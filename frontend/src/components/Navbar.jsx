@@ -41,16 +41,7 @@ const Navbar = () => {
                 <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
                   <MapPin className="w-3.5 h-3.5" />
                 </div>
-                <span className="text-sm">English</span>
-                <ChevronDown className="w-4 h-4" />
-              </div>
-
-              {/* Currency */}
-              <div className="hidden lg:flex items-center gap-2">
-                <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
-                  <DollarSign className="w-3.5 h-3.5" />
-                </div>
-                <span className="text-sm">USD</span>
+                <span className="text-sm">Română</span>
                 <ChevronDown className="w-4 h-4" />
               </div>
             </div>
@@ -104,17 +95,17 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* Right Side - Oval Vertical Buttons */}
-            <div className="flex items-center gap-3 flex-shrink-0">
-              {/* Account Button - VERTICAL OVAL */}
+            {/* Right Side - Account and Cart without yellow background */}
+            <div className="flex items-center gap-6 flex-shrink-0">
+              {/* Account Button - No background */}
               {isAuthenticated ? (
-                <div className="bg-yellow-400 rounded-full px-6 py-3 flex items-center gap-3 cursor-pointer hover:bg-yellow-500 transition shadow-md">
-                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                    <User className="w-6 h-6 text-gray-900" />
+                <div className="flex items-center gap-2 cursor-pointer group">
+                  <div className="w-14 h-14 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition shadow-md">
+                    <User className="w-7 h-7 text-gray-900" />
                   </div>
                   <div className="text-left">
                     <div className="text-sm font-semibold text-gray-900">Account</div>
-                    <button onClick={logout} className="text-sm text-gray-700 hover:text-gray-900">
+                    <button onClick={logout} className="text-sm text-gray-600 hover:text-gray-900">
                       log out
                     </button>
                   </div>
@@ -122,25 +113,25 @@ const Navbar = () => {
               ) : (
                 <button
                   onClick={() => openAuthModal('login')}
-                  className="bg-yellow-400 rounded-full px-6 py-3 flex items-center gap-3 hover:bg-yellow-500 transition shadow-md"
+                  className="flex items-center gap-2 group"
                 >
-                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                    <User className="w-6 h-6 text-gray-900" />
+                  <div className="w-14 h-14 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition shadow-md">
+                    <User className="w-7 h-7 text-gray-900" />
                   </div>
                   <div className="text-left">
                     <div className="text-sm font-semibold text-gray-900">Account</div>
-                    <div className="text-sm text-gray-700">log in</div>
+                    <div className="text-sm text-gray-600">log in</div>
                   </div>
                 </button>
               )}
 
-              {/* Cart Button - VERTICAL OVAL */}
+              {/* Cart Button - No background */}
               <Link 
                 to="/cart" 
-                className="bg-yellow-400 rounded-full px-6 py-3 flex items-center gap-3 hover:bg-yellow-500 transition shadow-md relative"
+                className="flex items-center gap-2 group"
               >
-                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center relative">
-                  <ShoppingCart className="w-6 h-6 text-gray-900" />
+                <div className="w-14 h-14 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition shadow-md relative">
+                  <ShoppingCart className="w-7 h-7 text-gray-900" />
                   {cartCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
                       {cartCount}
@@ -149,7 +140,7 @@ const Navbar = () => {
                 </div>
                 <div className="text-left">
                   <div className="text-sm font-semibold text-gray-900">Cart</div>
-                  <div className="text-sm text-gray-700">{cartCount}- Items</div>
+                  <div className="text-sm text-gray-600">{cartCount}- Items</div>
                 </div>
               </Link>
 
