@@ -1,0 +1,131 @@
+from pydantic import BaseModel, EmailStr, Field
+from typing import Optional, List
+from datetime import datetime
+import uuid
+
+# User Models
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    firstName: str
+    lastName: str
+
+class User(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    email: EmailStr
+    firstName: str
+    lastName: str
+    role: str = "user"  # user or admin
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    updatedAt: datetime = Field(default_factory=datetime.utcnow)
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+class UserResponse(BaseModel):
+    id: str
+    email: str
+    firstName: str
+    lastName: str
+    role: str
+
+# Product Models
+class ProductCreate(BaseModel):
+    name: str
+    description: Optional[str] = ""
+    price: float
+    originalPrice: Optional[float] = None
+    discount: Optional[int] = 0
+    category: str
+    storeName: Optional[str] = ""
+    image: str
+    colors: Optional[List[str]] = []
+    sizes: Optional[List[str]] = []
+    rating: Optional[float] = 0.0
+    reviews: Optional[int] = 0
+    sold: Optional[int] = 0
+    available: Optional[int] = 100
+    inStock: Optional[bool] = True
+    badge: Optional[str] = ""
+
+class Product(ProductCreate):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    updatedAt: datetime = Field(default_factory=datetime.utcnow)
+
+# Category Models
+class CategoryCreate(BaseModel):
+    name: str
+    slug: str
+    icon: Optional[str] = ""
+    itemCount: Optional[int] = 0
+
+class Category(CategoryCreate):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+
+# Cart Models
+class CartItem(BaseModel):
+    productId: str
+    quantity: int
+    selectedSize: Optional[str] = None
+    selectedColor: Optional[str] = None
+    price: float
+
+class Cart(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    userId: str
+    items: List[CartItem] = []
+    total: float = 0.0
+    updatedAt: datetime = Field(default_factory=datetime.utcnow)
+
+class AddToCartRequest(BaseModel):
+    productId: str
+    quantity: int = 1
+    selectedSize: Optional[str] = None
+    selectedColor: Optional[str] = None
+
+# Wishlist Models
+class Wishlist(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    userId: str
+    products: List[str] = []
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+
+# Order Models
+class OrderItem(BaseModel):
+    productId: str
+    productName: str
+    quantity: int
+    selectedSize: Optional[str] = None
+    selectedColor: Optional[str] = None
+    price: float
+
+class ShippingAddress(BaseModel):
+    fullName: str
+    address: str
+    city: str
+    postalCode: str
+    phone: str
+
+class OrderCreate(BaseModel):
+    items: List[OrderItem]
+    shippingAddress: ShippingAddress
+
+class Order(OrderCreate):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    userId: str
+    total: float
+    status: str = "pending"  # pending, processing, shipped, delivered, cancelled
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    updatedAt: datetime = Field(default_factory=datetime.utcnow)
+
+# Admin Dashboard Models
+class DashboardStats(BaseModel):
+    totalUsers: int
+    totalProducts: int
+    totalOrders: int
+    totalRevenue: float
+    pendingOrders: int
+    lowStockProducts: int

@@ -1,0 +1,324 @@
+import React, { useState } from 'react';
+import HeroSlider from '../components/HeroSlider';
+import CategoryGrid from '../components/CategoryGrid';
+import ProductCard from '../components/ProductCard';
+import CountdownTimer from '../components/CountdownTimer';
+import { products } from '../data/mockData';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+const HomePage = () => {
+  const [activeTab, setActiveTab] = useState('mens');
+  
+  // Product sections
+  const hotPicksProducts = products.slice(0, 6);
+  const flashDealProducts = products.slice(6, 11);
+  const freshFindsProducts = products.slice(11, 19);
+
+  const tabs = [
+    { id: 'mens', label: "Men's Fashion" },
+    { id: 'womens', label: "Women's Fashion" },
+    { id: 'kids', label: 'Kids Clothing' },
+    { id: 'accessories', label: 'Accessories' },
+    { id: 'jewelry', label: 'Jewelry & Watches' }
+  ];
+
+  return (
+    <div className="min-h-screen">
+      {/* Hero Slider */}
+      <HeroSlider />
+
+      {/* Categories Grid */}
+      <CategoryGrid />
+
+      {/* Today's Hot Picks Section */}
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+            <h2 className="text-3xl font-bold mb-4 md:mb-0">Today's Hot Picks</h2>
+            <CountdownTimer targetDate={new Date(Date.now() + 24 * 60 * 60 * 1000)} />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+            {hotPicksProducts.map((product) => (
+              <ProductCard key={product.id} product={product} showProgress />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Flash Fashion Deal Section */}
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-8">Flash Fashion Deal</h2>
+
+          {/* Tabs */}
+          <div className="flex flex-wrap justify-center gap-4 mb-8 border-b">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-6 py-3 font-semibold transition border-b-2 ${
+                  activeTab === tab.id
+                    ? 'border-teal-600 text-teal-600'
+                    : 'border-transparent text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Products Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            {flashDealProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Banner Section */}
+      <section className="py-8">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Banner 1 */}
+            <div className="bg-teal-600 rounded-2xl overflow-hidden relative group">
+              <div className="p-8 relative z-10">
+                <span className="text-white text-sm mb-2 block">Enjoy 20% savings</span>
+                <h3 className="text-white text-2xl font-bold mb-4">From Runway to Your Closet</h3>
+                <button className="bg-white text-teal-600 px-6 py-2 rounded-full hover:bg-gray-100 transition">
+                  Shop Now
+                </button>
+              </div>
+              <div className="absolute bottom-0 right-0 w-1/2 h-full opacity-20">
+                <div className="w-full h-full bg-gradient-to-l from-white/20 to-transparent" />
+              </div>
+            </div>
+
+            {/* Banner 2 */}
+            <div className="bg-pink-100 rounded-2xl overflow-hidden relative group">
+              <div className="p-8 relative z-10">
+                <span className="text-gray-700 text-sm mb-2 block">Enjoy 20% savings</span>
+                <h3 className="text-gray-900 text-2xl font-bold mb-4">Women's Clothing</h3>
+                <button className="bg-teal-600 text-white px-6 py-2 rounded-full hover:bg-teal-700 transition">
+                  Shop Now
+                </button>
+              </div>
+            </div>
+
+            {/* Banner 3 */}
+            <div className="bg-blue-100 rounded-2xl overflow-hidden relative group">
+              <div className="p-8 relative z-10">
+                <span className="text-gray-700 text-sm mb-2 block">Enjoy 20% savings</span>
+                <h3 className="text-gray-900 text-2xl font-bold mb-4">Kids & Baby Clothing</h3>
+                <button className="bg-teal-600 text-white px-6 py-2 rounded-full hover:bg-teal-700 transition">
+                  Shop Now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Free Shipment Ticker */}
+      <section className="py-6 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="overflow-hidden">
+            <div className="flex animate-scroll">
+              {[...Array(12)].map((_, i) => (
+                <span key={i} className="mx-8 text-lg font-semibold text-gray-600 whitespace-nowrap">
+                  ★ Free shipment
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Brands Section */}
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center">
+            {['Cowshed', 'Ninoa', 'Claudia', 'Minut', 'Orchard'].map((brand, index) => (
+              <div key={index} className="flex justify-center">
+                <div className="text-2xl font-bold text-gray-400 hover:text-gray-600 transition">
+                  {brand}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Hand Picked Section */}
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">Hand picked Just for You</h2>
+          
+          <div className="grid md:grid-cols-4 gap-8">
+            {/* Product Showcase 1 */}
+            <div className="space-y-4">
+              <div className="relative aspect-[3/4] bg-gray-200 rounded-lg overflow-hidden group">
+                <img
+                  src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400"
+                  alt="Product"
+                  className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
+                />
+              </div>
+              <div>
+                <h3 className="font-semibold mb-2">Bali Underware Bra</h3>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs text-gray-500">(189)</span>
+                </div>
+                <div className="flex gap-1 mb-3">
+                  {['S', 'M', 'L', 'XL', 'XXL'].map((size) => (
+                    <button key={size} className="px-2 py-1 text-xs border border-gray-300 rounded hover:border-teal-600">
+                      {size}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-lg font-bold">$27.46</span>
+                  <span className="text-sm text-gray-400 line-through">$29.99</span>
+                  <span className="text-xs text-green-600">10% OFF</span>
+                </div>
+                <button className="w-full bg-teal-600 text-white py-2 rounded hover:bg-teal-700 transition">
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+
+            {/* Carousel of small images */}
+            <div className="flex flex-col gap-4">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
+                  <img
+                    src={`https://images.unsplash.com/photo-${1483985988355 + i * 100}-763728e1935b?w=200`}
+                    alt={`Product ${i}`}
+                    className="w-full h-full object-cover hover:scale-110 transition"
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Repeat for other columns */}
+            <div className="flex flex-col gap-4">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
+                  <img
+                    src={`https://images.unsplash.com/photo-${1490481651871 + i * 100}-ab68de25d43d?w=200`}
+                    alt={`Product ${i}`}
+                    className="w-full h-full object-cover hover:scale-110 transition"
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-4">
+              <div className="relative aspect-[3/4] bg-gray-200 rounded-lg overflow-hidden group">
+                <img
+                  src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400"
+                  alt="Product"
+                  className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
+                />
+              </div>
+              <div>
+                <h3 className="font-semibold mb-2">Bali Underware Bra</h3>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs text-gray-500">(189)</span>
+                </div>
+                <div className="flex gap-1 mb-3">
+                  {['S', 'M', 'L', 'XL', 'XXL'].map((size) => (
+                    <button key={size} className="px-2 py-1 text-xs border border-gray-300 rounded hover:border-teal-600">
+                      {size}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-lg font-bold">$27.46</span>
+                  <span className="text-sm text-gray-400 line-through">$29.99</span>
+                  <span className="text-xs text-green-600">10% OFF</span>
+                </div>
+                <button className="w-full bg-teal-600 text-white py-2 rounded hover:bg-teal-700 transition">
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Fresh Finds Section */}
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-wrap justify-center gap-4 mb-8 border-b">
+            <button className="px-6 py-3 font-semibold border-b-2 border-teal-600 text-teal-600">
+              Fresh Finds
+            </button>
+            <button className="px-6 py-3 font-semibold border-b-2 border-transparent text-gray-600 hover:text-gray-900">
+              Top Sellers
+            </button>
+            <button className="px-6 py-3 font-semibold border-b-2 border-transparent text-gray-600 hover:text-gray-900">
+              Most Wanted
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-4">
+            {freshFindsProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </div>
+              <h3 className="font-bold text-lg mb-2">Free Shipping</h3>
+              <p className="text-gray-600 text-sm">Enjoy the Convenience of Free Shipping on Every Order</p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </div>
+              <h3 className="font-bold text-lg mb-2">24x7 Support</h3>
+              <p className="text-gray-600 text-sm">Round-the-Clock Assistance, Anytime You Need It</p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </div>
+              <h3 className="font-bold text-lg mb-2">30 Days Return</h3>
+              <p className="text-gray-600 text-sm">Your Satisfaction is Our Priority: Return Any Product Within 30 Days</p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <h3 className="font-bold text-lg mb-2">Secure Payment</h3>
+              <p className="text-gray-600 text-sm">Seamless Shopping Backed by Safe and Secure Payment Options</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default HomePage;
