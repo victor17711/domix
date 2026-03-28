@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, ShoppingCart, User, Menu, X, ChevronDown, Phone, MapPin } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, ChevronDown, Phone, MapPin, Headphones, DollarSign, Tag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from './AuthModal';
@@ -22,40 +22,57 @@ const Navbar = () => {
       {/* Top Bar */}
       <div className="bg-teal-700 text-white">
         <div className="w-full px-6">
-          <div className="flex items-center justify-between py-2.5 text-sm">
+          <div className="flex items-center justify-between py-3 text-sm">
             {/* Left Side */}
             <div className="flex items-center gap-6">
+              {/* Need Support */}
               <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4" />
-                <span>Need Support ? Call Us</span>
-                <span className="bg-yellow-400 text-black px-3 py-1 rounded font-semibold ml-1">
+                <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
+                  <Headphones className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-sm">Need Support ? Call Us</span>
+                <span className="bg-yellow-400 text-black px-4 py-1.5 rounded-full font-bold text-sm">
                   (480) 555-0103
                 </span>
               </div>
-              <div className="hidden lg:flex items-center gap-1 cursor-pointer">
-                <MapPin className="w-4 h-4" />
-                <span>English</span>
+
+              {/* Language */}
+              <div className="hidden lg:flex items-center gap-2">
+                <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
+                  <MapPin className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-sm">English</span>
                 <ChevronDown className="w-4 h-4" />
               </div>
-              <div className="hidden lg:flex items-center gap-1 cursor-pointer">
-                <span>💲</span>
-                <span>USD</span>
+
+              {/* Currency */}
+              <div className="hidden lg:flex items-center gap-2">
+                <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
+                  <DollarSign className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-sm">USD</span>
                 <ChevronDown className="w-4 h-4" />
               </div>
             </div>
 
             {/* Right Side */}
             <div className="hidden lg:flex items-center gap-6">
+              {/* Fashion Category */}
               <div className="flex items-center gap-2">
-                <span>🏷️ Fashion Category</span>
-                <span className="bg-yellow-400 text-black px-3 py-1 rounded font-semibold ml-1">
+                <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
+                  <Tag className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-sm">Fashion Category</span>
+                <span className="bg-yellow-400 text-black px-4 py-1.5 rounded-full font-bold text-sm">
                   25% OFF Today
                 </span>
               </div>
-              <Link to="/about" className="hover:text-yellow-400 transition">About us</Link>
-              <Link to="/account" className="hover:text-yellow-400 transition">My Account</Link>
-              <Link to="/wishlist" className="hover:text-yellow-400 transition">My Wishlist</Link>
-              <Link to="/track-order" className="hover:text-yellow-400 transition">Order Tracking</Link>
+              
+              {/* Links */}
+              <Link to="/about" className="hover:text-yellow-400 transition text-sm">About us</Link>
+              <Link to="/account" className="hover:text-yellow-400 transition text-sm">My Account</Link>
+              <Link to="/wishlist" className="hover:text-yellow-400 transition text-sm">My Wishlist</Link>
+              <Link to="/track-order" className="hover:text-yellow-400 transition text-sm">Order Tracking</Link>
             </div>
           </div>
         </div>
@@ -65,12 +82,12 @@ const Navbar = () => {
       <div className="bg-white border-b">
         <div className="w-full px-6 py-6">
           <div className="flex items-center justify-between gap-8">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-              <div className="bg-teal-600 text-white w-16 h-16 rounded-full flex items-center justify-center font-bold text-3xl shadow-lg">
-                S
+            {/* Logo - Text Style */}
+            <Link to="/" className="flex-shrink-0">
+              <div className="text-5xl font-bold">
+                <span className="text-teal-600">S</span>
+                <span className="text-gray-900">ellzy</span>
               </div>
-              <span className="text-4xl font-bold text-gray-900">Sellzy</span>
             </Link>
 
             {/* Search Bar */}
@@ -79,25 +96,25 @@ const Navbar = () => {
                 <input
                   type="text"
                   placeholder="Search for the Items"
-                  className="w-full px-6 py-4 pr-14 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-teal-500 text-base"
+                  className="w-full px-6 py-4 pr-14 border-2 border-gray-200 rounded-full focus:outline-none focus:border-teal-500 text-base"
                 />
-                <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-teal-600 text-white p-3 rounded-md hover:bg-teal-700 transition">
-                  <Search className="w-5 h-5" />
+                <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal-600">
+                  <Search className="w-6 h-6" />
                 </button>
               </div>
             </div>
 
-            {/* Right Side Icons */}
-            <div className="flex items-center gap-4 flex-shrink-0">
-              {/* Account Button */}
+            {/* Right Side - Oval Vertical Buttons */}
+            <div className="flex items-center gap-3 flex-shrink-0">
+              {/* Account Button - VERTICAL OVAL */}
               {isAuthenticated ? (
-                <div className="flex flex-col items-center cursor-pointer group">
-                  <div className="bg-yellow-400 text-black w-14 h-14 rounded-full flex items-center justify-center mb-1 group-hover:bg-yellow-500 transition shadow-md">
-                    <User className="w-7 h-7" />
+                <div className="bg-yellow-400 rounded-full px-6 py-3 flex items-center gap-3 cursor-pointer hover:bg-yellow-500 transition shadow-md">
+                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                    <User className="w-6 h-6 text-gray-900" />
                   </div>
-                  <div className="text-center">
-                    <div className="text-xs text-gray-600">Account</div>
-                    <button onClick={logout} className="text-sm font-semibold text-gray-900 hover:text-teal-600">
+                  <div className="text-left">
+                    <div className="text-sm font-semibold text-gray-900">Account</div>
+                    <button onClick={logout} className="text-sm text-gray-700 hover:text-gray-900">
                       log out
                     </button>
                   </div>
@@ -105,37 +122,40 @@ const Navbar = () => {
               ) : (
                 <button
                   onClick={() => openAuthModal('login')}
-                  className="flex flex-col items-center group"
+                  className="bg-yellow-400 rounded-full px-6 py-3 flex items-center gap-3 hover:bg-yellow-500 transition shadow-md"
                 >
-                  <div className="bg-yellow-400 text-black w-14 h-14 rounded-full flex items-center justify-center mb-1 group-hover:bg-yellow-500 transition shadow-md">
-                    <User className="w-7 h-7" />
+                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                    <User className="w-6 h-6 text-gray-900" />
                   </div>
-                  <div className="text-center">
-                    <div className="text-xs text-gray-600">Account</div>
-                    <div className="text-sm font-semibold text-gray-900">log in</div>
+                  <div className="text-left">
+                    <div className="text-sm font-semibold text-gray-900">Account</div>
+                    <div className="text-sm text-gray-700">log in</div>
                   </div>
                 </button>
               )}
 
-              {/* Cart Button */}
-              <Link to="/cart" className="flex flex-col items-center group">
-                <div className="bg-yellow-400 text-black w-14 h-14 rounded-full flex items-center justify-center mb-1 relative group-hover:bg-yellow-500 transition shadow-md">
-                  <ShoppingCart className="w-7 h-7" />
+              {/* Cart Button - VERTICAL OVAL */}
+              <Link 
+                to="/cart" 
+                className="bg-yellow-400 rounded-full px-6 py-3 flex items-center gap-3 hover:bg-yellow-500 transition shadow-md relative"
+              >
+                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center relative">
+                  <ShoppingCart className="w-6 h-6 text-gray-900" />
                   {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold">
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
                       {cartCount}
                     </span>
                   )}
                 </div>
-                <div className="text-center">
-                  <div className="text-xs text-gray-600">Cart</div>
-                  <div className="text-sm font-semibold text-gray-900">{cartCount} Items</div>
+                <div className="text-left">
+                  <div className="text-sm font-semibold text-gray-900">Cart</div>
+                  <div className="text-sm text-gray-700">{cartCount}- Items</div>
                 </div>
               </Link>
 
               {/* Mobile Menu Toggle */}
-              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden">
-                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden ml-4">
+                {isMenuOpen ? <Menu className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
           </div>
@@ -147,16 +167,21 @@ const Navbar = () => {
         <div className="w-full px-6">
           <div className="flex items-center justify-between py-4">
             {/* Explore Categories Button */}
-            <button className="bg-teal-600 text-white px-8 py-3.5 rounded-lg flex items-center gap-3 hover:bg-teal-700 transition shadow-md font-semibold text-base">
-              <Menu className="w-5 h-5" />
+            <button className="bg-teal-600 text-white px-8 py-4 rounded-xl flex items-center gap-3 hover:bg-teal-700 transition shadow-md font-semibold">
+              <div className="grid grid-cols-2 gap-0.5 w-5 h-5">
+                <div className="bg-white rounded-sm"></div>
+                <div className="bg-white rounded-sm"></div>
+                <div className="bg-white rounded-sm"></div>
+                <div className="bg-white rounded-sm"></div>
+              </div>
               Explore All Categories
               <ChevronDown className="w-5 h-5" />
             </button>
 
             {/* Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-8 text-base">
-              <Link to="/" className="text-teal-600 font-semibold hover:text-teal-700 transition">
-                Home
+            <nav className="hidden lg:flex items-center gap-8 text-base font-medium">
+              <Link to="/" className="text-teal-600 hover:text-teal-700 transition flex items-center gap-1">
+                Home <ChevronDown className="w-4 h-4" />
               </Link>
               <Link to="/about" className="text-gray-700 hover:text-teal-600 transition">
                 About Us
@@ -183,9 +208,11 @@ const Navbar = () => {
 
             {/* Support Info */}
             <div className="hidden lg:flex items-center gap-3">
-              <Phone className="w-6 h-6 text-gray-600" />
+              <div className="w-12 h-12 border-2 border-gray-300 rounded-full flex items-center justify-center">
+                <Phone className="w-6 h-6 text-gray-600" />
+              </div>
               <div>
-                <div className="text-xs text-gray-500">24/7 Support</div>
+                <div className="text-sm text-gray-500">24/7 Support</div>
                 <div className="text-base font-bold text-gray-900">888-777-999</div>
               </div>
             </div>
