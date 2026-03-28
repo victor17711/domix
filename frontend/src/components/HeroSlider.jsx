@@ -25,58 +25,62 @@ const HeroSlider = () => {
   };
 
   return (
-    <div className="relative bg-yellow-200 rounded-none overflow-hidden">
-      <div className="w-full px-6 py-12 md:py-20">
-        <div className="grid md:grid-cols-2 gap-8 items-center">
-          {/* Left Content */}
-          <div className="space-y-6 relative z-10">
-            <span className="inline-block text-sm font-medium text-gray-700">
-              {sliderData[currentSlide].badge}
-            </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-              {sliderData[currentSlide].title}
-            </h1>
-            <p className="text-gray-700 text-lg">
-              {sliderData[currentSlide].description}
-            </p>
-            <button className="bg-teal-600 text-white px-8 py-3 rounded-full flex items-center gap-2 hover:bg-teal-700 transition group">
-              Shop Now
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition" />
-            </button>
+    <div className="w-full px-6 py-6">
+      <div className="relative bg-yellow-200 rounded-3xl overflow-hidden">
+        <div className="w-full px-12 py-16 md:py-24">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            {/* Left Content */}
+            <div className="space-y-6 relative z-10">
+              <span className="inline-block text-base font-medium text-gray-800">
+                {sliderData[currentSlide].badge}
+              </span>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight">
+                {sliderData[currentSlide].title}
+              </h1>
+              <p className="text-gray-800 text-lg max-w-lg">
+                {sliderData[currentSlide].description}
+              </p>
+              <button className="bg-teal-600 text-white px-8 py-4 rounded-full flex items-center gap-2 hover:bg-teal-700 transition group shadow-lg font-semibold">
+                Shop Now
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition" />
+              </button>
+            </div>
+
+            {/* Right Image */}
+            <div className="relative flex justify-end">
+              <img
+                src={sliderData[currentSlide].image}
+                alt={sliderData[currentSlide].title}
+                className="w-full max-w-lg h-[500px] object-cover rounded-2xl"
+              />
+            </div>
           </div>
 
-          {/* Right Image */}
-          <div className="relative">
-            <img
-              src={sliderData[currentSlide].image}
-              alt={sliderData[currentSlide].title}
-              className="w-full h-[400px] object-cover rounded-lg"
-            />
-          </div>
+          {/* Navigation Buttons */}
+          <button
+            onClick={prevSlide}
+            className="absolute left-6 top-1/2 -translate-y-1/2 bg-black bg-opacity-70 text-white p-4 rounded-full hover:bg-opacity-90 transition z-20"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button
+            onClick={nextSlide}
+            className="absolute right-6 top-1/2 -translate-y-1/2 bg-black bg-opacity-70 text-white p-4 rounded-full hover:bg-opacity-90 transition z-20"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
         </div>
 
-        {/* Navigation Buttons */}
-        <button
-          onClick={prevSlide}
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition"
-        >
-          <ChevronLeft className="w-6 h-6" />
-        </button>
-        <button
-          onClick={nextSlide}
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition"
-        >
-          <ChevronRight className="w-6 h-6" />
-        </button>
-
-        {/* Dots Indicator */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+        {/* Dots Indicator - Bottom Center */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20 bg-white bg-opacity-90 px-6 py-3 rounded-full shadow-lg">
           {sliderData.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-2 h-2 rounded-full transition ${
-                currentSlide === index ? 'bg-teal-600 w-8' : 'bg-gray-400'
+              className={`transition-all rounded-full ${
+                currentSlide === index 
+                  ? 'bg-teal-600 w-10 h-3' 
+                  : 'bg-gray-300 w-3 h-3 hover:bg-gray-400'
               }`}
             />
           ))}
