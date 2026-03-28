@@ -15,21 +15,29 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (mode === 'login') {
-      login(formData.email, formData.password);
-      toast({ title: 'Success', description: 'Logged in successfully!' });
-      onClose();
-    } else if (mode === 'register') {
-      if (formData.password !== formData.confirmPassword) {
-        toast({ title: 'Error', description: 'Passwords do not match!', variant: 'destructive' });
-        return;
+    try {
+      if (mode === 'login') {
+        await login(formData.email, formData.password);
+        toast({ title: 'Success', description: 'Logged in successfully!' });
+        onClose();
+      } else if (mode === 'register') {
+        if (formData.password !== formData.confirmPassword) {
+          toast({ title: 'Error', description: 'Passwords do not match!', variant: 'destructive' });
+          return;
+        }
+        await register(formData.firstName, formData.lastName, formData.email, formData.password);
+        toast({ title: 'Success', description: 'Account created successfully!' });
+        onClose();
       }
-      register(formData.firstName, formData.lastName, formData.email, formData.password);
-      toast({ title: 'Success', description: 'Account created successfully!' });
-      onClose();
+    } catch (error) {
+      toast({ 
+        title: 'Error', 
+        description: error.response?.data?.detail || 'An error occurred. Please try again.',
+        variant: 'destructive' 
+      });
     }
   };
 

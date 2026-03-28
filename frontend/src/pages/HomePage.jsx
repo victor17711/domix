@@ -1,13 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import HeroSlider from '../components/HeroSlider';
 import CategoryGrid from '../components/CategoryGrid';
 import ProductCard from '../components/ProductCard';
 import CountdownTimer from '../components/CountdownTimer';
-import { products } from '../data/mockData';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const HomePage = () => {
   const [activeTab, setActiveTab] = useState('mens');
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(`${API}/products`);
+      setProducts(response.data);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Loading products...</p>
+      </div>
+    </div>;
+  }
   
   // Product sections
   const hotPicksProducts = products.slice(0, 6);

@@ -1,0 +1,87 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+
+const AdminContext = createContext();
+
+export const useAdmin = () => {
+  const context = useContext(AdminContext);
+  if (!context) {
+    throw new Error('useAdmin must be used within an AdminProvider');
+  }
+  return context;
+};
+
+export const AdminProvider = ({ children }) => {
+  const [adminUser, setAdminUser] = useState(null);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    // Check if admin is logged in
+    const savedToken = localStorage.getItem('adminToken');
+    const savedUser = localStorage.getItem('adminUser');
+    
+    if (savedToken && savedUser) {
+      setToken(savedToken);
+      setAdminUser(JSON.parse(savedUser));
+      setIsAdminAuthenticated(true);
+    }
+  }, []);
+
+  const adminLogin = async (email, password) => {
+    try {
+      const response = await axios.post(`${API}/auth/login`, { email, password });
+      
+      if (response.data.user.role !== 'admin') {
+        throw new Error('Not authorized as admin');
+      }
+
+      const { access_token, user } = response.data;
+      
+      setToken(access_token);
+      setAdminUser(user);
+      setIsAdminAuthenticated(true);
+      
+      localStorage.setItem('adminToken', access_token);
+      localStorage.setItem('adminUser', JSON.stringify(user));
+      
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const adminLogout = () => {
+    setToken(null);
+    setAdminUser(null);
+    setIsAdminAuthenticated(false);
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUser');
+  };
+
+  const getAuthHeaders = () => {
+    return {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    };
+  };
+
+  return (
+    <AdminContext.Provider
+      value={{
+        adminUser,
+        isAdminAuthenticated,
+        token,
+        adminLogin,
+        adminLogout,
+        getAuthHeaders
+      }}
+    >
+      {children}
+    </AdminContext.Provider>
+  );
+};
