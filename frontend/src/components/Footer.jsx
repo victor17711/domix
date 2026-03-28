@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, Share2 } from 'lucide-react';
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Printer,
+  BadgeDollarSign,
+  ChevronRight,
+} from 'lucide-react';
 import { toast } from '../hooks/use-toast';
 
 const Footer = () => {
@@ -8,177 +15,312 @@ const Footer = () => {
 
   const handleSubscribe = (e) => {
     e.preventDefault();
-    toast({ title: 'Success', description: 'Successfully subscribed to newsletter!' });
+    toast({
+      title: 'Success',
+      description: 'Successfully subscribed to newsletter!',
+    });
     setEmail('');
   };
 
   return (
-    <footer className="bg-teal-800 text-white">
+    <>
       {/* Newsletter Section */}
-      <div className="bg-white text-gray-800 py-12">
-        <div className="w-full px-6 text-center">
-          <h2 className="text-3xl font-bold mb-4">Subscribe to our newsletter</h2>
-          <p className="text-gray-600 mb-6">
-            Stay updated! Subscribe to our mailing list for news, updates, and exclusive offers.
-          </p>
-          <form onSubmit={handleSubscribe} className="max-w-md mx-auto flex gap-2">
-            <div className="flex-1 relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                required
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-teal-600 text-white px-8 py-3 rounded-lg hover:bg-teal-700 transition font-semibold"
-            >
-              Subscribe
-            </button>
-          </form>
-        </div>
-      </div>
+      <section className="bg-[#f5f5f5] pt-12 md:pt-16">
+        <div className="max-w-[1320px] mx-auto px-4">
+          <div className="text-center">
+            <h2 className="text-[#1d2433] text-[30px] md:text-[38px] font-bold leading-tight">
+              Subscribe to our newsletter
+            </h2>
 
-      {/* Main Footer */}
-      <div className="w-full px-6 py-12">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* About Section */}
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="bg-yellow-400 text-teal-800 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl">
-                S
-              </div>
-              <span className="text-2xl font-bold">Sellzy</span>
-            </div>
-            <p className="text-gray-300 mb-4">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            <p className="mt-5 text-[#94A3B8] text-[15px] md:text-[16px] leading-[1.7]">
+              Stay updated! Subscribe to our mailing list for news, updates, and exclusive offers.
             </p>
-            <div className="flex gap-3">
-              <a href="#" className="w-10 h-10 border border-gray-500 rounded-full flex items-center justify-center hover:bg-white hover:text-teal-800 transition">
-                <Share2 className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 border border-gray-500 rounded-full flex items-center justify-center hover:bg-white hover:text-teal-800 transition">
-                <Share2 className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 border border-gray-500 rounded-full flex items-center justify-center hover:bg-white hover:text-teal-800 transition">
-                <Share2 className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 border border-gray-500 rounded-full flex items-center justify-center hover:bg-white hover:text-teal-800 transition">
-                <Share2 className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 border border-gray-500 rounded-full flex items-center justify-center hover:bg-white hover:text-teal-800 transition">
-                <Share2 className="w-5 h-5" />
-              </a>
+
+            <form
+              onSubmit={handleSubscribe}
+              className="mt-7 mx-auto w-full max-w-[500px]"
+            >
+              <div className="h-[58px] rounded-full border border-[#D9E0E7] bg-white flex items-center pl-5 pr-[7px] shadow-[0_4px_18px_rgba(15,92,92,0.06)]">
+                <Mail className="w-5 h-5 text-[#4B5563] shrink-0" />
+
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  required
+                  className="flex-1 h-full bg-transparent outline-none px-4 text-[16px] text-[#64748B] placeholder:text-[#94A3B8]"
+                />
+
+                <button
+                  type="submit"
+                  className="h-[42px] px-7 md:px-9 rounded-full bg-[#0f8b8d] text-white font-semibold text-[16px] hover:bg-[#0d7c7e] transition"
+                >
+                  Subscribe
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-[#0d5c63] pt-10 md:pt-12 pb-[100px] md:pb-14 xl:rounded-tr-[22px] xl:rounded-tl-[22px] relative">
+        <div className="max-w-[1320px] mx-auto px-4">
+          <div className="grid grid-cols-12 gap-x-6 gap-y-10 pb-9">
+            {/* Column 1 */}
+            <div className="col-span-12 md:col-span-12 xl:col-span-3 flex flex-col gap-y-6">
+              <div>
+                <Link to="/" className="inline-flex items-center gap-2">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 rounded-full bg-[#FFD65A] flex items-center justify-center text-[#0d5c63] font-bold text-[22px] leading-none">
+                      S
+                    </div>
+                    <span className="ml-2 text-[#FFD65A] text-[28px] font-bold leading-none">
+                      Sellzy
+                    </span>
+                  </div>
+                </Link>
+              </div>
+
+              <p className="text-[#D8ECE6] text-base leading-[1.8] max-w-[330px]">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              </p>
+
+              <div className="flex flex-wrap gap-x-4 gap-y-4">
+                {/* <a
+                  href="#"
+                  className="inline-flex items-center justify-center size-10 rounded-full bg-[rgba(145,158,171,0.16)]"
+                >
+                  <Facebook className="w-5 h-5 text-white" />
+                </a>
+                <a
+                  href="#"
+                  className="inline-flex items-center justify-center size-10 rounded-full bg-[rgba(145,158,171,0.16)]"
+                >
+                  <Instagram className="w-5 h-5 text-white" />
+                </a>
+                <a
+                  href="#"
+                  className="inline-flex items-center justify-center size-10 rounded-full bg-[rgba(145,158,171,0.16)]"
+                >
+                  <Linkedin className="w-5 h-5 text-white" />
+                </a>
+                <a
+                  href="#"
+                  className="inline-flex items-center justify-center size-10 rounded-full bg-[rgba(145,158,171,0.16)]"
+                >
+                  <Pinterest className="w-5 h-5 text-white" />
+                </a> */}
+                <a
+                  href="#"
+                  className="inline-flex items-center justify-center size-10 rounded-full bg-[rgba(145,158,171,0.16)]"
+                >
+                  <BadgeDollarSign className="w-5 h-5 text-white" />
+                </a>
+              </div>
+
+              <div className="flex flex-col gap-y-[15px]">
+                <p className="text-base font-semibold text-[#D8ECE6]">
+                  Download Our App:
+                </p>
+
+                <div className="flex gap-x-2.5">
+                  <a href="#">
+                    <img
+                      src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                      alt="google-play"
+                      className="h-[44px] w-auto"
+                    />
+                  </a>
+                  <a href="#">
+                    <img
+                      src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg"
+                      alt="apple-store"
+                      className="h-[44px] w-auto"
+                    />
+                  </a>
+                </div>
+              </div>
             </div>
-            <div className="mt-6">
-              <p className="font-semibold mb-3">Download Our App:</p>
-              <div className="flex gap-2">
-                <a href="#" className="inline-block">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" className="h-10" />
-                </a>
-                <a href="#" className="inline-block">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" className="h-10" />
-                </a>
+
+            {/* Column 2 */}
+            <div className="col-span-12 md:col-span-6 xl:col-span-2">
+              <h5 className="text-[#D8ECE6] text-[18px] font-semibold pb-6 border-b border-[rgba(145,158,171,0.24)]">
+                About
+              </h5>
+
+              <ul className="flex flex-col gap-y-1.5 pt-4">
+                {[
+                  { to: '/about', label: 'About Us' },
+                  { to: '/terms', label: 'Terms & Conditions' },
+                  { to: '/careers', label: 'Careers' },
+                  { to: '/news', label: 'Latest News' },
+                  { to: '/contact', label: 'Contact Us' },
+                  { to: '/privacy', label: 'Privacy Policy' },
+                ].map((item) => (
+                  <li key={item.label} className="py-1.5 flex items-center gap-x-2">
+                    <span className="inline-flex items-center">
+                      <ChevronRight className="w-5 h-5 text-[#D8ECE6]" />
+                    </span>
+                    <Link
+                      to={item.to}
+                      className="text-[#D8ECE6] font-semibold hover:underline"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Column 3 */}
+            <div className="col-span-12 md:col-span-6 xl:col-span-2">
+              <h5 className="text-[#D8ECE6] text-[18px] font-semibold pb-6 border-b border-[rgba(145,158,171,0.24)]">
+                My Account
+              </h5>
+
+              <ul className="flex flex-col gap-y-1.5 pt-4">
+                {[
+                  { to: '/account', label: 'Your Account' },
+                  { to: '/return-policy', label: 'Return Policies' },
+                  { to: '/become-vendor', label: 'Become a Vendor' },
+                  { to: '/wishlist', label: 'Wishlist' },
+                  { to: '/affiliate', label: 'Affiliate Program' },
+                  { to: '/faqs', label: 'FAQs' },
+                ].map((item) => (
+                  <li key={item.label} className="py-1.5 flex items-center gap-x-2">
+                    <span className="inline-flex items-center">
+                      <ChevronRight className="w-5 h-5 text-[#D8ECE6]" />
+                    </span>
+                    <Link
+                      to={item.to}
+                      className="text-[#D8ECE6] font-semibold hover:underline"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Column 4 */}
+            <div className="col-span-12 md:col-span-6 xl:col-span-2">
+              <h5 className="text-[#D8ECE6] text-[18px] font-semibold pb-6 border-b border-[rgba(145,158,171,0.24)]">
+                Categories
+              </h5>
+
+              <ul className="flex flex-col gap-y-1.5 pt-4">
+                {[
+                  'Healthcare',
+                  'Fashion',
+                  'Organic',
+                  'Beauty',
+                  'Groceries',
+                  'Fahion',
+                ].map((item) => (
+                  <li key={item} className="py-1.5 flex items-center gap-x-2">
+                    <span className="inline-flex items-center">
+                      <ChevronRight className="w-5 h-5 text-[#D8ECE6]" />
+                    </span>
+                    <Link
+                      to="#"
+                      className="text-[#D8ECE6] font-semibold hover:underline"
+                    >
+                      {item}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Column 5 */}
+            <div className="col-span-12 md:col-span-6 xl:col-span-3">
+              <h5 className="text-[#D8ECE6] text-[18px] font-semibold pb-6 border-b border-[rgba(145,158,171,0.24)]">
+                Contact Information&apos;s
+              </h5>
+
+              <ul className="flex flex-col gap-y-3 py-4">
+                <li className="flex items-center gap-x-3">
+                  <span className="size-10 inline-flex items-center justify-center rounded-full bg-[rgba(145,158,171,0.16)] shrink-0">
+                    <MapPin className="w-5 h-5 text-[#D8ECE6]" />
+                  </span>
+                  <p className="text-[#D8ECE6] font-semibold leading-[1.6]">
+                    2715 Ash Dr. San Jose, South Dakota 83475
+                  </p>
+                </li>
+
+                <li className="flex items-center gap-x-3">
+                  <span className="size-10 inline-flex items-center justify-center rounded-full bg-[rgba(145,158,171,0.16)] shrink-0">
+                    <Phone className="w-5 h-5 text-[#D8ECE6]" />
+                  </span>
+                  <p className="text-[#D8ECE6] font-semibold">
+                    Call Us: (239) 555-0108
+                  </p>
+                </li>
+
+                <li className="flex items-center gap-x-3">
+                  <span className="size-10 inline-flex items-center justify-center rounded-full bg-[rgba(145,158,171,0.16)] shrink-0">
+                    <Mail className="w-5 h-5 text-[#D8ECE6]" />
+                  </span>
+                  <p className="text-[#D8ECE6] font-semibold">
+                    sara.cruz@example.com
+                  </p>
+                </li>
+
+                <li className="flex items-center gap-x-3">
+                  <span className="size-10 inline-flex items-center justify-center rounded-full bg-[rgba(145,158,171,0.16)] shrink-0">
+                    <Printer className="w-5 h-5 text-[#D8ECE6]" />
+                  </span>
+                  <p className="text-[#D8ECE6] font-semibold">
+                    sara.cruz@example.com
+                  </p>
+                </li>
+              </ul>
+
+              <div className="pt-2">
+                <div className="flex flex-wrap items-center gap-3">
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png"
+                    alt="Visa"
+                    className="h-9 w-auto object-contain"
+                  />
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png"
+                    alt="Mastercard"
+                    className="h-9 w-auto object-contain"
+                  />
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg"
+                    alt="American Express"
+                    className="h-9 w-auto object-contain"
+                  />
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg"
+                    alt="PayPal"
+                    className="h-9 w-auto object-contain"
+                  />
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
+                    alt="Apple Pay"
+                    className="h-9 w-auto object-contain bg-[#1F2937] rounded px-3 py-2"
+                  />
+                </div>
               </div>
             </div>
           </div>
 
-          {/* About Links */}
-          <div>
-            <h3 className="text-lg font-bold mb-4">About</h3>
-            <ul className="space-y-2">
-              <li><Link to="/about" className="text-gray-300 hover:text-white transition">About Us</Link></li>
-              <li><Link to="/terms" className="text-gray-300 hover:text-white transition">Terms & Conditions</Link></li>
-              <li><Link to="/careers" className="text-gray-300 hover:text-white transition">Careers</Link></li>
-              <li><Link to="/news" className="text-gray-300 hover:text-white transition">Latest News</Link></li>
-              <li><Link to="/contact" className="text-gray-300 hover:text-white transition">Contact Us</Link></li>
-              <li><Link to="/privacy" className="text-gray-300 hover:text-white transition">Privacy Policy</Link></li>
-            </ul>
-          </div>
-
-          {/* My Account Links */}
-          <div>
-            <h3 className="text-lg font-bold mb-4">My Account</h3>
-            <ul className="space-y-2">
-              <li><Link to="/account" className="text-gray-300 hover:text-white transition">Your Account</Link></li>
-              <li><Link to="/return-policy" className="text-gray-300 hover:text-white transition">Return Policies</Link></li>
-              <li><Link to="/become-vendor" className="text-gray-300 hover:text-white transition">Become a Vendor</Link></li>
-              <li><Link to="/wishlist" className="text-gray-300 hover:text-white transition">Wishlist</Link></li>
-              <li><Link to="/affiliate" className="text-gray-300 hover:text-white transition">Affiliate Program</Link></li>
-              <li><Link to="/faqs" className="text-gray-300 hover:text-white transition">FAQs</Link></li>
-            </ul>
-          </div>
-
-          {/* Contact Information */}
-          <div>
-            <h3 className="text-lg font-bold mb-4">Contact Information's</h3>
-            <ul className="space-y-4">
-              <li className="flex gap-3">
-                <MapPin className="w-5 h-5 flex-shrink-0 mt-1" />
-                <span className="text-gray-300">2715 Ash Dr. San Jose, South Dakota 83475</span>
-              </li>
-              <li className="flex gap-3">
-                <Phone className="w-5 h-5 flex-shrink-0" />
-                <span className="text-gray-300">Call Us: (239) 555-0108</span>
-              </li>
-              <li className="flex gap-3">
-                <Mail className="w-5 h-5 flex-shrink-0" />
-                <span className="text-gray-300">sara.cruz@example.com</span>
-              </li>
-            </ul>
-            <div className="mt-6">
-              <p className="text-sm text-gray-400 mb-2">Payment Methods:</p>
-              <div className="flex gap-2">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" className="h-8 bg-white p-1 rounded" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-8 bg-white p-1 rounded" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-8 bg-white p-1 rounded" />
-              </div>
-            </div>
+          {/* Bottom */}
+          <div className="text-center text-white pt-[22px] pb-px bg-no-repeat bg-center relative">
+            <div className="absolute left-1/2 -translate-x-1/2 top-0 w-full max-w-[520px] h-[48px] border-t border-[#1b7a7f] rounded-t-[120px]" />
+            <p className="relative z-10 text-[15px] text-[#EAF6F2]">
+              2026 Copyright By Themeforest Powered By Createuiux
+            </p>
           </div>
         </div>
-      </div>
-
-      {/* Bottom Bar */}
-      <div className="border-t border-teal-700">
-        <div className="w-full px-6 py-4 text-center text-gray-400 text-sm">
-          <p>2026 Copyright By Themeforest Powered By Createuiux</p>
-        </div>
-      </div>
-
-      {/* Quick Links Mobile Bottom */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-40">
-        <div className="flex justify-around py-3">
-          <Link to="/" className="flex flex-col items-center gap-1 text-teal-600">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
-            <span className="text-xs">Home</span>
-          </Link>
-          <Link to="/cart" className="flex flex-col items-center gap-1 text-gray-600">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-            </svg>
-            <span className="text-xs">My Order</span>
-          </Link>
-          <Link to="/wishlist" className="flex flex-col items-center gap-1 text-gray-600">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
-            <span className="text-xs">Wishlist</span>
-          </Link>
-          <Link to="/account" className="flex flex-col items-center gap-1 text-gray-600">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-            <span className="text-xs">My Account</span>
-          </Link>
-        </div>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 };
 

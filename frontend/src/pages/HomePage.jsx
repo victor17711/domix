@@ -301,51 +301,69 @@ const HomePage = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-12 bg-gray-50">
-        <div className="w-full px-6">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-              </div>
-              <h3 className="font-bold text-lg mb-2">Free Shipping</h3>
-              <p className="text-gray-600 text-sm">Enjoy the Convenience of Free Shipping on Every Order</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              </div>
-              <h3 className="font-bold text-lg mb-2">24x7 Support</h3>
-              <p className="text-gray-600 text-sm">Round-the-Clock Assistance, Anytime You Need It</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-              </div>
-              <h3 className="font-bold text-lg mb-2">30 Days Return</h3>
-              <p className="text-gray-600 text-sm">Your Satisfaction is Our Priority: Return Any Product Within 30 Days</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-              </div>
-              <h3 className="font-bold text-lg mb-2">Secure Payment</h3>
-              <p className="text-gray-600 text-sm">Seamless Shopping Backed by Safe and Secure Payment Options</p>
-            </div>
-          </div>
+      <section className="py-10 bg-[#fff]">
+  <div className="w-full px-5">
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+      
+      <div className="rounded-[24px] bg-[#9ad3d3] px-8 py-6 text-center flex flex-col items-center justify-center shadow-[0_2px_6px_rgba(0,0,0,0.06)]">
+        <div className="w-[60px] h-[60px] bg-white rounded-full flex items-center justify-center mb-5">
+          <svg className="w-9 h-9 text-[#2f3137]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 17H6a2 2 0 01-2-2v-3.5a1.5 1.5 0 011.5-1.5H7l1.5-3h5l1.5 3H17a3 3 0 013 3v2a2 2 0 01-2 2h-1m-8 0a2 2 0 104 0m-4 0a2 2 0 104 0m-4 0H9m4 0h2" />
+          </svg>
         </div>
-      </section>
+        <h3 className="text-[18px] leading-none font-extrabold text-[#1f2430] mb-2">
+          Free Shipping
+        </h3>
+        <p className="text-[15px] leading-[1.45] text-[#4b5563] max-w-[360px]">
+          Enjoy the Convenience of Free Shipping on Every Order
+        </p>
+      </div>
+
+      <div className="rounded-[24px] bg-[#f3e466] px-8 py-6 text-center flex flex-col items-center justify-center shadow-[0_2px_6px_rgba(0,0,0,0.06)]">
+        <div className="w-[60px] h-[60px] bg-white rounded-full flex items-center justify-center mb-5">
+          <svg className="w-9 h-9 text-[#2f3137]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M18 10a6 6 0 10-12 0v4a2 2 0 002 2h1v-4H8m8 0v4h1a2 2 0 002-2v-4m-5 9h-4" />
+          </svg>
+        </div>
+        <h3 className="text-[18px] leading-none font-extrabold text-[#1f2430] mb-2">
+          24x7 Support
+        </h3>
+        <p className="text-[15px] leading-[1.45] text-[#4b5563] max-w-[360px]">
+          Round-the-Clock Assistance, Anytime You Need It
+        </p>
+      </div>
+
+      <div className="rounded-[24px] bg-[#f3b98f] px-8 py-6 text-center flex flex-col items-center justify-center shadow-[0_2px_6px_rgba(0,0,0,0.06)]">
+        <div className="w-[60px] h-[60px] bg-white rounded-full flex items-center justify-center mb-5">
+          <svg className="w-9 h-9 text-[#2f3137]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M7 7h10M7 11h10M8 4h8a2 2 0 012 2v9a5 5 0 11-10 0V6a2 2 0 012-2z" />
+          </svg>
+        </div>
+        <h3 className="text-[18px] leading-none font-extrabold text-[#1f2430] mb-2">
+          30 Days Return
+        </h3>
+        <p className="text-[15px] leading-[1.45] text-[#4b5563] max-w-[390px]">
+          Your Satisfaction is Our Priority: Return Any Product Within 30 Days
+        </p>
+      </div>
+
+      <div className="rounded-[24px] bg-[#99dc6c] px-8 py-6 text-center flex flex-col items-center justify-center shadow-[0_2px_6px_rgba(0,0,0,0.06)]">
+        <div className="w-[60px] h-[60px] bg-white rounded-full flex items-center justify-center mb-5">
+          <svg className="w-9 h-9 text-[#2f3137]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 8v4l3 2m6-2a9 9 0 11-18 0 9 9 0 0118 0zm-9 7a3 3 0 100-6 3 3 0 000 6z" />
+          </svg>
+        </div>
+        <h3 className="text-[18px] leading-none font-extrabold text-[#1f2430] mb-2">
+          Secure Payment
+        </h3>
+        <p className="text-[15px] leading-[1.45] text-[#4b5563] max-w-[380px]">
+          Seamless Shopping Backed by Safe and Secure Payment Options
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
     </div>
   );
 };
