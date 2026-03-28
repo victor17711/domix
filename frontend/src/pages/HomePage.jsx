@@ -61,13 +61,13 @@ const HomePage = () => {
 
       {/* Today's Hot Picks Section */}
       <section className="py-12 bg-gray-50">
-        <div className="container mx-auto px-4">
+        <div className="w-full px-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
             <h2 className="text-3xl font-bold mb-4 md:mb-0">Today's Hot Picks</h2>
             <CountdownTimer targetDate={new Date(Date.now() + 24 * 60 * 60 * 1000)} />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
             {hotPicksProducts.map((product) => (
               <ProductCard key={product.id} product={product} showProgress />
             ))}
@@ -77,7 +77,7 @@ const HomePage = () => {
 
       {/* Flash Fashion Deal Section */}
       <section className="py-12">
-        <div className="container mx-auto px-4">
+        <div className="w-full px-6">
           <h2 className="text-3xl font-bold text-center mb-8">Flash Fashion Deal</h2>
 
           {/* Tabs */}
@@ -108,7 +108,7 @@ const HomePage = () => {
 
       {/* Banner Section */}
       <section className="py-8">
-        <div className="container mx-auto px-4">
+        <div className="w-full px-6">
           <div className="grid md:grid-cols-3 gap-6">
             {/* Banner 1 */}
             <div className="bg-teal-600 rounded-2xl overflow-hidden relative group">
@@ -151,7 +151,7 @@ const HomePage = () => {
 
       {/* Free Shipment Ticker */}
       <section className="py-6 bg-gray-50">
-        <div className="container mx-auto px-4">
+        <div className="w-full">
           <div className="overflow-hidden">
             <div className="flex animate-scroll">
               {[...Array(12)].map((_, i) => (
@@ -166,7 +166,7 @@ const HomePage = () => {
 
       {/* Brands Section */}
       <section className="py-12">
-        <div className="container mx-auto px-4">
+        <div className="w-full px-6">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center">
             {['Cowshed', 'Ninoa', 'Claudia', 'Minut', 'Orchard'].map((brand, index) => (
               <div key={index} className="flex justify-center">
@@ -181,7 +181,7 @@ const HomePage = () => {
 
       {/* Hand Picked Section */}
       <section className="py-12 bg-gray-50">
-        <div className="container mx-auto px-4">
+        <div className="w-full px-6">
           <h2 className="text-3xl font-bold text-center mb-12">Hand picked Just for You</h2>
           
           <div className="grid md:grid-cols-4 gap-8">
@@ -279,7 +279,7 @@ const HomePage = () => {
 
       {/* Fresh Finds Section */}
       <section className="py-12">
-        <div className="container mx-auto px-4">
+        <div className="w-full px-6">
           <div className="flex flex-wrap justify-center gap-4 mb-8 border-b">
             <button className="px-6 py-3 font-semibold border-b-2 border-teal-600 text-teal-600">
               Fresh Finds
@@ -302,7 +302,7 @@ const HomePage = () => {
 
       {/* Features Section */}
       <section className="py-12 bg-gray-50">
-        <div className="container mx-auto px-4">
+        <div className="w-full px-6">
           <div className="grid md:grid-cols-4 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 const CategoryGrid = () => {
   return (
     <section className="py-8">
-      <div className="container mx-auto px-4">
+      <div className="w-full px-6">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {categories.map((category) => (
             <Link

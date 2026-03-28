@@ -25,8 +25,8 @@ const HeroSlider = () => {
   };
 
   return (
-    <div className="relative bg-yellow-200 rounded-2xl overflow-hidden mx-4 my-6">
-      <div className="container mx-auto px-8 py-12 md:py-20">
+    <div className="relative bg-yellow-200 rounded-none overflow-hidden">
+      <div className="w-full px-6 py-12 md:py-20">
         <div className="grid md:grid-cols-2 gap-8 items-center">
           {/* Left Content */}
           <div className="space-y-6 relative z-10">

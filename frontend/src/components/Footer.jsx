@@ -16,7 +16,7 @@ const Footer = () => {
     <footer className="bg-teal-800 text-white">
       {/* Newsletter Section */}
       <div className="bg-white text-gray-800 py-12">
-        <div className="container mx-auto px-4 text-center">
+        <div className="w-full px-6 text-center">
           <h2 className="text-3xl font-bold mb-4">Subscribe to our newsletter</h2>
           <p className="text-gray-600 mb-6">
             Stay updated! Subscribe to our mailing list for news, updates, and exclusive offers.
@@ -44,7 +44,7 @@ const Footer = () => {
       </div>
 
       {/* Main Footer */}
-      <div className="container mx-auto px-4 py-12">
+      <div className="w-full px-6 py-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About Section */}
           <div>
@@ -144,7 +144,7 @@ const Footer = () => {
 
       {/* Bottom Bar */}
       <div className="border-t border-teal-700">
-        <div className="container mx-auto px-4 py-4 text-center text-gray-400 text-sm">
+        <div className="w-full px-6 py-4 text-center text-gray-400 text-sm">
           <p>2026 Copyright By Themeforest Powered By Createuiux</p>
         </div>
       </div>

@@ -21,7 +21,7 @@ const Navbar = () => {
     <>
       {/* Top Bar */}
       <div className="bg-teal-700 text-white">
-        <div className="container mx-auto px-4">
+        <div className="w-full px-6">
           <div className="flex items-center justify-between py-2 text-sm">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
@@ -54,7 +54,7 @@ const Navbar = () => {
 
       {/* Main Navbar */}
       <div className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4">
+        <div className="w-full px-6">
           <div className="flex items-center justify-between py-4">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2">
@@ -123,7 +123,7 @@ const Navbar = () => {
 
         {/* Navigation Menu */}
         <div className="border-t">
-          <div className="container mx-auto px-4">
+          <div className="w-full px-6">
             <div className="flex items-center justify-between">
               <button className="bg-teal-600 text-white px-6 py-3 rounded-md flex items-center gap-2 hover:bg-teal-700 transition">
                 <Menu className="w-5 h-5" />
@@ -167,7 +167,7 @@ const Navbar = () => {
       {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t">
-          <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">
+          <nav className="w-full px-6 py-4 flex flex-col gap-4">
             <Link to="/" className="text-gray-700 hover:text-teal-600">Home</Link>
             <Link to="/about" className="text-gray-700 hover:text-teal-600">About Us</Link>
             <Link to="/shop" className="text-gray-700 hover:text-teal-600">Shop</Link>
