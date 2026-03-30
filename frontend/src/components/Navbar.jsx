@@ -70,7 +70,7 @@ const Navbar = () => {
                 </div>
                 <span className="text-sm">Ai nevoie de ajutor ?</span>
                 <span className="bg-yellow-400 text-black px-4 py-1.5 rounded-full font-bold text-sm">
-                  (373) 602 95 651
+                  (373) 697 11 967
                 </span>
               </div>
 
@@ -86,7 +86,7 @@ const Navbar = () => {
 
             {/* Right Side */}
             <div className="hidden lg:flex items-center gap-6">
-              {/* Fashion Category */}
+              {/* Fashion Category
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
                   <Tag className="w-3.5 h-3.5" />
@@ -95,12 +95,12 @@ const Navbar = () => {
                 <span className="bg-yellow-400 text-black px-4 py-1.5 rounded-full font-bold text-sm">
                   25% OFF Today
                 </span>
-              </div>
+              </div> */}
 
               {/* Links */}
-              <Link to="/about" className="hover:text-yellow-400 transition text-sm">Despre Noi</Link>
-              <Link to="/wishlist" className="hover:text-yellow-400 transition text-sm">My Wishlist</Link>
-              <Link to="/track-order" className="hover:text-yellow-400 transition text-sm">Order Tracking</Link>
+              <Link to="/about" className="hover:text-yellow-400 transition text-sm">Termeni și condiții</Link>
+              <Link to="/wishlist" className="hover:text-yellow-400 transition text-sm">Livrare & returnare</Link>
+              {/* <Link to="/track-order" className="hover:text-yellow-400 transition text-sm">Order Tracking</Link> */}
             </div>
           </div>
         </div>
@@ -152,12 +152,12 @@ const Navbar = () => {
                   onClick={() => openAuthModal('login')}
                   className="flex items-center gap-2 group"
                 >
-                  <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition shadow-md">
+                  <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition shadow-none">
                     <User className="w-6 h-6 text-gray-900" />
                   </div>
                   <div className="text-left">
                     <div className="text-sm font-semibold text-gray-900">Contul meu</div>
-                    <div className="text-sm text-gray-600">Logheaza-te</div>
+                    <div className="text-sm text-gray-600">Loghează-te</div>
                   </div>
                 </button>
               )}
@@ -167,7 +167,7 @@ const Navbar = () => {
                 to="/cart"
                 className="flex items-center gap-2 group"
               >
-                <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition shadow-md relative">
+                <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition shadow-none relative">
                   <ShoppingCart className="w-6 h-6 text-gray-900" />
                   {cartCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
@@ -176,7 +176,7 @@ const Navbar = () => {
                   )}
                 </div>
                 <div className="text-left">
-                  <div className="text-sm font-semibold text-gray-900">Cos</div>
+                  <div className="text-sm font-semibold text-gray-900">Coș</div>
                   <div className="text-sm text-gray-600">{cartCount}- Articole</div>
                 </div>
               </Link>
@@ -193,7 +193,7 @@ const Navbar = () => {
       {/* Navigation Menu */}
       <div className="bg-white border-b sticky top-0 z-50 shadow-sm">
         <div className="w-full px-6">
-          <div className="flex items-center justify-between py-4">
+          <div className="flex items-center justify-between py-3">
             {/* Explore Categories Button with Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button 
@@ -303,7 +303,7 @@ const Navbar = () => {
               </div>
               <div>
                 <div className="text-sm text-gray-500">24/7 Suport</div>
-                <div className="text-base font-bold text-gray-900">060 295 651</div>
+                <div className="text-base font-bold text-gray-900">069 711 967</div>
               </div>
             </div>
           </div>
@@ -348,7 +348,7 @@ const Navbar = () => {
                 onClick={() => { openAuthModal('login'); setIsMenuOpen(false); }}
                 className="text-left text-gray-700 hover:text-teal-600 font-semibold"
               >
-                Login
+                Loghează-te
               </button>
             )}
           </nav>
