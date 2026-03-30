@@ -144,9 +144,11 @@ const UsersManagement = () => {
                     <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
                       user.role === 'admin' 
                         ? 'bg-purple-100 text-purple-800' 
+                        : user.role === 'manager'
+                        ? 'bg-orange-100 text-orange-800'
                         : 'bg-blue-100 text-blue-800'
                     }`}>
-                      {user.role === 'admin' ? 'Administrator' : 'Utilizator'}
+                      {user.role === 'admin' ? 'Administrator' : user.role === 'manager' ? 'Manager' : 'Utilizator'}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -154,6 +156,7 @@ const UsersManagement = () => {
                       <button
                         onClick={() => handleDelete(user.id)}
                         className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                        title="Șterge utilizator"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -230,9 +233,15 @@ const UsersManagement = () => {
                   onChange={(e) => setFormData({...formData, role: e.target.value})}
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                 >
-                  <option value="user">Utilizator</option>
-                  <option value="admin">Administrator</option>
+                  <option value="user">Utilizator (Client)</option>
+                  <option value="manager">Manager (Produse & Comenzi)</option>
+                  <option value="admin">Administrator (Acces Total)</option>
                 </select>
+                <p className="text-xs text-gray-500 mt-2">
+                  • Utilizator: Client normal fără acces admin<br/>
+                  • Manager: Acces doar la Produse și Comenzi<br/>
+                  • Administrator: Acces complet la toate secțiunile
+                </p>
               </div>
 
               <div className="flex gap-3 pt-4">

@@ -18,8 +18,8 @@ const CategoriesManagement = () => {
     name: '', 
     slug: '', 
     icon: '',
-    parentId: null,
-    image: ''
+    image: '',
+    parentId: null
   });
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const CategoriesManagement = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
-        setFormData({ ...formData, image: reader.result, icon: '' });
+        setFormData({ ...formData, image: reader.result });
       };
       reader.readAsDataURL(file);
     }
@@ -52,11 +52,17 @@ const CategoriesManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    if (!formData.image) {
+      toast({ title: 'Eroare', description: 'Te rog încarcă o imagine pentru categorie', variant: 'destructive' });
+      return;
+    }
+    
     try {
       const categoryData = { 
-        ...formData, 
+        ...formData,
+        icon: formData.image,
         itemCount: 0,
-        icon: formData.image || formData.icon 
+        parentId: formData.parentId || null
       };
 
       if (editingCategory) {
@@ -70,7 +76,7 @@ const CategoriesManagement = () => {
       setShowModal(false);
       setEditingCategory(null);
       setImagePreview(null);
-      setFormData({ name: '', slug: '', icon: '', parentId: null, image: '' });
+      setFormData({ name: '', slug: '', icon: '', image: '', parentId: null });
       fetchCategories();
     } catch (error) {
       toast({ title: 'Eroare', description: error.response?.data?.detail || 'Nu s-a putut salva categoria', variant: 'destructive' });
@@ -95,11 +101,11 @@ const CategoriesManagement = () => {
       name: category.name,
       slug: category.slug,
       icon: category.icon || '',
-      parentId: category.parentId || null,
-      image: ''
+      image: category.image || category.icon || '',
+      parentId: category.parentId || null
     });
-    if (category.icon && category.icon.startsWith('data:image')) {
-      setImagePreview(category.icon);
+    if (category.image || (category.icon && category.icon.startsWith('data:image'))) {
+      setImagePreview(category.image || category.icon);
     }
     setShowModal(true);
   };
@@ -158,10 +164,12 @@ const CategoriesManagement = () => {
                 <React.Fragment key={category.id}>
                   <tr className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-teal-50 transition`}>
                     <td className="px-6 py-4">
-                      {category.icon && category.icon.startsWith('data:image') ? (
-                        <img src={category.icon} alt={category.name} className="w-12 h-12 object-cover rounded-lg" />
+                      {(category.image || category.icon) && (category.image?.startsWith('data:image') || category.icon?.startsWith('data:image')) ? (
+                        <img src={category.image || category.icon} alt={category.name} className="w-12 h-12 object-cover rounded-lg shadow-md" />
                       ) : (
-                        <div className="text-3xl">{category.icon || '📁'}</div>
+                        <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400">
+                          <ImageIcon className="w-6 h-6" />
+                        </div>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -195,10 +203,12 @@ const CategoriesManagement = () => {
                   {getSubCategories(category.id).map((subCat) => (
                     <tr key={subCat.id} className="bg-teal-50 hover:bg-teal-100 transition">
                       <td className="px-6 py-3 pl-16">
-                        {subCat.icon && subCat.icon.startsWith('data:image') ? (
-                          <img src={subCat.icon} alt={subCat.name} className="w-10 h-10 object-cover rounded-lg" />
+                        {(subCat.image || subCat.icon) && (subCat.image?.startsWith('data:image') || subCat.icon?.startsWith('data:image')) ? (
+                          <img src={subCat.image || subCat.icon} alt={subCat.name} className="w-10 h-10 object-cover rounded-lg shadow-md" />
                         ) : (
-                          <div className="text-2xl">{subCat.icon || '📂'}</div>
+                          <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400">
+                            <ImageIcon className="w-4 h-4" />
+                          </div>
                         )}
                       </td>
                       <td className="px-6 py-3">
@@ -250,25 +260,25 @@ const CategoriesManagement = () => {
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               {/* Image Upload */}
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Icon/Imagine</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Imagine Categorie * (recomandabil 200x200px)</label>
                 <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:border-teal-500 transition">
                   {imagePreview ? (
-                    <div className="relative">
-                      <img src={imagePreview} alt="Preview" className="max-h-32 mx-auto rounded-lg" />
+                    <div className="relative inline-block">
+                      <img src={imagePreview} alt="Preview" className="max-h-40 rounded-lg shadow-lg" />
                       <button
                         type="button"
                         onClick={() => { setImagePreview(null); setFormData({...formData, image: ''}); }}
-                        className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full"
+                        className="absolute -top-2 -right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition shadow-lg"
                       >
                         <X className="w-4 h-4" />
                       </button>
                     </div>
                   ) : (
                     <div>
-                      <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                      <ImageIcon className="w-16 h-16 text-gray-400 mx-auto mb-3" />
                       <label className="cursor-pointer">
-                        <span className="bg-teal-600 text-white px-4 py-2 rounded-lg inline-flex items-center gap-2 hover:bg-teal-700 transition text-sm">
-                          <Upload className="w-4 h-4" />
+                        <span className="bg-teal-600 text-white px-6 py-3 rounded-lg inline-flex items-center gap-2 hover:bg-teal-700 transition font-semibold">
+                          <Upload className="w-5 h-5" />
                           Încarcă Imagine
                         </span>
                         <input
@@ -278,7 +288,7 @@ const CategoriesManagement = () => {
                           className="hidden"
                         />
                       </label>
-                      <p className="text-xs text-gray-500 mt-2">sau emoji în câmpul Icon</p>
+                      <p className="text-xs text-gray-500 mt-3">PNG, JPG, WebP până la 2MB</p>
                     </div>
                   )}
                 </div>
@@ -291,6 +301,7 @@ const CategoriesManagement = () => {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  placeholder="ex: Haine Femei"
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
@@ -305,28 +316,18 @@ const CategoriesManagement = () => {
                   placeholder="ex: haine-femei"
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
+                <p className="text-xs text-gray-500 mt-1">URL-ul categoriei: /category/{formData.slug || 'slug-aici'}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Icon (Emoji)</label>
-                <input
-                  type="text"
-                  value={formData.icon}
-                  onChange={(e) => setFormData({...formData, icon: e.target.value})}
-                  placeholder="👗"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Categorie Părinte (opțional)</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Categorie Părinte (opțional - pentru subcategorii)</label>
                 <select
                   value={formData.parentId || ''}
                   onChange={(e) => setFormData({...formData, parentId: e.target.value || null})}
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                 >
                   <option value="">Nicio (Categorie principală)</option>
-                  {getParentCategories().map(cat => (
+                  {getParentCategories().filter(cat => !editingCategory || cat.id !== editingCategory.id).map(cat => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
                 </select>

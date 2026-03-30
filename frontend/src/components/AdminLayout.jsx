@@ -27,15 +27,20 @@ const AdminLayout = ({ children }) => {
     navigate('/admin/login');
   };
 
-  const menuItems = [
-    { path: '/admin/dashboard', label: 'Tablou de Bord', icon: LayoutDashboard },
-    { path: '/admin/products', label: 'Produse', icon: Package },
-    { path: '/admin/categories', label: 'Categorii', icon: FolderOpen },
-    { path: '/admin/orders', label: 'Comenzi', icon: ShoppingCart },
-    { path: '/admin/users', label: 'Utilizatori', icon: Users },
-    { path: '/admin/pages', label: 'Pagini', icon: FileText },
-    { path: '/admin/settings', label: 'Setări', icon: Settings },
+  const allMenuItems = [
+    { path: '/admin/dashboard', label: 'Tablou de Bord', icon: LayoutDashboard, roles: ['admin', 'manager'] },
+    { path: '/admin/products', label: 'Produse', icon: Package, roles: ['admin', 'manager'] },
+    { path: '/admin/categories', label: 'Categorii', icon: FolderOpen, roles: ['admin'] },
+    { path: '/admin/orders', label: 'Comenzi', icon: ShoppingCart, roles: ['admin', 'manager'] },
+    { path: '/admin/users', label: 'Utilizatori', icon: Users, roles: ['admin'] },
+    { path: '/admin/pages', label: 'Pagini', icon: FileText, roles: ['admin'] },
+    { path: '/admin/settings', label: 'Setări', icon: Settings, roles: ['admin'] },
   ];
+
+  // Filter menu items based on user role
+  const menuItems = allMenuItems.filter(item => 
+    item.roles.includes(adminUser?.role || 'user')
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex">
@@ -82,7 +87,7 @@ const AdminLayout = ({ children }) => {
 
         {/* User Profile at Bottom */}
         <div className="absolute bottom-0 w-full p-6 border-t border-teal-600 bg-teal-800">
-          <div className="flex items-center gap-3 mb-4 p-3 bg-teal-700 rounded-lg">
+          <div className="flex items-center gap-3 mb-3 p-3 bg-teal-700 rounded-lg">
             <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-lg">
               <span className="text-white font-bold text-lg">
                 {adminUser?.firstName?.[0]}{adminUser?.lastName?.[0]}
@@ -91,6 +96,15 @@ const AdminLayout = ({ children }) => {
             <div className="flex-1">
               <p className="font-semibold text-white">{adminUser?.firstName} {adminUser?.lastName}</p>
               <p className="text-xs text-teal-200">{adminUser?.email}</p>
+              <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded-full font-semibold ${
+                adminUser?.role === 'admin' 
+                  ? 'bg-purple-500 text-white' 
+                  : adminUser?.role === 'manager'
+                  ? 'bg-orange-500 text-white'
+                  : 'bg-blue-500 text-white'
+              }`}>
+                {adminUser?.role === 'admin' ? 'Administrator' : adminUser?.role === 'manager' ? 'Manager' : 'User'}
+              </span>
             </div>
           </div>
           <button

@@ -220,8 +220,12 @@ const Navbar = () => {
                       className="flex items-center gap-4 px-6 py-4 hover:bg-teal-50 transition group"
                     >
                       {item.icon && (
-                        <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-teal-600 rounded-xl flex items-center justify-center text-2xl shadow-md group-hover:scale-110 transition-transform">
-                          {item.icon}
+                        <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform overflow-hidden bg-gray-100">
+                          {item.icon.startsWith('data:image') ? (
+                            <img src={item.icon} alt={item.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="text-2xl">{item.icon}</span>
+                          )}
                         </div>
                       )}
                       <div className="flex-1">

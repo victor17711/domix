@@ -9,13 +9,14 @@ class UserCreate(BaseModel):
     password: str
     firstName: str
     lastName: str
+    role: Optional[str] = "user"  # user, manager, or admin
 
 class User(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     email: EmailStr
     firstName: str
     lastName: str
-    role: str = "user"  # user or admin
+    role: str = "user"  # user, manager, or admin
     createdAt: datetime = Field(default_factory=datetime.utcnow)
     updatedAt: datetime = Field(default_factory=datetime.utcnow)
 
@@ -59,6 +60,8 @@ class CategoryCreate(BaseModel):
     name: str
     slug: str
     icon: Optional[str] = ""
+    image: Optional[str] = ""
+    parentId: Optional[str] = None
     itemCount: Optional[int] = 0
 
 class Category(CategoryCreate):

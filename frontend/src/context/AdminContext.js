@@ -35,8 +35,9 @@ export const AdminProvider = ({ children }) => {
     try {
       const response = await axios.post(`${API}/auth/login`, { email, password });
       
-      if (response.data.user.role !== 'admin') {
-        throw new Error('Not authorized as admin');
+      // Allow both admin and manager roles
+      if (response.data.user.role !== 'admin' && response.data.user.role !== 'manager') {
+        throw new Error('Nu ai permisiuni de administrator sau manager');
       }
 
       const { access_token, user } = response.data;
