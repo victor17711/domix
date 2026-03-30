@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, ShoppingCart, User, Menu, Globe, ChevronDown, Phone, MapPin, Headphones, DollarSign, Tag } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, Globe, ChevronDown, Phone, MapPin, Headphones, DollarSign, Tag, ChevronRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from './AuthModal';
@@ -17,6 +17,7 @@ const Navbar = () => {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState('login');
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
+  const [hoveredCategoryId, setHoveredCategoryId] = useState(null);
   const [menuItems, setMenuItems] = useState([]);
   const [categoryMenuItems, setCategoryMenuItems] = useState([]);
   const dropdownRef = useRef(null);
@@ -213,15 +214,23 @@ const Navbar = () => {
               {isCategoriesOpen && categoryMenuItems.length > 0 && (
                 <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 z-50">
                   {categoryMenuItems.map((item) => (
-                    <div key={item.id} className="relative group">
+                    <div 
+                      key={item.id} 
+                      className="relative"
+                      onMouseEnter={() => setHoveredCategoryId(item.id)}
+                      onMouseLeave={() => setHoveredCategoryId(null)}
+                    >
                       <Link
                         to={item.url}
-                        onClick={() => setIsCategoriesOpen(false)}
+                        onClick={() => {
+                          setIsCategoriesOpen(false);
+                          setHoveredCategoryId(null);
+                        }}
                         className="flex items-center justify-between gap-3 px-4 py-2.5 hover:bg-teal-50 transition"
                       >
                         <div className="flex items-center gap-3">
                           {item.icon && (
-                            <div className="w-9 h-9 rounded-lg flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform overflow-hidden bg-gray-100">
+                            <div className="w-9 h-9 rounded-lg flex items-center justify-center shadow-sm hover:scale-105 transition-transform overflow-hidden bg-gray-100">
                               {item.icon.startsWith('data:image') ? (
                                 <img src={item.icon} alt={item.name} className="w-full h-full object-cover" />
                               ) : (
@@ -229,23 +238,26 @@ const Navbar = () => {
                               )}
                             </div>
                           )}
-                          <div className="font-semibold text-gray-900 group-hover:text-teal-600 transition text-base">
+                          <div className="font-semibold text-gray-900 hover:text-teal-600 transition text-base">
                             {item.name}
                           </div>
                         </div>
                         {item.hasChildren && item.children && item.children.length > 0 && (
-                          <ChevronDown className="w-4 h-4 text-gray-400 -rotate-90" />
+                          <ChevronRight className="w-4 h-4 text-gray-400" />
                         )}
                       </Link>
 
                       {/* Sub-dropdown for children - appears on hover */}
-                      {item.hasChildren && item.children && item.children.length > 0 && (
-                        <div className="absolute left-full top-0 ml-1 w-64 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                      {item.hasChildren && item.children && item.children.length > 0 && hoveredCategoryId === item.id && (
+                        <div className="absolute left-full top-0 ml-1 w-64 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 z-50">
                           {item.children.map((child) => (
                             <Link
                               key={child.id}
                               to={child.url}
-                              onClick={() => setIsCategoriesOpen(false)}
+                              onClick={() => {
+                                setIsCategoriesOpen(false);
+                                setHoveredCategoryId(null);
+                              }}
                               className="flex items-center gap-3 px-4 py-2 hover:bg-teal-50 transition"
                             >
                               {child.icon && (
