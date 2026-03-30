@@ -55,7 +55,8 @@ class ProductCreate(BaseModel):
     category: str
     brandId: Optional[str] = None
     storeName: Optional[str] = ""
-    image: str
+    image: str  # Primary image (for backward compatibility)
+    images: Optional[List[str]] = []  # Up to 5 images
     colors: Optional[List[str]] = []
     sizes: Optional[List[str]] = []
     specifications: Optional[List[ProductSpecification]] = []

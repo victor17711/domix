@@ -84,22 +84,19 @@ const ProductDetailPage = () => {
   };
 
   const handleAddToCart = () => {
-    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
-      toast({ title: 'Atenție', description: 'Selectează o mărime', variant: 'destructive' });
-      return;
-    }
-    if (product.colors && product.colors.length > 0 && !selectedColor) {
-      toast({ title: 'Atenție', description: 'Selectează o culoare', variant: 'destructive' });
-      return;
-    }
-
     addToCart({
       ...product,
-      quantity,
-      selectedSize,
-      selectedColor
+      quantity
     });
     toast({ title: 'Succes', description: `${product.name} adăugat în coș!` });
+  };
+
+  const handleBuyNow = () => {
+    addToCart({
+      ...product,
+      quantity
+    });
+    window.location.href = '/checkout';
   };
 
   const handleAddToWishlist = () => {
@@ -126,7 +123,7 @@ const ProductDetailPage = () => {
     );
   }
 
-  const images = [product.image]; // În viitor, produsele pot avea multiple imagini
+  const images = product.images && product.images.length > 0 ? product.images : [product.image];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -156,16 +153,16 @@ const ProductDetailPage = () => {
               />
             </div>
             {images.length > 1 && (
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-5 gap-3">
                 {images.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => setSelectedImage(idx)}
-                    className={`bg-white rounded-xl overflow-hidden border-2 transition ${
+                    className={`bg-white rounded-lg overflow-hidden border-2 transition ${
                       selectedImage === idx ? 'border-teal-600' : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
-                    <img src={img} alt="" className="w-full h-24 object-cover" />
+                    <img src={img} alt="" className="w-full h-20 object-cover" />
                   </button>
                 ))}
               </div>
@@ -216,48 +213,6 @@ const ProductDetailPage = () => {
               </div>
             </div>
 
-            {/* Colors */}
-            {product.colors && product.colors.length > 0 && (
-              <div className="mb-6">
-                <label className="block text-sm font-bold text-gray-900 mb-3">Culoare</label>
-                <div className="flex gap-3">
-                  {product.colors.map((color, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setSelectedColor(color)}
-                      className={`w-10 h-10 rounded-full border-2 transition ${
-                        selectedColor === color ? 'border-teal-600 scale-110' : 'border-gray-300 hover:border-gray-400'
-                      }`}
-                      style={{ backgroundColor: color }}
-                      title={color}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Sizes */}
-            {product.sizes && product.sizes.length > 0 && (
-              <div className="mb-6">
-                <label className="block text-sm font-bold text-gray-900 mb-3">Mărime</label>
-                <div className="flex gap-3">
-                  {product.sizes.map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`px-6 py-2 rounded-lg border-2 font-semibold transition ${
-                        selectedSize === size
-                          ? 'border-teal-600 bg-teal-50 text-teal-600'
-                          : 'border-gray-300 text-gray-700 hover:border-gray-400'
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
             {/* Quantity */}
             <div className="mb-6">
               <label className="block text-sm font-bold text-gray-900 mb-3">Cantitate</label>
@@ -284,19 +239,28 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Actions */}
-            <div className="flex gap-4 mb-8">
-              <button
-                onClick={handleAddToCart}
-                className="flex-1 bg-teal-600 text-white py-4 rounded-xl hover:bg-teal-700 transition font-bold text-lg flex items-center justify-center gap-2"
-              >
-                <ShoppingCart className="w-6 h-6" />
-                Adaugă în Coș
-              </button>
+            <div className="space-y-3 mb-8">
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={handleAddToCart}
+                  className="bg-white border-2 border-teal-600 text-teal-600 py-4 rounded-xl hover:bg-teal-50 transition font-bold text-lg flex items-center justify-center gap-2"
+                >
+                  <ShoppingCart className="w-6 h-6" />
+                  Adaugă în Coș
+                </button>
+                <button
+                  onClick={handleBuyNow}
+                  className="bg-teal-600 text-white py-4 rounded-xl hover:bg-teal-700 transition font-bold text-lg"
+                >
+                  Cumpără Acum
+                </button>
+              </div>
               <button
                 onClick={handleAddToWishlist}
-                className="px-6 py-4 border-2 border-teal-600 text-teal-600 rounded-xl hover:bg-teal-50 transition"
+                className="w-full py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition font-semibold flex items-center justify-center gap-2"
               >
-                <Heart className="w-6 h-6" />
+                <Heart className="w-5 h-5" />
+                Adaugă la Favorite
               </button>
             </div>
 
@@ -376,9 +340,9 @@ const ProductDetailPage = () => {
               </div>
             )}
             {activeTab === 'reviews' && (
-              <div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Review Form */}
-                <div className="bg-gray-50 rounded-xl p-6 mb-8">
+                <div className="bg-gray-50 rounded-xl p-6 h-fit">
                   <h3 className="text-xl font-bold text-gray-900 mb-4">Scrie o Recenzie</h3>
                   <form onSubmit={handleSubmitReview} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -451,41 +415,44 @@ const ProductDetailPage = () => {
                 </div>
 
                 {/* Reviews List */}
-                {reviews.length > 0 ? (
-                  <div className="space-y-6">
-                    {reviews.map((review) => (
-                      <div key={review.id} className="border-b pb-6">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <h4 className="font-semibold text-gray-900">{review.userName}</h4>
-                            <div className="flex items-center gap-2 mt-1">
-                              <div className="flex">
-                                {[...Array(5)].map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    className={`w-4 h-4 ${
-                                      i < review.rating
-                                        ? 'text-yellow-400 fill-yellow-400'
-                                        : 'text-gray-300'
-                                    }`}
-                                  />
-                                ))}
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-6">Recenzii Clienți</h3>
+                  {reviews.length > 0 ? (
+                    <div className="space-y-6 max-h-[600px] overflow-y-auto pr-2">
+                      {reviews.map((review) => (
+                        <div key={review.id} className="border-b pb-6">
+                          <div className="flex items-start justify-between mb-2">
+                            <div>
+                              <h4 className="font-semibold text-gray-900">{review.userName}</h4>
+                              <div className="flex items-center gap-2 mt-1">
+                                <div className="flex">
+                                  {[...Array(5)].map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      className={`w-4 h-4 ${
+                                        i < review.rating
+                                          ? 'text-yellow-400 fill-yellow-400'
+                                          : 'text-gray-300'
+                                      }`}
+                                    />
+                                  ))}
+                                </div>
+                                <span className="text-sm text-gray-500">
+                                  {new Date(review.createdAt).toLocaleDateString('ro-RO')}
+                                </span>
                               </div>
-                              <span className="text-sm text-gray-500">
-                                {new Date(review.createdAt).toLocaleDateString('ro-RO')}
-                              </span>
                             </div>
                           </div>
+                          <p className="text-gray-700">{review.comment}</p>
                         </div>
-                        <p className="text-gray-700">{review.comment}</p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-gray-600">
-                    Nicio recenzie încă. Fii primul care evaluează acest produs!
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-gray-600 bg-gray-50 rounded-lg">
+                      Nicio recenzie încă. Fii primul care evaluează acest produs!
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

@@ -19,6 +19,7 @@ const ProductsManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [imagePreview, setImagePreview] = useState(null);
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [specifications, setSpecifications] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
@@ -29,6 +30,7 @@ const ProductsManagement = () => {
     brandId: '',
     storeName: '',
     image: '',
+    images: [],
     available: 100,
     badge: ''
   });
@@ -80,6 +82,28 @@ const ProductsManagement = () => {
     }
   };
 
+  const handleMultipleImagesUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length + imagePreviews.length > 5) {
+      toast({ title: 'Limită atinsă', description: 'Maximum 5 imagini per produs', variant: 'destructive' });
+      return;
+    }
+
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreviews(prev => [...prev, reader.result]);
+        setFormData(prev => ({ ...prev, images: [...prev.images, reader.result] }));
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeImage = (index) => {
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -109,6 +133,7 @@ const ProductsManagement = () => {
       setShowModal(false);
       setEditingProduct(null);
       setImagePreview(null);
+      setImagePreviews([]);
       setSpecifications([]);
       resetForm();
       fetchProducts();
@@ -140,11 +165,13 @@ const ProductsManagement = () => {
       brandId: product.brandId || '',
       storeName: product.storeName || '',
       image: product.image,
+      images: product.images || [],
       available: product.available,
       badge: product.badge || ''
     });
     setSpecifications(product.specifications || []);
     setImagePreview(product.image);
+    setImagePreviews(product.images || []);
     setShowModal(true);
   };
 
@@ -158,10 +185,12 @@ const ProductsManagement = () => {
       brandId: '',
       storeName: '',
       image: '',
+      images: [],
       available: 100,
       badge: ''
     });
     setImagePreview(null);
+    setImagePreviews([]);
     setSpecifications([]);
   };
 
@@ -382,6 +411,45 @@ const ProductsManagement = () => {
                       </label>
                       <p className="text-sm text-gray-500 mt-2">PNG, JPG până la 10MB</p>
                     </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Additional Images (up to 5) */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Imagini Suplimentare (Max 5 total)</label>
+                <div className="space-y-3">
+                  {imagePreviews.length > 0 && (
+                    <div className="grid grid-cols-5 gap-3">
+                      {imagePreviews.map((img, index) => (
+                        <div key={index} className="relative">
+                          <img src={img} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded-lg" />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {imagePreviews.length < 5 && (
+                    <label className="cursor-pointer block">
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-teal-500 transition">
+                        <Plus className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                        <span className="text-sm text-gray-600">Adaugă imagini ({imagePreviews.length}/5)</span>
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleMultipleImagesUpload}
+                        className="hidden"
+                      />
+                    </label>
                   )}
                 </div>
               </div>
