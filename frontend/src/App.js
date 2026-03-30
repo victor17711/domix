@@ -9,6 +9,10 @@ import AdminLayout from './components/AdminLayout';
 import HomePage from './pages/HomePage';
 import DynamicPage from './pages/DynamicPage';
 import CategoryPage from './pages/CategoryPage';
+import ProductDetailPage from './pages/ProductDetailPage';
+import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrderSuccessPage from './pages/OrderSuccessPage';
 import AdminLogin from './pages/admin/AdminLogin';
 import Dashboard from './pages/admin/Dashboard';
 import ProductsManagement from './pages/admin/ProductsManagement';
@@ -63,6 +67,42 @@ function App() {
                   <>
                     <Navbar />
                     <CategoryPage />
+                    <Footer />
+                  </>
+                } />
+
+                {/* Product Detail Page Route */}
+                <Route path="/product/:id" element={
+                  <>
+                    <Navbar />
+                    <ProductDetailPage />
+                    <Footer />
+                  </>
+                } />
+
+                {/* Cart Page Route */}
+                <Route path="/cart" element={
+                  <>
+                    <Navbar />
+                    <CartPage />
+                    <Footer />
+                  </>
+                } />
+
+                {/* Checkout Page Route */}
+                <Route path="/checkout" element={
+                  <>
+                    <Navbar />
+                    <CheckoutPage />
+                    <Footer />
+                  </>
+                } />
+
+                {/* Order Success Page Route */}
+                <Route path="/order-success" element={
+                  <>
+                    <Navbar />
+                    <OrderSuccessPage />
                     <Footer />
                   </>
                 } />
