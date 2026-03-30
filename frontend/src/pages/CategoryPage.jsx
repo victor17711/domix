@@ -171,7 +171,7 @@ const CategoryPage = () => {
         <div className="flex gap-8">
           {/* Sidebar Filter - Desktop */}
           <aside className="hidden lg:block w-80 flex-shrink-0">
-            <div className="bg-white rounded-2xl p-6 border-2 border-gray-100 sticky top-4">
+            <div className="bg-white rounded-2xl p-6 border-2 border-gray-100 sticky top-24">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                   <SlidersHorizontal className="w-5 h-5 text-teal-600" />
@@ -341,7 +341,7 @@ const CategoryPage = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
                 {products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
