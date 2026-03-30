@@ -18,11 +18,21 @@ const QuickViewModal = ({ isOpen, onClose, product }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
-          <h2 className="text-xl font-bold">Quick View</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+      style={{ zIndex: 9999 }}
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center z-10">
+          <h2 className="text-2xl font-bold text-gray-900">Quick View</h2>
+          <button 
+            onClick={onClose} 
+            className="text-gray-400 hover:text-gray-600 transition p-2 hover:bg-gray-100 rounded-full"
+          >
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -72,9 +82,15 @@ const QuickViewModal = ({ isOpen, onClose, product }) => {
 
               {/* Price */}
               <div className="flex items-center gap-3">
-                <span className="text-3xl font-bold text-gray-900">${product.price}</span>
-                <span className="text-xl text-gray-400 line-through">${product.originalPrice}</span>
-                <span className="text-sm font-semibold text-green-600">{product.discount}% OFF</span>
+                <span className="text-3xl font-bold text-teal-600">{product.price} MDL</span>
+                {product.originalPrice && (
+                  <>
+                    <span className="text-xl text-gray-400 line-through">{product.originalPrice} MDL</span>
+                    <span className="text-sm font-semibold text-green-600">
+                      -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+                    </span>
+                  </>
+                )}
               </div>
 
               {/* Color Selection */}
@@ -154,9 +170,9 @@ const QuickViewModal = ({ isOpen, onClose, product }) => {
 
               {/* Additional Info */}
               <div className="border-t pt-4 space-y-2 text-sm">
-                <p><strong>SKU:</strong> SKU-001</p>
-                <p><strong>Categories:</strong> {product.category}</p>
-                <p className="text-green-600"><strong>Free Shipping:</strong> Estimated Delivery Time 5-7 Days</p>
+                <p><strong>Categorie:</strong> {product.category}</p>
+                {product.storeName && <p><strong>Brand:</strong> {product.storeName}</p>}
+                <p className="text-green-600"><strong>Livrare Gratuită:</strong> Timp estimat 3-5 zile</p>
               </div>
             </div>
           </div>
