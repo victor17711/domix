@@ -14,15 +14,24 @@ const ProductDetailPage = () => {
   const { addToCart, addToWishlist } = useCart();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
+  const [reviewForm, setReviewForm] = useState({
+    userName: '',
+    userEmail: '',
+    rating: 5,
+    comment: ''
+  });
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
     fetchProduct();
+    fetchReviews();
   }, [id]);
 
   const fetchProduct = async () => {
@@ -37,6 +46,40 @@ const ProductDetailPage = () => {
       console.error('Error fetching product:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchReviews = async () => {
+    try {
+      const response = await axios.get(`${API}/products/${id}/reviews`);
+      setReviews(response.data);
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+    }
+  };
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    setSubmittingReview(true);
+
+    try {
+      await axios.post(`${API}/products/${id}/reviews`, {
+        ...reviewForm,
+        productId: id
+      });
+      
+      toast({ title: 'Succes', description: 'Recenzia ta a fost adăugată!' });
+      setReviewForm({ userName: '', userEmail: '', rating: 5, comment: '' });
+      fetchReviews();
+      fetchProduct(); // Refresh product to update rating
+    } catch (error) {
+      toast({ 
+        title: 'Eroare', 
+        description: error.response?.data?.detail || 'Nu s-a putut adăuga recenzia',
+        variant: 'destructive' 
+      });
+    } finally {
+      setSubmittingReview(false);
     }
   };
 
@@ -172,9 +215,6 @@ const ProductDetailPage = () => {
                 )}
               </div>
             </div>
-
-            {/* Description */}
-            <p className="text-gray-600 mb-6 leading-relaxed">{product.description}</p>
 
             {/* Colors */}
             {product.colors && product.colors.length > 0 && (
@@ -320,16 +360,132 @@ const ProductDetailPage = () => {
               </div>
             )}
             {activeTab === 'specifications' && (
-              <div className="grid grid-cols-2 gap-4">
-                <div><strong>Categorie:</strong> {product.category}</div>
-                <div><strong>Brand:</strong> {product.storeName || 'N/A'}</div>
-                {product.colors && <div><strong>Culori disponibile:</strong> {product.colors.length}</div>}
-                {product.sizes && <div><strong>Mărimi disponibile:</strong> {product.sizes.join(', ')}</div>}
+              <div>
+                {product.specifications && product.specifications.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {product.specifications.map((spec, index) => (
+                      <div key={index} className="border-b pb-2">
+                        <strong className="text-gray-900">{spec.title}:</strong>
+                        <span className="ml-2 text-gray-700">{spec.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-600">Nicio specificație disponibilă</p>
+                )}
               </div>
             )}
             {activeTab === 'reviews' && (
-              <div className="text-center py-8 text-gray-600">
-                Nicio recenzie încă. Fii primul care evaluează acest produs!
+              <div>
+                {/* Review Form */}
+                <div className="bg-gray-50 rounded-xl p-6 mb-8">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">Scrie o Recenzie</h3>
+                  <form onSubmit={handleSubmitReview} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Numele tău *</label>
+                        <input
+                          type="text"
+                          required
+                          value={reviewForm.userName}
+                          onChange={(e) => setReviewForm({...reviewForm, userName: e.target.value})}
+                          className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                          placeholder="Ion Popescu"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                        <input
+                          type="email"
+                          required
+                          value={reviewForm.userEmail}
+                          onChange={(e) => setReviewForm({...reviewForm, userEmail: e.target.value})}
+                          className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                          placeholder="email@exemplu.com"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Rating *</label>
+                      <div className="flex gap-2">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={() => setReviewForm({...reviewForm, rating: star})}
+                            className="focus:outline-none"
+                          >
+                            <Star
+                              className={`w-8 h-8 ${
+                                star <= reviewForm.rating
+                                  ? 'text-yellow-400 fill-yellow-400'
+                                  : 'text-gray-300'
+                              }`}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Comentariu *</label>
+                      <textarea
+                        required
+                        value={reviewForm.comment}
+                        onChange={(e) => setReviewForm({...reviewForm, comment: e.target.value})}
+                        rows="4"
+                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        placeholder="Spune-ne părerea ta despre produs..."
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={submittingReview}
+                      className="bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {submittingReview ? 'Se trimite...' : 'Trimite Recenzia'}
+                    </button>
+                  </form>
+                </div>
+
+                {/* Reviews List */}
+                {reviews.length > 0 ? (
+                  <div className="space-y-6">
+                    {reviews.map((review) => (
+                      <div key={review.id} className="border-b pb-6">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h4 className="font-semibold text-gray-900">{review.userName}</h4>
+                            <div className="flex items-center gap-2 mt-1">
+                              <div className="flex">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`w-4 h-4 ${
+                                      i < review.rating
+                                        ? 'text-yellow-400 fill-yellow-400'
+                                        : 'text-gray-300'
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-sm text-gray-500">
+                                {new Date(review.createdAt).toLocaleDateString('ro-RO')}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-gray-700">{review.comment}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-600">
+                    Nicio recenzie încă. Fii primul care evaluează acest produs!
+                  </div>
+                )}
               </div>
             )}
           </div>

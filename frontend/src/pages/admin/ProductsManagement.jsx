@@ -19,6 +19,7 @@ const ProductsManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [imagePreview, setImagePreview] = useState(null);
+  const [specifications, setSpecifications] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -90,6 +91,7 @@ const ProductsManagement = () => {
         discount: formData.originalPrice ? Math.round(((formData.originalPrice - formData.price) / formData.originalPrice) * 100) : 0,
         colors: ["#9b59b6", "#3498db", "#e74c3c", "#f1c40f"],
         sizes: ["S", "M", "L", "XL", "XXL"],
+        specifications: specifications.filter(spec => spec.title && spec.value),
         rating: 4.5,
         reviews: 100,
         sold: 0,
@@ -107,6 +109,7 @@ const ProductsManagement = () => {
       setShowModal(false);
       setEditingProduct(null);
       setImagePreview(null);
+      setSpecifications([]);
       resetForm();
       fetchProducts();
     } catch (error) {
@@ -140,6 +143,7 @@ const ProductsManagement = () => {
       available: product.available,
       badge: product.badge || ''
     });
+    setSpecifications(product.specifications || []);
     setImagePreview(product.image);
     setShowModal(true);
   };
@@ -158,6 +162,25 @@ const ProductsManagement = () => {
       badge: ''
     });
     setImagePreview(null);
+    setSpecifications([]);
+  };
+
+  const addSpecification = () => {
+    if (specifications.length < 10) {
+      setSpecifications([...specifications, { title: '', value: '' }]);
+    } else {
+      toast({ title: 'Limită atinsă', description: 'Maximum 10 specificații per produs', variant: 'destructive' });
+    }
+  };
+
+  const updateSpecification = (index, field, value) => {
+    const newSpecs = [...specifications];
+    newSpecs[index][field] = value;
+    setSpecifications(newSpecs);
+  };
+
+  const removeSpecification = (index) => {
+    setSpecifications(specifications.filter((_, i) => i !== index));
   };
 
   const filteredProducts = products.filter(product => 
@@ -467,6 +490,55 @@ const ProductsManagement = () => {
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
+              </div>
+
+              {/* Specifications Section */}
+              <div className="border-t pt-6">
+                <div className="flex justify-between items-center mb-4">
+                  <label className="block text-sm font-bold text-gray-700">Specificații Custom (Max 10)</label>
+                  <button
+                    type="button"
+                    onClick={addSpecification}
+                    disabled={specifications.length >= 10}
+                    className="text-teal-600 hover:text-teal-700 font-semibold text-sm flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Adaugă Specificație
+                  </button>
+                </div>
+                
+                {specifications.length > 0 && (
+                  <div className="space-y-3">
+                    {specifications.map((spec, index) => (
+                      <div key={index} className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="Titlu (ex: Material)"
+                          value={spec.title}
+                          onChange={(e) => updateSpecification(index, 'title', e.target.value)}
+                          className="flex-1 px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Valoare (ex: Bumbac 100%)"
+                          value={spec.value}
+                          onChange={(e) => updateSpecification(index, 'value', e.target.value)}
+                          className="flex-1 px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeSpecification(index)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {specifications.length === 0 && (
+                  <p className="text-sm text-gray-500 text-center py-4">Nicio specificație adăugată</p>
+                )}
               </div>
 
               <div className="flex gap-3 pt-4">

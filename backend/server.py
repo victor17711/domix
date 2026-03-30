@@ -13,10 +13,11 @@ import uuid
 from models import (
     UserCreate, User, UserLogin, UserResponse,
     BrandCreate, Brand,
-    ProductCreate, Product,
+    ProductCreate, Product, ProductSpecification,
     CategoryCreate, Category,
     AddToCartRequest, Cart, CartItem,
     Wishlist,
+    ReviewCreate, Review,
     OrderCreate, Order,
     DashboardStats,
     MenuItem, SettingsCreate, Settings,
@@ -147,7 +148,8 @@ async def get_products(
     if brandId:
         query["brandId"] = brandId
     
-    products = await db.products.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
+    # Sort by createdAt descending (newest first)
+    products = await db.products.find(query, {"_id": 0}).sort("createdAt", -1).skip(skip).limit(limit).to_list(limit)
     return [Product(**product) for product in products]
 
 
@@ -234,6 +236,52 @@ async def delete_product(
     )
     
     return {"message": "Product deleted successfully"}
+
+
+# ==================== REVIEWS ENDPOINTS ====================
+
+@api_router.post("/products/{product_id}/reviews", response_model=Review)
+async def create_review(product_id: str, review: ReviewCreate):
+    """Create a review for a product"""
+    # Check if product exists
+    product = await db.products.find_one({"id": product_id}, {"_id": 0})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Check if user already reviewed this product (based on email)
+    existing_review = await db.reviews.find_one({
+        "productId": product_id,
+        "userEmail": review.userEmail
+    })
+    if existing_review:
+        raise HTTPException(status_code=400, detail="Ai lăsat deja o recenzie pentru acest produs")
+    
+    # Validate rating
+    if review.rating < 1 or review.rating > 5:
+        raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
+    
+    # Create review
+    new_review = Review(**review.dict())
+    await db.reviews.insert_one(new_review.dict())
+    
+    # Recalculate product rating
+    all_reviews = await db.reviews.find({"productId": product_id}, {"_id": 0}).to_list(1000)
+    avg_rating = sum(r["rating"] for r in all_reviews) / len(all_reviews)
+    
+    # Update product rating and review count
+    await db.products.update_one(
+        {"id": product_id},
+        {"$set": {"rating": round(avg_rating, 1), "reviews": len(all_reviews)}}
+    )
+    
+    return new_review
+
+
+@api_router.get("/products/{product_id}/reviews", response_model=List[Review])
+async def get_product_reviews(product_id: str):
+    """Get all reviews for a product"""
+    reviews = await db.reviews.find({"productId": product_id}, {"_id": 0}).sort("createdAt", -1).to_list(100)
+    return [Review(**review) for review in reviews]
 
 
 # ==================== CATEGORY ENDPOINTS ====================

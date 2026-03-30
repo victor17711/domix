@@ -42,6 +42,10 @@ class Brand(BrandCreate):
     createdAt: datetime = Field(default_factory=datetime.utcnow)
 
 # Product Models
+class ProductSpecification(BaseModel):
+    title: str
+    value: str
+
 class ProductCreate(BaseModel):
     name: str
     description: Optional[str] = ""
@@ -54,6 +58,7 @@ class ProductCreate(BaseModel):
     image: str
     colors: Optional[List[str]] = []
     sizes: Optional[List[str]] = []
+    specifications: Optional[List[ProductSpecification]] = []
     rating: Optional[float] = 0.0
     reviews: Optional[int] = 0
     sold: Optional[int] = 0
@@ -106,6 +111,18 @@ class Wishlist(BaseModel):
     userId: str
     products: List[str] = []
     createdAt: datetime = Field(default_factory=datetime.utcnow)
+
+# Review Models
+class ReviewCreate(BaseModel):
+    productId: str
+    userName: str
+    userEmail: str
+    rating: int  # 1-5
+    comment: str
+
+class Review(ReviewCreate):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 # Order Models
 class OrderItem(BaseModel):
