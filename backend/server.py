@@ -240,8 +240,15 @@ async def delete_product(
 
 @api_router.get("/categories", response_model=List[Category])
 async def get_categories():
-    """Get all categories"""
+    """Get all categories with product count"""
     categories = await db.categories.find().to_list(100)
+    
+    # Count products for each category
+    for category in categories:
+        # Count products where category matches the category name
+        product_count = await db.products.count_documents({"category": category["name"]})
+        category["itemCount"] = product_count
+    
     return [Category(**cat) for cat in categories]
 
 
