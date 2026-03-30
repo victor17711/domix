@@ -193,7 +193,7 @@ const OrdersManagement = () => {
                   </div>
                   <div>
                     <span className="text-gray-600">Metodă Plată:</span>
-                    <p>{selectedOrder.paymentMethod === 'cash_on_delivery' ? 'Ramburs' : selectedOrder.paymentMethod}</p>
+                    <p>{selectedOrder.paymentMethod === 'cash_on_delivery' ? 'Cash la curier' : selectedOrder.paymentMethod}</p>
                   </div>
                 </div>
               </div>

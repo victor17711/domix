@@ -161,10 +161,10 @@ const ProductDetailPage = () => {
             {/* Price */}
             <div className="mb-6">
               <div className="flex items-baseline gap-4">
-                <span className="text-4xl font-bold text-teal-600">{product.price} MDL</span>
+                <span className="text-4xl font-bold text-teal-600">{product.price * quantity} MDL</span>
                 {product.originalPrice && (
                   <>
-                    <span className="text-2xl text-gray-400 line-through">{product.originalPrice} MDL</span>
+                    <span className="text-2xl text-gray-400 line-through">{product.originalPrice * quantity} MDL</span>
                     <span className="text-xl font-semibold text-green-600">
                       -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
                     </span>

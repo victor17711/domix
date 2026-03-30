@@ -69,13 +69,18 @@ const CheckoutPage = () => {
       const response = await axios.post(`${API}/orders`, orderData);
       console.log('Order response:', response.data);
       
+      // Clear cart BEFORE navigation
+      clearCart();
+      
       toast({ 
         title: 'Succes', 
         description: 'Comanda ta a fost plasată cu succes!' 
       });
       
-      clearCart();
-      navigate('/order-success');
+      // Small delay to ensure cart is cleared
+      setTimeout(() => {
+        navigate('/order-success');
+      }, 100);
     } catch (error) {
       console.error('Error placing order:', error.response?.data || error.message);
       toast({ 
@@ -246,7 +251,7 @@ const CheckoutPage = () => {
                     <label className="flex items-center gap-4 p-4 border-2 border-teal-600 rounded-xl bg-teal-50 cursor-pointer">
                       <input type="radio" name="payment" defaultChecked className="w-5 h-5 text-teal-600" />
                       <div className="flex-1">
-                        <div className="font-semibold text-gray-900">Ramburs (Cash la Livrare)</div>
+                        <div className="font-semibold text-gray-900">Cash la curier</div>
                         <div className="text-sm text-gray-600">Plătește când primești comanda</div>
                       </div>
                       <Check className="w-6 h-6 text-teal-600" />
