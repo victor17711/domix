@@ -18,6 +18,7 @@ export const AdminProvider = ({ children }) => {
   const [adminUser, setAdminUser] = useState(null);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check if admin is logged in
@@ -25,10 +26,18 @@ export const AdminProvider = ({ children }) => {
     const savedUser = localStorage.getItem('adminUser');
     
     if (savedToken && savedUser) {
-      setToken(savedToken);
-      setAdminUser(JSON.parse(savedUser));
-      setIsAdminAuthenticated(true);
+      try {
+        setToken(savedToken);
+        setAdminUser(JSON.parse(savedUser));
+        setIsAdminAuthenticated(true);
+      } catch (error) {
+        console.error('Error parsing saved admin data:', error);
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+      }
     }
+    
+    setLoading(false);
   }, []);
 
   const adminLogin = async (email, password) => {
@@ -77,6 +86,7 @@ export const AdminProvider = ({ children }) => {
         adminUser,
         isAdminAuthenticated,
         token,
+        loading,
         adminLogin,
         adminLogout,
         getAuthHeaders

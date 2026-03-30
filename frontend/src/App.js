@@ -27,7 +27,19 @@ import './App.css';
 
 // Protected Route Component for Admin
 const AdminProtectedRoute = ({ children }) => {
-  const { isAdminAuthenticated } = useAdmin();
+  const { isAdminAuthenticated, loading } = useAdmin();
+  
+  // Wait for loading to complete before redirecting
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Se încarcă...</p>
+        </div>
+      </div>
+    );
+  }
   
   if (!isAdminAuthenticated) {
     return <Navigate to="/admin/login" replace />;
