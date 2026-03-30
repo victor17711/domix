@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Autoplay } from 'swiper/modules';
@@ -19,6 +19,8 @@ const HomePage = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState(null);
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
   
   useEffect(() => {
     fetchSettings();
@@ -105,32 +107,55 @@ const HomePage = () => {
           </div>
 
           {featuredProducts.length > 0 ? (
-            <Swiper
-              modules={[Navigation, Autoplay]}
-              spaceBetween={24}
-              slidesPerView={1}
-              navigation
-              speed={900}
-              autoplay={{ 
-                delay: 4500, 
-                disableOnInteraction: false,
-                pauseOnMouseEnter: true 
-              }}
-              loop={true}
-              breakpoints={{
-                640: { slidesPerView: 2 },
-                768: { slidesPerView: 3 },
-                1024: { slidesPerView: 4 },
-                1280: { slidesPerView: 5 }
-              }}
-              className="hot-picks-carousel"
-            >
-              {featuredProducts.map((product) => (
-                <SwiperSlide key={product.id}>
-                  <ProductCard product={product} showProgress />
-                </SwiperSlide>
-              ))}
-            </Swiper>
+            <div className="relative">
+              <Swiper
+                modules={[Navigation, Autoplay]}
+                spaceBetween={24}
+                slidesPerView={1}
+                navigation={{
+                  prevEl: prevRef.current,
+                  nextEl: nextRef.current,
+                }}
+                onBeforeInit={(swiper) => {
+                  swiper.params.navigation.prevEl = prevRef.current;
+                  swiper.params.navigation.nextEl = nextRef.current;
+                }}
+                speed={900}
+                autoplay={{ 
+                  delay: 4500, 
+                  disableOnInteraction: false,
+                  pauseOnMouseEnter: true 
+                }}
+                loop={true}
+                breakpoints={{
+                  640: { slidesPerView: 2 },
+                  768: { slidesPerView: 3 },
+                  1024: { slidesPerView: 4 },
+                  1280: { slidesPerView: 5 }
+                }}
+                className="hot-picks-carousel"
+              >
+                {featuredProducts.map((product) => (
+                  <SwiperSlide key={product.id}>
+                    <ProductCard product={product} showProgress />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+
+              {/* Custom Navigation Buttons */}
+              <button
+                ref={prevRef}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-teal-600 hover:bg-teal-600 hover:text-white transition-all duration-300 hover:scale-110 border border-gray-200"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                ref={nextRef}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-teal-600 hover:bg-teal-600 hover:text-white transition-all duration-300 hover:scale-110 border border-gray-200"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
               {products.slice(0, 10).map((product) => (
@@ -436,48 +461,3 @@ const HomePage = () => {
 
 export default HomePage;
 
-      <style jsx>{`
-        .hot-picks-carousel :global(.swiper-button-next),
-        .hot-picks-carousel :global(.swiper-button-prev) {
-          color: #0d9488;
-          background: white;
-          width: 46px;
-          height: 46px;
-          border-radius: 50%;
-          border: 2px solid rgba(13, 148, 136, 0.15);
-          box-shadow: 0 2px 14px rgba(0, 0, 0, 0.1);
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .hot-picks-carousel :global(.swiper-button-next):hover,
-        .hot-picks-carousel :global(.swiper-button-prev):hover {
-          color: white;
-          background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
-          border-color: #0d9488;
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(13, 148, 136, 0.3);
-        }
-        
-        .hot-picks-carousel :global(.swiper-button-next):after,
-        .hot-picks-carousel :global(.swiper-button-prev):after {
-          font-size: 18px;
-          font-weight: 600;
-        }
-        
-        .hot-picks-carousel :global(.swiper-button-next) {
-          right: 10px;
-        }
-        
-        .hot-picks-carousel :global(.swiper-button-prev) {
-          left: 10px;
-        }
-        
-        .hot-picks-carousel :global(.swiper-button-disabled) {
-          opacity: 0.4;
-          cursor: not-allowed;
-        }
-        
-        .hot-picks-carousel :global(.swiper-slide) {
-          transition: transform 0.3s ease;
-        }
-      `}</style>
