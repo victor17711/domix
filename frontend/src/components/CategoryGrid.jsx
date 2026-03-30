@@ -99,30 +99,33 @@ const CategoryGrid = () => {
       <style jsx>{`
         .category-carousel :global(.swiper-button-next),
         .category-carousel :global(.swiper-button-prev) {
-          color: white;
-          background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
-          width: 50px;
-          height: 50px;
+          color: #0d9488;
+          background: white;
+          width: 42px;
+          height: 42px;
           border-radius: 50%;
-          box-shadow: 0 4px 15px rgba(13, 148, 136, 0.4);
+          border: 2px solid rgba(13, 148, 136, 0.15);
+          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
           transition: all 0.3s ease;
         }
         
         .category-carousel :global(.swiper-button-next):hover,
         .category-carousel :global(.swiper-button-prev):hover {
-          transform: scale(1.1);
-          box-shadow: 0 6px 20px rgba(13, 148, 136, 0.6);
-          background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+          color: white;
+          background: #0d9488;
+          border-color: #0d9488;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 16px rgba(13, 148, 136, 0.25);
         }
         
         .category-carousel :global(.swiper-button-next):after,
         .category-carousel :global(.swiper-button-prev):after {
-          font-size: 20px;
-          font-weight: bold;
+          font-size: 16px;
+          font-weight: 600;
         }
         
         .category-carousel :global(.swiper-button-disabled) {
-          opacity: 0.3;
+          opacity: 0.4;
           cursor: not-allowed;
         }
       `}</style>

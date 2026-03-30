@@ -439,26 +439,29 @@ export default HomePage;
       <style jsx>{`
         .hot-picks-carousel :global(.swiper-button-next),
         .hot-picks-carousel :global(.swiper-button-prev) {
-          color: white;
-          background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
-          width: 56px;
-          height: 56px;
+          color: #0d9488;
+          background: white;
+          width: 46px;
+          height: 46px;
           border-radius: 50%;
-          box-shadow: 0 6px 20px rgba(13, 148, 136, 0.35);
+          border: 2px solid rgba(13, 148, 136, 0.15);
+          box-shadow: 0 2px 14px rgba(0, 0, 0, 0.1);
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .hot-picks-carousel :global(.swiper-button-next):hover,
         .hot-picks-carousel :global(.swiper-button-prev):hover {
-          transform: scale(1.15);
-          box-shadow: 0 8px 25px rgba(13, 148, 136, 0.5);
-          background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+          color: white;
+          background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+          border-color: #0d9488;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(13, 148, 136, 0.3);
         }
         
         .hot-picks-carousel :global(.swiper-button-next):after,
         .hot-picks-carousel :global(.swiper-button-prev):after {
-          font-size: 22px;
-          font-weight: bold;
+          font-size: 18px;
+          font-weight: 600;
         }
         
         .hot-picks-carousel :global(.swiper-button-next) {
@@ -470,7 +473,7 @@ export default HomePage;
         }
         
         .hot-picks-carousel :global(.swiper-button-disabled) {
-          opacity: 0.3;
+          opacity: 0.4;
           cursor: not-allowed;
         }
         
