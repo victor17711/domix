@@ -7,6 +7,8 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import AdminLayout from './components/AdminLayout';
 import HomePage from './pages/HomePage';
+import DynamicPage from './pages/DynamicPage';
+import CategoryPage from './pages/CategoryPage';
 import AdminLogin from './pages/admin/AdminLogin';
 import Dashboard from './pages/admin/Dashboard';
 import ProductsManagement from './pages/admin/ProductsManagement';
@@ -42,6 +44,24 @@ function App() {
                   <>
                     <Navbar />
                     <HomePage />
+                    <Footer />
+                  </>
+                } />
+
+                {/* Dynamic Page Route */}
+                <Route path="/page/:slug" element={
+                  <>
+                    <Navbar />
+                    <DynamicPage />
+                    <Footer />
+                  </>
+                } />
+
+                {/* Category Page Route */}
+                <Route path="/category/:slug" element={
+                  <>
+                    <Navbar />
+                    <CategoryPage />
                     <Footer />
                   </>
                 } />

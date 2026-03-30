@@ -33,6 +33,7 @@ const AdminLayout = ({ children }) => {
     { path: '/admin/categories', label: 'Categorii', icon: FolderOpen },
     { path: '/admin/orders', label: 'Comenzi', icon: ShoppingCart },
     { path: '/admin/users', label: 'Utilizatori', icon: Users },
+    { path: '/admin/pages', label: 'Pagini', icon: FileText },
     { path: '/admin/settings', label: 'Setări', icon: Settings },
   ];
 

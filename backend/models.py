@@ -129,3 +129,34 @@ class DashboardStats(BaseModel):
     totalRevenue: float
     pendingOrders: int
     lowStockProducts: int
+
+# Menu Item Models
+class MenuItem(BaseModel):
+    id: str
+    name: str
+    url: str
+    type: str  # 'link', 'category', 'page'
+    icon: Optional[str] = None
+    categoryId: Optional[str] = None
+    pageId: Optional[str] = None
+
+# Settings Models
+class SettingsCreate(BaseModel):
+    menuItems: List[MenuItem] = []
+    categoryMenuItems: List[MenuItem] = []
+
+class Settings(SettingsCreate):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    updatedAt: datetime = Field(default_factory=datetime.utcnow)
+
+# Page Models
+class PageCreate(BaseModel):
+    title: str
+    slug: str
+    content: str
+    isPublished: Optional[bool] = True
+
+class Page(PageCreate):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    updatedAt: datetime = Field(default_factory=datetime.utcnow)

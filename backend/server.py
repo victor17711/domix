@@ -8,6 +8,7 @@ import logging
 from pathlib import Path
 from typing import List, Optional
 from datetime import datetime
+import uuid
 
 from models import (
     UserCreate, User, UserLogin, UserResponse,
@@ -16,7 +17,9 @@ from models import (
     AddToCartRequest, Cart, CartItem,
     Wishlist,
     OrderCreate, Order,
-    DashboardStats
+    DashboardStats,
+    MenuItem, SettingsCreate, Settings,
+    PageCreate, Page
 )
 from auth_utils import verify_password, get_password_hash, create_access_token
 from dependencies import get_current_user, get_current_admin_user
@@ -704,6 +707,153 @@ async def get_dashboard_stats(authorization: Optional[str] = Header(None)):
         pendingOrders=pending_orders,
         lowStockProducts=low_stock_products
     )
+
+
+# ==================== SETTINGS ENDPOINTS ====================
+
+@api_router.get("/settings")
+async def get_settings():
+    """Get site settings (menu configuration)"""
+    settings = await db.settings.find_one({}, {"_id": 0})
+    if not settings:
+        # Return default empty settings
+        default_settings = Settings(
+            menuItems=[],
+            categoryMenuItems=[]
+        )
+        return default_settings
+    return Settings(**settings)
+
+
+@api_router.post("/settings")
+async def save_settings(
+    settings_data: SettingsCreate,
+    authorization: Optional[str] = Header(None)
+):
+    """Save site settings (admin only)"""
+    current_user = await get_current_user(authorization, db)
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # Check if settings exist
+    existing_settings = await db.settings.find_one({})
+    
+    settings_dict = settings_data.dict()
+    settings_dict["updatedAt"] = datetime.utcnow()
+    
+    if existing_settings:
+        # Update existing
+        settings_dict["id"] = existing_settings.get("id", str(uuid.uuid4()))
+        await db.settings.update_one(
+            {"id": settings_dict["id"]},
+            {"$set": settings_dict}
+        )
+    else:
+        # Create new
+        settings_dict["id"] = str(uuid.uuid4())
+        await db.settings.insert_one(settings_dict)
+    
+    return {"message": "Settings saved successfully"}
+
+
+# ==================== PAGES ENDPOINTS ====================
+
+@api_router.get("/pages", response_model=List[Page])
+async def get_pages(published_only: bool = False):
+    """Get all pages"""
+    query = {}
+    if published_only:
+        query["isPublished"] = True
+    
+    pages = await db.pages.find(query, {"_id": 0}).to_list(100)
+    return [Page(**page) for page in pages]
+
+
+@api_router.get("/pages/{page_id}", response_model=Page)
+async def get_page(page_id: str):
+    """Get page by ID"""
+    page = await db.pages.find_one({"id": page_id}, {"_id": 0})
+    if not page:
+        raise HTTPException(status_code=404, detail="Page not found")
+    return Page(**page)
+
+
+@api_router.get("/pages/slug/{slug}", response_model=Page)
+async def get_page_by_slug(slug: str):
+    """Get page by slug"""
+    page = await db.pages.find_one({"slug": slug}, {"_id": 0})
+    if not page:
+        raise HTTPException(status_code=404, detail="Page not found")
+    return Page(**page)
+
+
+@api_router.post("/pages", response_model=Page)
+async def create_page(
+    page_data: PageCreate,
+    authorization: Optional[str] = Header(None)
+):
+    """Create a new page (admin only)"""
+    current_user = await get_current_user(authorization, db)
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # Check if slug already exists
+    existing = await db.pages.find_one({"slug": page_data.slug})
+    if existing:
+        raise HTTPException(status_code=400, detail="Page with this slug already exists")
+    
+    new_page = Page(**page_data.dict())
+    await db.pages.insert_one(new_page.dict())
+    
+    return new_page
+
+
+@api_router.put("/pages/{page_id}", response_model=Page)
+async def update_page(
+    page_id: str,
+    page_data: PageCreate,
+    authorization: Optional[str] = Header(None)
+):
+    """Update a page (admin only)"""
+    current_user = await get_current_user(authorization, db)
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    existing_page = await db.pages.find_one({"id": page_id})
+    if not existing_page:
+        raise HTTPException(status_code=404, detail="Page not found")
+    
+    updated_page = page_data.dict()
+    updated_page["updatedAt"] = datetime.utcnow()
+    
+    await db.pages.update_one(
+        {"id": page_id},
+        {"$set": updated_page}
+    )
+    
+    updated_page["id"] = page_id
+    updated_page["createdAt"] = existing_page["createdAt"]
+    
+    return Page(**updated_page)
+
+
+@api_router.delete("/pages/{page_id}")
+async def delete_page(
+    page_id: str,
+    authorization: Optional[str] = Header(None)
+):
+    """Delete a page (admin only)"""
+    current_user = await get_current_user(authorization, db)
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    page = await db.pages.find_one({"id": page_id})
+    if not page:
+        raise HTTPException(status_code=404, detail="Page not found")
+    
+    await db.pages.delete_one({"id": page_id})
+    
+    return {"message": "Page deleted successfully"}
 
 
 @api_router.get("/")
