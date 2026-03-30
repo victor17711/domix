@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAdmin } from '../../context/AdminContext';
 import axios from 'axios';
-import { Plus, Edit, Trash2, Search, Upload, X, Image as ImageIcon } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Upload, X, Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from '../../hooks/use-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+const ITEMS_PER_PAGE = 10;
 
 const ProductsManagement = () => {
   const { getAuthHeaders } = useAdmin();
@@ -15,6 +16,7 @@ const ProductsManagement = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [imagePreview, setImagePreview] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -149,6 +151,12 @@ const ProductsManagement = () => {
     product.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Pagination
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentProducts = filteredProducts.slice(startIndex, endIndex);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -160,15 +168,15 @@ const ProductsManagement = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-teal-600 to-teal-700 rounded-2xl p-6 text-white shadow-lg">
+      <div className="bg-gradient-to-r from-teal-600 to-teal-700 rounded-2xl p-6 text-white">
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-3xl font-bold mb-2">Gestionare Produse</h2>
-            <p className="text-teal-100">Administrează inventarul magazinului</p>
+            <p className="text-teal-100">Total: {filteredProducts.length} produse</p>
           </div>
           <button
             onClick={() => { setShowModal(true); setEditingProduct(null); resetForm(); }}
-            className="bg-white text-teal-700 px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-teal-50 transition shadow-md font-semibold"
+            className="bg-white text-teal-700 px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-teal-50 transition font-semibold"
           >
             <Plus className="w-5 h-5" />
             Adaugă Produs
@@ -176,69 +184,124 @@ const ProductsManagement = () => {
         </div>
       </div>
 
-      {/* Search & Filter */}
-      <div className="bg-white rounded-2xl shadow-md p-6">
+      {/* Search */}
+      <div className="bg-white rounded-2xl p-4">
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input
             type="text"
-            placeholder="Caută produse după nume sau categorie..."
+            placeholder="Caută produse..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+            className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
         </div>
       </div>
 
-      {/* Products Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredProducts.map((product) => (
-          <div key={product.id} className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
-            <div className="relative h-48 overflow-hidden bg-gray-100">
-              <img 
-                src={product.image} 
-                alt={product.name} 
-                className="w-full h-full object-cover group-hover:scale-110 transition duration-300" 
-              />
-              <div className="absolute top-2 right-2 flex gap-2">
-                <button
-                  onClick={() => handleEdit(product)}
-                  className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition shadow-md"
-                >
-                  <Edit className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => handleDelete(product.id)}
-                  className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition shadow-md"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-            <div className="p-4">
-              <h3 className="font-bold text-lg text-gray-900 mb-1 line-clamp-1">{product.name}</h3>
-              <p className="text-sm text-gray-500 mb-2">{product.category}</p>
-              <div className="flex items-center justify-between mb-2">
-                <div>
-                  <span className="text-2xl font-bold text-teal-600">{product.price} MDL</span>
-                  {product.originalPrice && (
-                    <span className="text-sm text-gray-400 line-through ml-2">{product.originalPrice} MDL</span>
-                  )}
-                </div>
-              </div>
-              <div className={`px-3 py-1 rounded-full text-xs font-semibold inline-block ${
-                product.available > 50 ? 'bg-green-100 text-green-800' :
-                product.available > 10 ? 'bg-yellow-100 text-yellow-800' :
-                'bg-red-100 text-red-800'
-              }`}>
-                Stoc: {product.available}
-              </div>
-            </div>
+      {/* Table */}
+      <div className="bg-white rounded-2xl overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gradient-to-r from-teal-600 to-teal-700 text-white">
+              <tr>
+                <th className="px-6 py-4 text-left font-semibold">Imagine</th>
+                <th className="px-6 py-4 text-left font-semibold">Nume Produs</th>
+                <th className="px-6 py-4 text-left font-semibold">Categorie</th>
+                <th className="px-6 py-4 text-left font-semibold">Preț (MDL)</th>
+                <th className="px-6 py-4 text-left font-semibold">Stoc</th>
+                <th className="px-6 py-4 text-left font-semibold">Acțiuni</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {currentProducts.map((product, index) => (
+                <tr key={product.id} className={`hover:bg-teal-50 transition ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                  <td className="px-6 py-4">
+                    <img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded-lg" />
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="font-semibold text-gray-900">{product.name}</div>
+                    <div className="text-sm text-gray-500">{product.storeName}</div>
+                  </td>
+                  <td className="px-6 py-4 text-gray-700">{product.category}</td>
+                  <td className="px-6 py-4">
+                    <div className="font-bold text-teal-600">{product.price} MDL</div>
+                    {product.originalPrice && (
+                      <div className="text-sm text-gray-400 line-through">{product.originalPrice} MDL</div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      product.available > 50 ? 'bg-green-100 text-green-800' :
+                      product.available > 10 ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-red-100 text-red-800'
+                    }`}>
+                      {product.available}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(product)}
+                        className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(product.id)}
+                        className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t">
+          <div className="text-sm text-gray-700">
+            Afișare <span className="font-semibold">{startIndex + 1}</span> - <span className="font-semibold">{Math.min(endIndex, filteredProducts.length)}</span> din <span className="font-semibold">{filteredProducts.length}</span>
           </div>
-        ))}
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Anterior
+            </button>
+            <div className="flex gap-1">
+              {[...Array(totalPages)].map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={`px-4 py-2 rounded-lg ${
+                    currentPage === i + 1
+                      ? 'bg-teal-600 text-white'
+                      : 'border border-gray-300 hover:bg-gray-100'
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              Următor
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Modal Add/Edit */}
+      {/* Modal - Same as before */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
@@ -294,7 +357,7 @@ const ProductsManagement = () => {
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
                 <div>
@@ -303,9 +366,9 @@ const ProductsManagement = () => {
                     required
                     value={formData.category}
                     onChange={(e) => setFormData({...formData, category: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                   >
-                    <option value="">Selectează Categoria</option>
+                    <option value="">Selectează</option>
                     {categories.map(cat => (
                       <option key={cat.id} value={cat.name}>{cat.name}</option>
                     ))}
@@ -319,7 +382,7 @@ const ProductsManagement = () => {
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   rows="3"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
 
@@ -332,7 +395,7 @@ const ProductsManagement = () => {
                     required
                     value={formData.price}
                     onChange={(e) => setFormData({...formData, price: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
                 <div>
@@ -342,7 +405,7 @@ const ProductsManagement = () => {
                     step="0.01"
                     value={formData.originalPrice}
                     onChange={(e) => setFormData({...formData, originalPrice: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
                 <div>
@@ -352,7 +415,7 @@ const ProductsManagement = () => {
                     required
                     value={formData.available}
                     onChange={(e) => setFormData({...formData, available: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
               </div>
@@ -364,7 +427,7 @@ const ProductsManagement = () => {
                     type="text"
                     value={formData.storeName}
                     onChange={(e) => setFormData({...formData, storeName: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
                 <div>
@@ -374,7 +437,7 @@ const ProductsManagement = () => {
                     value={formData.badge}
                     onChange={(e) => setFormData({...formData, badge: e.target.value})}
                     placeholder="ex: SALES, 15% OFF"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
               </div>
@@ -382,9 +445,9 @@ const ProductsManagement = () => {
               <div className="flex gap-3 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-gradient-to-r from-teal-600 to-teal-700 text-white py-3 rounded-xl hover:from-teal-700 hover:to-teal-800 transition font-semibold shadow-md"
+                  className="flex-1 bg-gradient-to-r from-teal-600 to-teal-700 text-white py-3 rounded-xl hover:from-teal-700 hover:to-teal-800 transition font-semibold"
                 >
-                  {editingProduct ? 'Actualizează Produs' : 'Creează Produs'}
+                  {editingProduct ? 'Actualizează' : 'Creează'}
                 </button>
                 <button
                   type="button"
