@@ -66,14 +66,14 @@ const CartPage = () => {
                       {/* Quantity */}
                       <div className="flex items-center border-2 border-gray-300 rounded-lg">
                         <button
-                          onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                          onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1), item.selectedSize, item.selectedColor)}
                           className="p-2 hover:bg-gray-100 transition"
                         >
                           <Minus className="w-4 h-4" />
                         </button>
                         <span className="px-4 py-2 font-semibold">{item.quantity}</span>
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.id, item.quantity + 1, item.selectedSize, item.selectedColor)}
                           className="p-2 hover:bg-gray-100 transition"
                         >
                           <Plus className="w-4 h-4" />
@@ -94,7 +94,7 @@ const CartPage = () => {
 
                   {/* Remove */}
                   <button
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => removeFromCart(item.id, item.selectedSize, item.selectedColor)}
                     className="text-red-500 hover:text-red-700 transition"
                   >
                     <Trash2 className="w-5 h-5" />

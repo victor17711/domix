@@ -205,6 +205,10 @@ export const CartProvider = ({ children }) => {
     return wishlist.some(item => item === productId || item.id === productId);
   };
 
+  const getCartTotal = () => {
+    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+  };
+
   const cartTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
 
@@ -220,6 +224,7 @@ export const CartProvider = ({ children }) => {
         addToWishlist,
         removeFromWishlist,
         isInWishlist,
+        getCartTotal,
         cartTotal,
         cartCount,
         loading
