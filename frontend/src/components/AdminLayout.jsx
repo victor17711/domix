@@ -11,7 +11,8 @@ import {
   Menu,
   X,
   Settings,
-  Bell
+  Bell,
+  FileText
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -32,6 +33,7 @@ const AdminLayout = ({ children }) => {
     { path: '/admin/categories', label: 'Categorii', icon: FolderOpen },
     { path: '/admin/orders', label: 'Comenzi', icon: ShoppingCart },
     { path: '/admin/users', label: 'Utilizatori', icon: Users },
+    { path: '/admin/settings', label: 'Setări', icon: Settings },
   ];
 
   return (

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAdmin } from '../../context/AdminContext';
 import axios from 'axios';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Upload, X, Image as ImageIcon } from 'lucide-react';
 import { toast } from '../../hooks/use-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -13,7 +13,14 @@ const CategoriesManagement = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
-  const [formData, setFormData] = useState({ name: '', slug: '', icon: '' });
+  const [imagePreview, setImagePreview] = useState(null);
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    slug: '', 
+    icon: '',
+    parentId: null,
+    image: ''
+  });
 
   useEffect(() => {
     fetchCategories();
@@ -24,9 +31,21 @@ const CategoriesManagement = () => {
       const response = await axios.get(`${API}/categories`);
       setCategories(response.data);
     } catch (error) {
-      toast({ title: 'Error', description: 'Failed to fetch categories', variant: 'destructive' });
+      toast({ title: 'Eroare', description: 'Nu s-au putut încărca categoriile', variant: 'destructive' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        setFormData({ ...formData, image: reader.result, icon: '' });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -34,32 +53,39 @@ const CategoriesManagement = () => {
     e.preventDefault();
     
     try {
+      const categoryData = { 
+        ...formData, 
+        itemCount: 0,
+        icon: formData.image || formData.icon 
+      };
+
       if (editingCategory) {
-        await axios.put(`${API}/categories/${editingCategory.id}`, formData, getAuthHeaders());
-        toast({ title: 'Success', description: 'Category updated successfully!' });
+        await axios.put(`${API}/categories/${editingCategory.id}`, categoryData, getAuthHeaders());
+        toast({ title: 'Succes', description: 'Categoria a fost actualizată!' });
       } else {
-        await axios.post(`${API}/categories`, { ...formData, itemCount: 0 }, getAuthHeaders());
-        toast({ title: 'Success', description: 'Category created successfully!' });
+        await axios.post(`${API}/categories`, categoryData, getAuthHeaders());
+        toast({ title: 'Succes', description: 'Categoria a fost creată!' });
       }
       
       setShowModal(false);
       setEditingCategory(null);
-      setFormData({ name: '', slug: '', icon: '' });
+      setImagePreview(null);
+      setFormData({ name: '', slug: '', icon: '', parentId: null, image: '' });
       fetchCategories();
     } catch (error) {
-      toast({ title: 'Error', description: error.response?.data?.detail || 'Failed to save category', variant: 'destructive' });
+      toast({ title: 'Eroare', description: error.response?.data?.detail || 'Nu s-a putut salva categoria', variant: 'destructive' });
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this category?')) return;
+    if (!window.confirm('Sigur doriți să ștergeți această categorie?')) return;
     
     try {
       await axios.delete(`${API}/categories/${id}`, getAuthHeaders());
-      toast({ title: 'Success', description: 'Category deleted successfully!' });
+      toast({ title: 'Succes', description: 'Categoria a fost ștearsă!' });
       fetchCategories();
     } catch (error) {
-      toast({ title: 'Error', description: 'Failed to delete category', variant: 'destructive' });
+      toast({ title: 'Eroare', description: 'Nu s-a putut șterge categoria', variant: 'destructive' });
     }
   };
 
@@ -68,116 +94,257 @@ const CategoriesManagement = () => {
     setFormData({
       name: category.name,
       slug: category.slug,
-      icon: category.icon || ''
+      icon: category.icon || '',
+      parentId: category.parentId || null,
+      image: ''
     });
+    if (category.icon && category.icon.startsWith('data:image')) {
+      setImagePreview(category.icon);
+    }
     setShowModal(true);
   };
 
+  const getParentCategories = () => {
+    return categories.filter(cat => !cat.parentId);
+  };
+
+  const getSubCategories = (parentId) => {
+    return categories.filter(cat => cat.parentId === parentId);
+  };
+
   if (loading) {
-    return <div className="text-center py-12">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-teal-600"></div>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Categories Management</h2>
-          <p className="text-gray-600">Manage product categories</p>
-        </div>
-        <button
-          onClick={() => { setShowModal(true); setEditingCategory(null); setFormData({ name: '', slug: '', icon: '' }); }}
-          className="bg-teal-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-teal-700 transition"
-        >
-          <Plus className="w-5 h-5" />
-          Add Category
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {categories.map((category) => (
-          <div key={category.id} className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
-            <div className="flex justify-between items-start mb-4">
-              <div className="text-4xl">{category.icon || '📁'}</div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleEdit(category)}
-                  className="text-blue-600 hover:text-blue-800"
-                >
-                  <Edit className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => handleDelete(category.id)}
-                  className="text-red-600 hover:text-red-800"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-            <h3 className="font-bold text-xl text-gray-900 mb-2">{category.name}</h3>
-            <p className="text-sm text-gray-500 mb-3">Slug: {category.slug}</p>
-            <div className="bg-teal-50 text-teal-700 px-3 py-1 rounded-full text-sm font-semibold inline-block">
-              {category.itemCount || 0} Products
-            </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-teal-600 to-teal-700 rounded-2xl p-6 text-white">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-3xl font-bold mb-2">Gestionare Categorii</h2>
+            <p className="text-teal-100">Total: {categories.length} categorii</p>
           </div>
-        ))}
+          <button
+            onClick={() => { setShowModal(true); setEditingCategory(null); setFormData({ name: '', slug: '', icon: '', parentId: null, image: '' }); }}
+            className="bg-white text-teal-700 px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-teal-50 transition font-semibold"
+          >
+            <Plus className="w-5 h-5" />
+            Adaugă Categorie
+          </button>
+        </div>
       </div>
 
-      {/* Add/Edit Modal */}
+      {/* Table */}
+      <div className="bg-white rounded-2xl overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gradient-to-r from-teal-600 to-teal-700 text-white">
+              <tr>
+                <th className="px-6 py-4 text-left font-semibold">Icon/Imagine</th>
+                <th className="px-6 py-4 text-left font-semibold">Nume Categorie</th>
+                <th className="px-6 py-4 text-left font-semibold">Slug</th>
+                <th className="px-6 py-4 text-left font-semibold">Categorie Părinte</th>
+                <th className="px-6 py-4 text-left font-semibold">Produse</th>
+                <th className="px-6 py-4 text-left font-semibold">Acțiuni</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {getParentCategories().map((category, index) => (
+                <React.Fragment key={category.id}>
+                  <tr className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-teal-50 transition`}>
+                    <td className="px-6 py-4">
+                      {category.icon && category.icon.startsWith('data:image') ? (
+                        <img src={category.icon} alt={category.name} className="w-12 h-12 object-cover rounded-lg" />
+                      ) : (
+                        <div className="text-3xl">{category.icon || '📁'}</div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-gray-900">{category.name}</div>
+                    </td>
+                    <td className="px-6 py-4 text-gray-600">{category.slug}</td>
+                    <td className="px-6 py-4 text-gray-500">-</td>
+                    <td className="px-6 py-4">
+                      <span className="bg-teal-100 text-teal-800 px-3 py-1 rounded-full text-sm font-semibold">
+                        {category.itemCount || 0}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleEdit(category)}
+                          className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(category.id)}
+                          className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  {/* Sub-categories */}
+                  {getSubCategories(category.id).map((subCat) => (
+                    <tr key={subCat.id} className="bg-teal-50 hover:bg-teal-100 transition">
+                      <td className="px-6 py-3 pl-16">
+                        {subCat.icon && subCat.icon.startsWith('data:image') ? (
+                          <img src={subCat.icon} alt={subCat.name} className="w-10 h-10 object-cover rounded-lg" />
+                        ) : (
+                          <div className="text-2xl">{subCat.icon || '📂'}</div>
+                        )}
+                      </td>
+                      <td className="px-6 py-3">
+                        <div className="font-semibold text-gray-800">↳ {subCat.name}</div>
+                      </td>
+                      <td className="px-6 py-3 text-gray-600">{subCat.slug}</td>
+                      <td className="px-6 py-3 text-gray-500">{category.name}</td>
+                      <td className="px-6 py-3">
+                        <span className="bg-teal-200 text-teal-900 px-3 py-1 rounded-full text-sm font-semibold">
+                          {subCat.itemCount || 0}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEdit(subCat)}
+                            className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(subCat.id)}
+                            className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full">
-            <div className="border-b px-6 py-4">
-              <h3 className="text-xl font-bold">{editingCategory ? 'Edit Category' : 'Add New Category'}</h3>
+          <div className="bg-white rounded-2xl max-w-2xl w-full">
+            <div className="bg-gradient-to-r from-teal-600 to-teal-700 text-white px-6 py-4 flex justify-between items-center rounded-t-2xl">
+              <h3 className="text-2xl font-bold">{editingCategory ? 'Editează Categorie' : 'Adaugă Categorie Nouă'}</h3>
+              <button onClick={() => { setShowModal(false); setEditingCategory(null); }} className="text-white hover:text-gray-200">
+                <X className="w-6 h-6" />
+              </button>
             </div>
             
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              {/* Image Upload */}
               <div>
-                <label className="block text-sm font-medium mb-1">Category Name *</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Icon/Imagine</label>
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:border-teal-500 transition">
+                  {imagePreview ? (
+                    <div className="relative">
+                      <img src={imagePreview} alt="Preview" className="max-h-32 mx-auto rounded-lg" />
+                      <button
+                        type="button"
+                        onClick={() => { setImagePreview(null); setFormData({...formData, image: ''}); }}
+                        className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                      <label className="cursor-pointer">
+                        <span className="bg-teal-600 text-white px-4 py-2 rounded-lg inline-flex items-center gap-2 hover:bg-teal-700 transition text-sm">
+                          <Upload className="w-4 h-4" />
+                          Încarcă Imagine
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                        />
+                      </label>
+                      <p className="text-xs text-gray-500 mt-2">sau emoji în câmpul Icon</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Nume Categorie *</label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">Slug *</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Slug *</label>
                 <input
                   type="text"
                   required
                   value={formData.slug}
                   onChange={(e) => setFormData({...formData, slug: e.target.value})}
-                  placeholder="e.g., womens-clothing"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="ex: haine-femei"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">Icon (Emoji)</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Icon (Emoji)</label>
                 <input
                   type="text"
                   value={formData.icon}
                   onChange={(e) => setFormData({...formData, icon: e.target.value})}
-                  placeholder="e.g., 👗"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="👗"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Categorie Părinte (opțional)</label>
+                <select
+                  value={formData.parentId || ''}
+                  onChange={(e) => setFormData({...formData, parentId: e.target.value || null})}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                >
+                  <option value="">Nicio (Categorie principală)</option>
+                  {getParentCategories().map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="flex gap-3 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 transition"
+                  className="flex-1 bg-gradient-to-r from-teal-600 to-teal-700 text-white py-3 rounded-xl hover:from-teal-700 hover:to-teal-800 transition font-semibold"
                 >
-                  {editingCategory ? 'Update Category' : 'Create Category'}
+                  {editingCategory ? 'Actualizează' : 'Creează'}
                 </button>
                 <button
                   type="button"
-                  onClick={() => { setShowModal(false); setEditingCategory(null); setFormData({ name: '', slug: '', icon: '' }); }}
-                  className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400 transition"
+                  onClick={() => { setShowModal(false); setEditingCategory(null); }}
+                  className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-xl hover:bg-gray-400 transition font-semibold"
                 >
-                  Cancel
+                  Anulează
                 </button>
               </div>
             </form>

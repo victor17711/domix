@@ -13,6 +13,8 @@ import ProductsManagement from './pages/admin/ProductsManagement';
 import CategoriesManagement from './pages/admin/CategoriesManagement';
 import UsersManagement from './pages/admin/UsersManagement';
 import OrdersManagement from './pages/admin/OrdersManagement';
+import Settings from './pages/admin/Settings';
+import Pages from './pages/admin/Pages';
 import { Toaster } from './components/ui/toaster';
 import './App.css';
 
@@ -74,6 +76,18 @@ function App() {
                 <Route path="/admin/orders" element={
                   <AdminProtectedRoute>
                     <OrdersManagement />
+                  </AdminProtectedRoute>
+                } />
+
+                <Route path="/admin/settings" element={
+                  <AdminProtectedRoute>
+                    <Settings />
+                  </AdminProtectedRoute>
+                } />
+
+                <Route path="/admin/pages" element={
+                  <AdminProtectedRoute>
+                    <Pages />
                   </AdminProtectedRoute>
                 } />
 
