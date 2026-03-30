@@ -142,6 +142,9 @@ class MenuItem(BaseModel):
     icon: Optional[str] = None
     categoryId: Optional[str] = None
     pageId: Optional[str] = None
+    hasChildren: Optional[bool] = None
+    children: Optional[List['MenuItem']] = None
+    parentId: Optional[str] = None
 
 # Settings Models
 class SettingsCreate(BaseModel):
@@ -163,3 +166,6 @@ class Page(PageCreate):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     createdAt: datetime = Field(default_factory=datetime.utcnow)
     updatedAt: datetime = Field(default_factory=datetime.utcnow)
+
+# Rebuild MenuItem model to resolve forward references for recursive children
+MenuItem.model_rebuild()
