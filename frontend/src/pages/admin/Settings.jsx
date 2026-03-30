@@ -55,13 +55,19 @@ const Settings = () => {
     return categories.filter(cat => cat.parentId === parentId);
   };
 
-  const addCategoryToMenu = (categoryId, includeChildren = false) => {
+  const addCategoryToMenu = (categoryId) => {
     const category = categories.find(c => c.id === categoryId);
     if (!category) return;
 
-    const newItems = [];
+    // Check if already added
+    if (categoryItems.find(item => item.categoryId === categoryId)) {
+      toast({ title: 'Info', description: 'Categoria este deja în meniu', variant: 'destructive' });
+      return;
+    }
+
+    const children = getChildCategories(categoryId);
     
-    // Add parent category
+    // Create parent item with children info
     const parentItem = {
       id: `cat_${Date.now()}`,
       name: category.name,
@@ -69,32 +75,24 @@ const Settings = () => {
       type: 'category',
       icon: category.icon || category.image,
       categoryId: category.id,
-      isParent: true
+      hasChildren: children.length > 0,
+      children: children.map((child, index) => ({
+        id: `cat_${Date.now()}_child_${index}`,
+        name: child.name,
+        url: `/category/${child.slug}`,
+        type: 'category',
+        icon: child.icon || child.image,
+        categoryId: child.id,
+        parentId: category.id
+      }))
     };
-    newItems.push(parentItem);
 
-    // Add children if requested
-    if (includeChildren) {
-      const children = getChildCategories(categoryId);
-      children.forEach((child, index) => {
-        newItems.push({
-          id: `cat_${Date.now()}_child_${index}`,
-          name: child.name,
-          url: `/category/${child.slug}`,
-          type: 'category',
-          icon: child.icon || child.image,
-          categoryId: child.id,
-          parentId: category.id,
-          isChild: true
-        });
-      });
-    }
-
-    setCategoryItems([...categoryItems, ...newItems]);
-    toast({ 
-      title: 'Succes', 
-      description: `${newItems.length} ${newItems.length === 1 ? 'categorie adăugată' : 'categorii adăugate'}`
-    });
+    setCategoryItems([...categoryItems, parentItem]);
+    
+    const message = children.length > 0 
+      ? `Categorie adăugată cu ${children.length} subcategorii`
+      : 'Categorie adăugată';
+    toast({ title: 'Succes', description: message });
   };
 
   const addMainMenuItem = () => {
@@ -337,55 +335,76 @@ const Settings = () => {
 
           <div className="space-y-2 mb-4 max-h-96 overflow-y-auto">
             {categoryItems.map((item, index) => (
-              <div 
-                key={item.id} 
-                className={`flex items-center gap-2 p-3 rounded-xl hover:bg-gray-100 transition ${
-                  item.isChild ? 'bg-teal-50 ml-6' : 'bg-gray-50'
-                }`}
-              >
-                {/* Reorder buttons */}
-                <div className="flex flex-col gap-1">
-                  <button
-                    onClick={() => moveCategoryItem(index, 'up')}
-                    disabled={index === 0}
-                    className={`p-1 rounded ${index === 0 ? 'text-gray-300' : 'text-gray-600 hover:bg-teal-100 hover:text-teal-700'}`}
-                    title="Mută sus"
-                  >
-                    <ArrowUp className="w-3 h-3" />
-                  </button>
-                  <button
-                    onClick={() => moveCategoryItem(index, 'down')}
-                    disabled={index === categoryItems.length - 1}
-                    className={`p-1 rounded ${index === categoryItems.length - 1 ? 'text-gray-300' : 'text-gray-600 hover:bg-teal-100 hover:text-teal-700'}`}
-                    title="Mută jos"
-                  >
-                    <ArrowDown className="w-3 h-3" />
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-2 flex-1">
-                  {item.icon && (
-                    item.icon.startsWith('data:image') ? (
-                      <img src={item.icon} alt="" className="w-8 h-8 rounded object-cover" />
-                    ) : (
-                      <span className="text-xl">{item.icon}</span>
-                    )
-                  )}
-                  <div>
-                    <div className={`font-semibold ${item.isChild ? 'text-sm text-gray-700' : 'text-gray-900'}`}>
-                      {item.isChild && '↳ '}{item.name}
-                    </div>
-                    <div className="text-xs text-gray-500">{item.url}</div>
+              <div key={item.id} className="border-b last:border-b-0 pb-2">
+                <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
+                  {/* Reorder buttons */}
+                  <div className="flex flex-col gap-1">
+                    <button
+                      onClick={() => moveCategoryItem(index, 'up')}
+                      disabled={index === 0}
+                      className={`p-1 rounded ${index === 0 ? 'text-gray-300' : 'text-gray-600 hover:bg-teal-100 hover:text-teal-700'}`}
+                      title="Mută sus"
+                    >
+                      <ArrowUp className="w-3 h-3" />
+                    </button>
+                    <button
+                      onClick={() => moveCategoryItem(index, 'down')}
+                      disabled={index === categoryItems.length - 1}
+                      className={`p-1 rounded ${index === categoryItems.length - 1 ? 'text-gray-300' : 'text-gray-600 hover:bg-teal-100 hover:text-teal-700'}`}
+                      title="Mută jos"
+                    >
+                      <ArrowDown className="w-3 h-3" />
+                    </button>
                   </div>
-                </div>
 
-                <button
-                  onClick={() => removeCategoryItem(item.id)}
-                  className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                  title="Șterge"
-                >
-                  <X className="w-3 h-3" />
-                </button>
+                  <div className="flex items-center gap-2 flex-1">
+                    {item.icon && (
+                      item.icon.startsWith('data:image') ? (
+                        <img src={item.icon} alt="" className="w-8 h-8 rounded object-cover" />
+                      ) : (
+                        <span className="text-xl">{item.icon}</span>
+                      )
+                    )}
+                    <div className="flex-1">
+                      <div className="font-semibold text-gray-900">
+                        {item.name}
+                        {item.hasChildren && item.children && (
+                          <span className="ml-2 text-xs bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full">
+                            {item.children.length} subcategorii
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-gray-500">{item.url}</div>
+                      
+                      {/* Show children */}
+                      {item.children && item.children.length > 0 && (
+                        <div className="mt-2 ml-4 space-y-1">
+                          {item.children.map((child) => (
+                            <div key={child.id} className="flex items-center gap-2 text-sm text-gray-600">
+                              <span className="text-gray-400">↳</span>
+                              {child.icon && (
+                                child.icon.startsWith('data:image') ? (
+                                  <img src={child.icon} alt="" className="w-5 h-5 rounded object-cover" />
+                                ) : (
+                                  <span className="text-sm">{child.icon}</span>
+                                )
+                              )}
+                              <span>{child.name}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => removeCategoryItem(item.id)}
+                    className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                    title="Șterge"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -397,12 +416,17 @@ const Settings = () => {
               {getParentCategories().map((cat) => {
                 const children = getChildCategories(cat.id);
                 const hasChildren = children.length > 0;
+                const isAlreadyAdded = categoryItems.find(item => item.categoryId === cat.id);
                 
                 return (
                   <div key={cat.id} className="border-b last:border-b-0">
                     <div 
-                      className="flex items-center justify-between p-3 hover:bg-gray-50 cursor-pointer"
-                      onClick={() => addCategoryToMenu(cat.id, hasChildren)}
+                      className={`flex items-center justify-between p-3 transition ${
+                        isAlreadyAdded 
+                          ? 'bg-gray-100 cursor-not-allowed opacity-50' 
+                          : 'hover:bg-teal-50 cursor-pointer'
+                      }`}
+                      onClick={() => !isAlreadyAdded && addCategoryToMenu(cat.id)}
                     >
                       <div className="flex items-center gap-2">
                         {(cat.image || cat.icon) && (
@@ -415,18 +439,23 @@ const Settings = () => {
                         <span className="font-medium text-gray-900">{cat.name}</span>
                         {hasChildren && (
                           <span className="text-xs bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full">
-                            +{children.length} subcategorii
+                            +{children.length}
+                          </span>
+                        )}
+                        {isAlreadyAdded && (
+                          <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+                            ✓ Adăugat
                           </span>
                         )}
                       </div>
-                      <Plus className="w-5 h-5 text-teal-600" />
+                      {!isAlreadyAdded && <Plus className="w-5 h-5 text-teal-600" />}
                     </div>
                   </div>
                 );
               })}
             </div>
             <p className="text-xs text-gray-600">
-              Click pe o categorie pentru a o adăuga. Categoriile cu subcategorii le vor adăuga automat.
+              Click pe o categorie pentru a o adăuga. Categoriile cu subcategorii (+N) le vor include automat pentru hover menu.
             </p>
           </div>
         </div>
