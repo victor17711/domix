@@ -13,7 +13,12 @@ const ProductCard = ({ product, showProgress = false }) => {
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(product);
+    addToCart({
+      ...product,
+      quantity: 1,
+      selectedSize: product.sizes?.[0] || null,
+      selectedColor: product.colors?.[0] || null
+    });
     toast({ title: 'Success', description: `${product.name} added to cart!` });
   };
 

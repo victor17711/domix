@@ -656,36 +656,23 @@ async def get_order(
 
 
 @api_router.post("/orders", response_model=Order)
-async def create_order(
-    order_data: OrderCreate,
-    authorization: Optional[str] = Header(None)
-):
-    """Create a new order"""
-    current_user = await get_current_user(authorization, db)
-    
-    # Calculate total
-    total = sum(item.price * item.quantity for item in order_data.items)
-    
+async def create_order(order_data: OrderCreate):
+    """Create a new order (guest or authenticated)"""
     # Create order
-    new_order = Order(
-        **order_data.dict(),
-        userId=current_user["id"],
-        total=total
-    )
+    new_order = Order(**order_data.dict())
     
-    await db.orders.insert_one(new_order.dict())
+    await db.orders.insert_one(new_order.dict(exclude={'_id'}))
     
-    # Clear cart
-    await db.carts.update_one(
-        {"userId": current_user["id"]},
-        {"$set": {"items": [], "total": 0.0, "updatedAt": datetime.utcnow()}}
-    )
-    
-    # Update product sold count
+    # Update product sold count and available stock
     for item in order_data.items:
         await db.products.update_one(
             {"id": item.productId},
-            {"$inc": {"sold": item.quantity, "available": -item.quantity}}
+            {
+                "$inc": {
+                    "sold": item.quantity,
+                    "available": -item.quantity
+                }
+            }
         )
     
     return new_order

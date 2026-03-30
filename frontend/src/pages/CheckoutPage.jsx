@@ -39,21 +39,35 @@ const CheckoutPage = () => {
     try {
       const orderData = {
         userId: user?.id || 'guest',
+        customerEmail: formData.email,
+        customerName: formData.fullName,
+        customerPhone: formData.phone,
         items: cart.map(item => ({
           productId: item.id,
           name: item.name,
           price: item.price,
           quantity: item.quantity,
           image: item.image,
-          selectedSize: item.selectedSize,
-          selectedColor: item.selectedColor
+          selectedSize: item.selectedSize || '',
+          selectedColor: item.selectedColor || ''
         })),
-        shippingInfo: formData,
+        shippingAddress: {
+          fullName: formData.fullName,
+          phone: formData.phone,
+          email: formData.email,
+          address: formData.address,
+          city: formData.city,
+          postalCode: formData.postalCode,
+          notes: formData.notes
+        },
         totalAmount: getCartTotal(),
-        status: 'pending'
+        status: 'pending',
+        paymentMethod: 'cash_on_delivery'
       };
 
-      await axios.post(`${API}/orders`, orderData);
+      console.log('Sending order:', orderData);
+      const response = await axios.post(`${API}/orders`, orderData);
+      console.log('Order response:', response.data);
       
       toast({ 
         title: 'Succes', 
@@ -63,10 +77,10 @@ const CheckoutPage = () => {
       clearCart();
       navigate('/order-success');
     } catch (error) {
-      console.error('Error placing order:', error);
+      console.error('Error placing order:', error.response?.data || error.message);
       toast({ 
         title: 'Eroare', 
-        description: 'Nu s-a putut plasa comanda. Te rog încearcă din nou.',
+        description: error.response?.data?.detail || 'Nu s-a putut plasa comanda. Te rog încearcă din nou.',
         variant: 'destructive' 
       });
     } finally {

@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 # User Models
@@ -110,29 +110,37 @@ class Wishlist(BaseModel):
 # Order Models
 class OrderItem(BaseModel):
     productId: str
-    productName: str
-    quantity: int
-    selectedSize: Optional[str] = None
-    selectedColor: Optional[str] = None
+    name: str
     price: float
+    quantity: int
+    image: str
+    selectedSize: Optional[str] = ""
+    selectedColor: Optional[str] = ""
 
 class ShippingAddress(BaseModel):
     fullName: str
+    phone: str
+    email: str
     address: str
     city: str
-    postalCode: str
-    phone: str
+    postalCode: Optional[str] = ""
+    notes: Optional[str] = ""
 
 class OrderCreate(BaseModel):
+    userId: str
+    customerEmail: str
+    customerName: str
+    customerPhone: str
     items: List[OrderItem]
     shippingAddress: ShippingAddress
+    totalAmount: float
+    status: str = "pending"
+    paymentMethod: str = "cash_on_delivery"
 
 class Order(OrderCreate):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    userId: str
-    total: float
-    status: str = "pending"  # pending, processing, shipped, delivered, cancelled
-    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updatedAt: datetime = Field(default_factory=datetime.utcnow)
 
 # Admin Dashboard Models

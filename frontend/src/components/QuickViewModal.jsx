@@ -12,7 +12,12 @@ const QuickViewModal = ({ isOpen, onClose, product }) => {
   if (!isOpen || !product) return null;
 
   const handleAddToCart = () => {
-    addToCart(product, quantity, selectedSize, selectedColor);
+    addToCart({
+      ...product,
+      quantity,
+      selectedSize,
+      selectedColor
+    });
     toast({ title: 'Success', description: `${product.name} added to cart!` });
     onClose();
   };

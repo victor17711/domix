@@ -65,7 +65,10 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const addToCart = async (product, quantity = 1, selectedSize = null, selectedColor = null) => {
+  const addToCart = async (productData) => {
+    // Extract product and options
+    const { quantity = 1, selectedSize = null, selectedColor = null, ...product } = productData;
+    
     if (isAuthenticated) {
       try {
         await axios.post(`${API}/cart/add`, {
@@ -78,10 +81,29 @@ export const CartProvider = ({ children }) => {
         await fetchCart();
       } catch (error) {
         console.error('Error adding to cart:', error);
-        throw error;
+        // Fallback to localStorage if API fails
+        setCart(prevCart => {
+          const existingItem = prevCart.find(
+            item => item.id === product.id && 
+                    item.selectedSize === selectedSize && 
+                    item.selectedColor === selectedColor
+          );
+
+          if (existingItem) {
+            return prevCart.map(item =>
+              item.id === product.id && 
+              item.selectedSize === selectedSize && 
+              item.selectedColor === selectedColor
+                ? { ...item, quantity: item.quantity + quantity }
+                : item
+            );
+          }
+
+          return [...prevCart, { ...product, quantity, selectedSize, selectedColor }];
+        });
       }
     } else {
-      // Local storage fallback for non-authenticated users
+      // Local storage for non-authenticated users
       setCart(prevCart => {
         const existingItem = prevCart.find(
           item => item.id === product.id && 
