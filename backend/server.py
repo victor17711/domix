@@ -687,7 +687,7 @@ async def get_all_orders(authorization: Optional[str] = Header(None)):
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    orders = await db.orders.find().to_list(1000)
+    orders = await db.orders.find({}, {"_id": 0}).to_list(1000)
     return [Order(**order) for order in orders]
 
 

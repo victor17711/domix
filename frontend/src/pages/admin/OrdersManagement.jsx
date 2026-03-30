@@ -103,10 +103,10 @@ const OrdersManagement = () => {
                     <div className="font-mono text-sm text-gray-900">#{order.id.slice(0, 8)}</div>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="font-semibold text-gray-900">${order.total.toFixed(2)}</div>
+                    <div className="font-semibold text-gray-900">{order.totalAmount} MDL</div>
                   </td>
                   <td className="px-4 py-3 text-gray-700">
-                    {order.items.length} item{order.items.length !== 1 ? 's' : ''}
+                    {order.items.length} produs{order.items.length !== 1 ? 'e' : ''}
                   </td>
                   <td className="px-4 py-3">
                     <select
@@ -114,11 +114,11 @@ const OrdersManagement = () => {
                       onChange={(e) => updateOrderStatus(order.id, e.target.value)}
                       className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(order.status)} border-0 cursor-pointer`}
                     >
-                      <option value="pending">Pending</option>
-                      <option value="processing">Processing</option>
-                      <option value="shipped">Shipped</option>
-                      <option value="delivered">Delivered</option>
-                      <option value="cancelled">Cancelled</option>
+                      <option value="pending">În așteptare</option>
+                      <option value="processing">În procesare</option>
+                      <option value="shipped">Expediat</option>
+                      <option value="delivered">Livrat</option>
+                      <option value="cancelled">Anulat</option>
                     </select>
                   </td>
                   <td className="px-4 py-3 text-gray-700 text-sm">
@@ -147,16 +147,22 @@ const OrdersManagement = () => {
       {selectedOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b px-6 py-4">
-              <h3 className="text-xl font-bold">Order Details #{selectedOrder.id.slice(0, 8)}</h3>
+            <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+              <h3 className="text-2xl font-bold">Detalii Comandă #{selectedOrder.id.slice(0, 8)}</h3>
+              <button
+                onClick={() => setSelectedOrder(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
             </div>
             
             <div className="p-6 space-y-6">
               <div>
-                <h4 className="font-semibold text-gray-900 mb-2">Order Information</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">Informații Comandă</h4>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-600">Order ID:</span>
+                    <span className="text-gray-600">ID Comandă:</span>
                     <p className="font-mono">{selectedOrder.id}</p>
                   </div>
                   <div>
@@ -166,53 +172,81 @@ const OrdersManagement = () => {
                     </p>
                   </div>
                   <div>
-                    <span className="text-gray-600">Total:</span>
-                    <p className="font-semibold">${selectedOrder.total.toFixed(2)}</p>
+                    <span className="text-gray-600">Client:</span>
+                    <p className="font-semibold">{selectedOrder.customerName}</p>
                   </div>
                   <div>
-                    <span className="text-gray-600">Date:</span>
-                    <p>{new Date(selectedOrder.createdAt).toLocaleString()}</p>
+                    <span className="text-gray-600">Email:</span>
+                    <p>{selectedOrder.customerEmail}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Telefon:</span>
+                    <p>{selectedOrder.customerPhone}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Total:</span>
+                    <p className="font-semibold text-lg text-teal-600">{selectedOrder.totalAmount} MDL</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Data:</span>
+                    <p>{new Date(selectedOrder.createdAt).toLocaleString('ro-RO')}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Metodă Plată:</span>
+                    <p>{selectedOrder.paymentMethod === 'cash_on_delivery' ? 'Ramburs' : selectedOrder.paymentMethod}</p>
                   </div>
                 </div>
               </div>
 
               <div>
-                <h4 className="font-semibold text-gray-900 mb-2">Shipping Address</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">Adresă Livrare</h4>
                 <div className="bg-gray-50 p-4 rounded-lg text-sm">
                   <p className="font-medium">{selectedOrder.shippingAddress.fullName}</p>
                   <p className="text-gray-600">{selectedOrder.shippingAddress.address}</p>
-                  <p className="text-gray-600">{selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.postalCode}</p>
-                  <p className="text-gray-600">Phone: {selectedOrder.shippingAddress.phone}</p>
+                  <p className="text-gray-600">{selectedOrder.shippingAddress.city}{selectedOrder.shippingAddress.postalCode && `, ${selectedOrder.shippingAddress.postalCode}`}</p>
+                  <p className="text-gray-600">Telefon: {selectedOrder.shippingAddress.phone}</p>
+                  <p className="text-gray-600">Email: {selectedOrder.shippingAddress.email}</p>
+                  {selectedOrder.shippingAddress.notes && (
+                    <p className="text-gray-600 mt-2 italic">Notă: {selectedOrder.shippingAddress.notes}</p>
+                  )}
                 </div>
               </div>
 
               <div>
-                <h4 className="font-semibold text-gray-900 mb-2">Order Items</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">Produse Comandate</h4>
                 <div className="space-y-3">
                   {selectedOrder.items.map((item, index) => (
-                    <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">{item.productName}</p>
+                    <div key={index} className="flex gap-4 p-3 bg-gray-50 rounded-lg">
+                      {item.image && (
+                        <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded" />
+                      )}
+                      <div className="flex-1">
+                        <p className="font-medium">{item.name}</p>
                         <p className="text-sm text-gray-600">
-                          Qty: {item.quantity} 
-                          {item.selectedSize && ` | Size: ${item.selectedSize}`}
-                          {item.selectedColor && ` | Color: ${item.selectedColor}`}
+                          Cantitate: {item.quantity} 
+                          {item.selectedSize && ` | Mărime: ${item.selectedSize}`}
+                          {item.selectedColor && ` | Culoare: ${item.selectedColor}`}
                         </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold">${item.price.toFixed(2)}</p>
-                        <p className="text-sm text-gray-600">× {item.quantity}</p>
+                        <p className="text-sm font-semibold text-teal-600 mt-1">
+                          {item.price} MDL × {item.quantity} = {item.price * item.quantity} MDL
+                        </p>
                       </div>
                     </div>
                   ))}
+                </div>
+                <div className="mt-4 pt-4 border-t">
+                  <div className="flex justify-between items-center text-lg font-bold">
+                    <span>Total Comandă:</span>
+                    <span className="text-teal-600">{selectedOrder.totalAmount} MDL</span>
+                  </div>
                 </div>
               </div>
 
               <button
                 onClick={() => setSelectedOrder(null)}
-                className="w-full bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400 transition"
+                className="w-full bg-gray-300 text-gray-700 py-3 rounded-xl hover:bg-gray-400 transition font-semibold"
               >
-                Close
+                Închide
               </button>
             </div>
           </div>
