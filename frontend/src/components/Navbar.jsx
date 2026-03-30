@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, ShoppingCart, User, Menu, ChevronDown, Phone, MapPin, Headphones, DollarSign, Tag } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, Globe, ChevronDown, Phone, MapPin, Headphones, DollarSign, Tag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from './AuthModal';
+import logo from "../assets/images/logo.png";
 
 const Navbar = () => {
   const { cartCount } = useCart();
@@ -30,16 +31,16 @@ const Navbar = () => {
                 <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
                   <Headphones className="w-3.5 h-3.5" />
                 </div>
-                <span className="text-sm">Need Support ? Call Us</span>
+                <span className="text-sm">Ai nevoie de ajutor ?</span>
                 <span className="bg-yellow-400 text-black px-4 py-1.5 rounded-full font-bold text-sm">
-                  (480) 555-0103
+                  (373) 602 95 651
                 </span>
               </div>
 
               {/* Language */}
               <div className="hidden lg:flex items-center gap-2">
                 <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
-                  <MapPin className="w-3.5 h-3.5" />
+                  <Globe className="w-4 h-4" />
                 </div>
                 <span className="text-sm">Română</span>
                 <ChevronDown className="w-4 h-4" />
@@ -58,10 +59,10 @@ const Navbar = () => {
                   25% OFF Today
                 </span>
               </div>
-              
+
               {/* Links */}
-              <Link to="/about" className="hover:text-yellow-400 transition text-sm">About us</Link>
-              <Link to="/account" className="hover:text-yellow-400 transition text-sm">My Account</Link>
+              <Link to="/about" className="hover:text-yellow-400 transition text-sm">Despre Noi</Link>
+              {/* <Link to="/account" className="hover:text-yellow-400 transition text-sm">My Account</Link> */}
               <Link to="/wishlist" className="hover:text-yellow-400 transition text-sm">My Wishlist</Link>
               <Link to="/track-order" className="hover:text-yellow-400 transition text-sm">Order Tracking</Link>
             </div>
@@ -71,14 +72,14 @@ const Navbar = () => {
 
       {/* Main Header */}
       <div className="bg-white border-b">
-        <div className="w-full px-6 py-6">
+        <div className="w-full px-6 py-4">
           <div className="flex items-center justify-between gap-8">
-            {/* Logo - Text Style */}
             <Link to="/" className="flex-shrink-0">
-              <div className="text-5xl font-bold">
-                <span className="text-teal-600">S</span>
-                <span className="text-gray-900">ellzy</span>
-              </div>
+              <img
+                src={logo}
+                alt="Domix Logo"
+                className="h-16 w-auto object-contain"
+              />
             </Link>
 
             {/* Search Bar */}
@@ -86,7 +87,7 @@ const Navbar = () => {
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search for the Items"
+                  placeholder="Cauta produse"
                   className="w-full px-6 py-4 pr-14 border-2 border-gray-200 rounded-full focus:outline-none focus:border-teal-500 text-base"
                 />
                 <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal-600">
@@ -100,11 +101,11 @@ const Navbar = () => {
               {/* Account Button - No background */}
               {isAuthenticated ? (
                 <div className="flex items-center gap-2 cursor-pointer group">
-                  <div className="w-14 h-14 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition shadow-md">
+                  <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition shadow-md">
                     <User className="w-7 h-7 text-gray-900" />
                   </div>
                   <div className="text-left">
-                    <div className="text-sm font-semibold text-gray-900">Account</div>
+                    <div className="text-sm font-semibold text-gray-900">Contul meu</div>
                     <button onClick={logout} className="text-sm text-gray-600 hover:text-gray-900">
                       log out
                     </button>
@@ -115,23 +116,23 @@ const Navbar = () => {
                   onClick={() => openAuthModal('login')}
                   className="flex items-center gap-2 group"
                 >
-                  <div className="w-14 h-14 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition shadow-md">
-                    <User className="w-7 h-7 text-gray-900" />
+                  <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition shadow-md">
+                    <User className="w-6 h-6 text-gray-900" />
                   </div>
                   <div className="text-left">
-                    <div className="text-sm font-semibold text-gray-900">Account</div>
-                    <div className="text-sm text-gray-600">log in</div>
+                    <div className="text-sm font-semibold text-gray-900">Contul meu</div>
+                    <div className="text-sm text-gray-600">Logheaza-te</div>
                   </div>
                 </button>
               )}
 
               {/* Cart Button - No background */}
-              <Link 
-                to="/cart" 
+              <Link
+                to="/cart"
                 className="flex items-center gap-2 group"
               >
-                <div className="w-14 h-14 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition shadow-md relative">
-                  <ShoppingCart className="w-7 h-7 text-gray-900" />
+                <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition shadow-md relative">
+                  <ShoppingCart className="w-6 h-6 text-gray-900" />
                   {cartCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
                       {cartCount}
@@ -139,8 +140,8 @@ const Navbar = () => {
                   )}
                 </div>
                 <div className="text-left">
-                  <div className="text-sm font-semibold text-gray-900">Cart</div>
-                  <div className="text-sm text-gray-600">{cartCount}- Items</div>
+                  <div className="text-sm font-semibold text-gray-900">Cos</div>
+                  <div className="text-sm text-gray-600">{cartCount}- Articole</div>
                 </div>
               </Link>
 
@@ -165,7 +166,7 @@ const Navbar = () => {
                 <div className="bg-white rounded-sm"></div>
                 <div className="bg-white rounded-sm"></div>
               </div>
-              Explore All Categories
+              Toate categoriile
               <ChevronDown className="w-5 h-5" />
             </button>
 
@@ -203,8 +204,8 @@ const Navbar = () => {
                 <Phone className="w-6 h-6 text-gray-600" />
               </div>
               <div>
-                <div className="text-sm text-gray-500">24/7 Support</div>
-                <div className="text-base font-bold text-gray-900">888-777-999</div>
+                <div className="text-sm text-gray-500">24/7 Suport</div>
+                <div className="text-base font-bold text-gray-900">060 295 651</div>
               </div>
             </div>
           </div>

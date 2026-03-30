@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAdmin } from '../../context/AdminContext';
 import axios from 'axios';
-import { Plus, Edit, Trash2, Search } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Upload, X, Image as ImageIcon } from 'lucide-react';
 import { toast } from '../../hooks/use-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -15,6 +15,7 @@ const ProductsManagement = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [imagePreview, setImagePreview] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -37,7 +38,7 @@ const ProductsManagement = () => {
       const response = await axios.get(`${API}/products`);
       setProducts(response.data);
     } catch (error) {
-      toast({ title: 'Error', description: 'Failed to fetch products', variant: 'destructive' });
+      toast({ title: 'Eroare', description: 'Nu s-au putut încărca produsele', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -49,6 +50,18 @@ const ProductsManagement = () => {
       setCategories(response.data);
     } catch (error) {
       console.error('Error fetching categories:', error);
+    }
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        setFormData({ ...formData, image: reader.result });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -71,30 +84,31 @@ const ProductsManagement = () => {
 
       if (editingProduct) {
         await axios.put(`${API}/products/${editingProduct.id}`, productData, getAuthHeaders());
-        toast({ title: 'Success', description: 'Product updated successfully!' });
+        toast({ title: 'Succes', description: 'Produsul a fost actualizat!' });
       } else {
         await axios.post(`${API}/products`, productData, getAuthHeaders());
-        toast({ title: 'Success', description: 'Product created successfully!' });
+        toast({ title: 'Succes', description: 'Produsul a fost creat!' });
       }
       
       setShowModal(false);
       setEditingProduct(null);
+      setImagePreview(null);
       resetForm();
       fetchProducts();
     } catch (error) {
-      toast({ title: 'Error', description: error.response?.data?.detail || 'Failed to save product', variant: 'destructive' });
+      toast({ title: 'Eroare', description: error.response?.data?.detail || 'Nu s-a putut salva produsul', variant: 'destructive' });
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    if (!window.confirm('Sigur doriți să ștergeți acest produs?')) return;
     
     try {
       await axios.delete(`${API}/products/${id}`, getAuthHeaders());
-      toast({ title: 'Success', description: 'Product deleted successfully!' });
+      toast({ title: 'Succes', description: 'Produsul a fost șters!' });
       fetchProducts();
     } catch (error) {
-      toast({ title: 'Error', description: 'Failed to delete product', variant: 'destructive' });
+      toast({ title: 'Eroare', description: 'Nu s-a putut șterge produsul', variant: 'destructive' });
     }
   };
 
@@ -111,6 +125,7 @@ const ProductsManagement = () => {
       available: product.available,
       badge: product.badge || ''
     });
+    setImagePreview(product.image);
     setShowModal(true);
   };
 
@@ -126,6 +141,7 @@ const ProductsManagement = () => {
       available: 100,
       badge: ''
     });
+    setImagePreview(null);
   };
 
   const filteredProducts = products.filter(product => 
@@ -134,129 +150,162 @@ const ProductsManagement = () => {
   );
 
   if (loading) {
-    return <div className="text-center py-12">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-teal-600"></div>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Products Management</h2>
-          <p className="text-gray-600">Manage your products inventory</p>
-        </div>
-        <button
-          onClick={() => { setShowModal(true); setEditingProduct(null); resetForm(); }}
-          className="bg-teal-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-teal-700 transition"
-        >
-          <Plus className="w-5 h-5" />
-          Add Product
-        </button>
-      </div>
-
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <div className="mb-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-teal-600 to-teal-700 rounded-2xl p-6 text-white shadow-lg">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-3xl font-bold mb-2">Gestionare Produse</h2>
+            <p className="text-teal-100">Administrează inventarul magazinului</p>
           </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Image</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Name</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Category</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Price</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Stock</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {filteredProducts.map((product) => (
-                <tr key={product.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3">
-                    <img src={product.image} alt={product.name} className="w-12 h-12 object-cover rounded" />
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="font-medium text-gray-900">{product.name}</div>
-                    <div className="text-sm text-gray-500">{product.storeName}</div>
-                  </td>
-                  <td className="px-4 py-3 text-gray-700">{product.category}</td>
-                  <td className="px-4 py-3">
-                    <div className="font-semibold text-gray-900">${product.price}</div>
-                    {product.originalPrice && (
-                      <div className="text-sm text-gray-400 line-through">${product.originalPrice}</div>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                      product.available > 50 ? 'bg-green-100 text-green-800' :
-                      product.available > 10 ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
-                      {product.available} units
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleEdit(product)}
-                        className="text-blue-600 hover:text-blue-800"
-                      >
-                        <Edit className="w-5 h-5" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(product.id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <button
+            onClick={() => { setShowModal(true); setEditingProduct(null); resetForm(); }}
+            className="bg-white text-teal-700 px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-teal-50 transition shadow-md font-semibold"
+          >
+            <Plus className="w-5 h-5" />
+            Adaugă Produs
+          </button>
         </div>
       </div>
 
-      {/* Add/Edit Modal */}
+      {/* Search & Filter */}
+      <div className="bg-white rounded-2xl shadow-md p-6">
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Caută produse după nume sau categorie..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+          />
+        </div>
+      </div>
+
+      {/* Products Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {filteredProducts.map((product) => (
+          <div key={product.id} className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
+            <div className="relative h-48 overflow-hidden bg-gray-100">
+              <img 
+                src={product.image} 
+                alt={product.name} 
+                className="w-full h-full object-cover group-hover:scale-110 transition duration-300" 
+              />
+              <div className="absolute top-2 right-2 flex gap-2">
+                <button
+                  onClick={() => handleEdit(product)}
+                  className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition shadow-md"
+                >
+                  <Edit className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => handleDelete(product.id)}
+                  className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition shadow-md"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            <div className="p-4">
+              <h3 className="font-bold text-lg text-gray-900 mb-1 line-clamp-1">{product.name}</h3>
+              <p className="text-sm text-gray-500 mb-2">{product.category}</p>
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <span className="text-2xl font-bold text-teal-600">{product.price} MDL</span>
+                  {product.originalPrice && (
+                    <span className="text-sm text-gray-400 line-through ml-2">{product.originalPrice} MDL</span>
+                  )}
+                </div>
+              </div>
+              <div className={`px-3 py-1 rounded-full text-xs font-semibold inline-block ${
+                product.available > 50 ? 'bg-green-100 text-green-800' :
+                product.available > 10 ? 'bg-yellow-100 text-yellow-800' :
+                'bg-red-100 text-red-800'
+              }`}>
+                Stoc: {product.available}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Modal Add/Edit */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b px-6 py-4">
-              <h3 className="text-xl font-bold">{editingProduct ? 'Edit Product' : 'Add New Product'}</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-gradient-to-r from-teal-600 to-teal-700 text-white px-6 py-4 flex justify-between items-center rounded-t-2xl">
+              <h3 className="text-2xl font-bold">{editingProduct ? 'Editează Produs' : 'Adaugă Produs Nou'}</h3>
+              <button onClick={() => { setShowModal(false); setEditingProduct(null); resetForm(); }} className="text-white hover:text-gray-200">
+                <X className="w-6 h-6" />
+              </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-6 space-y-6">
+              {/* Image Upload */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Imagine Produs *</label>
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-teal-500 transition">
+                  {imagePreview ? (
+                    <div className="relative">
+                      <img src={imagePreview} alt="Preview" className="max-h-48 mx-auto rounded-lg" />
+                      <button
+                        type="button"
+                        onClick={() => { setImagePreview(null); setFormData({...formData, image: ''}); }}
+                        className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <ImageIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                      <label className="cursor-pointer">
+                        <span className="bg-teal-600 text-white px-6 py-3 rounded-lg inline-flex items-center gap-2 hover:bg-teal-700 transition font-semibold">
+                          <Upload className="w-5 h-5" />
+                          Încarcă Imagine
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                        />
+                      </label>
+                      <p className="text-sm text-gray-500 mt-2">PNG, JPG până la 10MB</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Product Name *</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Nume Produs *</label>
                   <input
                     type="text"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Category *</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Categorie *</label>
                   <select
                     required
                     value={formData.category}
                     onChange={(e) => setFormData({...formData, category: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   >
-                    <option value="">Select Category</option>
+                    <option value="">Selectează Categoria</option>
                     {categories.map(cat => (
                       <option key={cat.id} value={cat.name}>{cat.name}</option>
                     ))}
@@ -265,80 +314,67 @@ const ProductsManagement = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">Description</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Descriere</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   rows="3"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Price *</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Preț (MDL) *</label>
                   <input
                     type="number"
                     step="0.01"
                     required
                     value={formData.price}
                     onChange={(e) => setFormData({...formData, price: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Original Price</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Preț Original (MDL)</label>
                   <input
                     type="number"
                     step="0.01"
                     value={formData.originalPrice}
                     onChange={(e) => setFormData({...formData, originalPrice: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Store Name</label>
-                  <input
-                    type="text"
-                    value={formData.storeName}
-                    onChange={(e) => setFormData({...formData, storeName: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Available Stock *</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Stoc *</label>
                   <input
                     type="number"
                     required
                     value={formData.available}
                     onChange={(e) => setFormData({...formData, available: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Image URL *</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Magazin</label>
                   <input
-                    type="url"
-                    required
-                    value={formData.image}
-                    onChange={(e) => setFormData({...formData, image: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    type="text"
+                    value={formData.storeName}
+                    onChange={(e) => setFormData({...formData, storeName: e.target.value})}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Badge</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Badge</label>
                   <input
                     type="text"
                     value={formData.badge}
                     onChange={(e) => setFormData({...formData, badge: e.target.value})}
-                    placeholder="e.g., SALES, 15% OFF"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    placeholder="ex: SALES, 15% OFF"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -346,16 +382,16 @@ const ProductsManagement = () => {
               <div className="flex gap-3 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 transition"
+                  className="flex-1 bg-gradient-to-r from-teal-600 to-teal-700 text-white py-3 rounded-xl hover:from-teal-700 hover:to-teal-800 transition font-semibold shadow-md"
                 >
-                  {editingProduct ? 'Update Product' : 'Create Product'}
+                  {editingProduct ? 'Actualizează Produs' : 'Creează Produs'}
                 </button>
                 <button
                   type="button"
                   onClick={() => { setShowModal(false); setEditingProduct(null); resetForm(); }}
-                  className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400 transition"
+                  className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-xl hover:bg-gray-400 transition font-semibold"
                 >
-                  Cancel
+                  Anulează
                 </button>
               </div>
             </form>

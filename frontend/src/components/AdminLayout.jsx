@@ -9,7 +9,9 @@ import {
   FolderOpen,
   LogOut,
   Menu,
-  X
+  X,
+  Settings,
+  Bell
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -25,27 +27,33 @@ const AdminLayout = ({ children }) => {
   };
 
   const menuItems = [
-    { path: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/admin/products', label: 'Products', icon: Package },
-    { path: '/admin/categories', label: 'Categories', icon: FolderOpen },
-    { path: '/admin/orders', label: 'Orders', icon: ShoppingCart },
-    { path: '/admin/users', label: 'Users', icon: Users },
+    { path: '/admin/dashboard', label: 'Tablou de Bord', icon: LayoutDashboard },
+    { path: '/admin/products', label: 'Produse', icon: Package },
+    { path: '/admin/categories', label: 'Categorii', icon: FolderOpen },
+    { path: '/admin/orders', label: 'Comenzi', icon: ShoppingCart },
+    { path: '/admin/users', label: 'Utilizatori', icon: Users },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      {/* Sidebar */}
-      <aside className={`bg-teal-800 text-white w-64 fixed h-full z-50 transform transition-transform lg:translate-x-0 ${
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex">
+      {/* Sidebar Modern */}
+      <aside className={`bg-gradient-to-b from-teal-700 to-teal-900 text-white w-72 fixed h-full z-50 transform transition-all duration-300 ease-in-out shadow-2xl lg:translate-x-0 ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <div className="p-6">
-          <div className="flex items-center gap-2 mb-8">
-            <div className="bg-yellow-400 text-teal-800 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl">
-              S
+          {/* Logo DOMIX */}
+          <div className="mb-8">
+            <img 
+              src="https://customer-assets.emergentagent.com/job_ecommerce-admin-55/artifacts/u4vrvwt1_Domix.png" 
+              alt="DOMIX Logo" 
+              className="h-16 mx-auto filter brightness-0 invert"
+            />
+            <div className="text-center mt-2 text-teal-100 text-sm font-medium">
+              Panou Administrare
             </div>
-            <span className="text-2xl font-bold">Sellzy Admin</span>
           </div>
 
+          {/* Navigation */}
           <nav className="space-y-2">
             {menuItems.map((item) => {
               const Icon = item.icon;
@@ -56,55 +64,71 @@ const AdminLayout = ({ children }) => {
                   key={item.path}
                   to={item.path}
                   onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                  className={`flex items-center gap-4 px-5 py-3.5 rounded-xl transition-all duration-200 ${
                     isActive 
-                      ? 'bg-teal-700 text-white' 
-                      : 'text-teal-100 hover:bg-teal-700 hover:text-white'
+                      ? 'bg-white text-teal-700 shadow-lg transform scale-105' 
+                      : 'text-teal-50 hover:bg-teal-600 hover:text-white hover:translate-x-1'
                   }`}
                 >
                   <Icon className="w-5 h-5" />
-                  <span className="font-medium">{item.label}</span>
+                  <span className="font-semibold">{item.label}</span>
                 </Link>
               );
-            })}
-          </nav>
+            })}</nav>
         </div>
 
-        <div className="absolute bottom-0 w-full p-6 border-t border-teal-700">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="bg-teal-600 w-10 h-10 rounded-full flex items-center justify-center">
-              <Users className="w-5 h-5" />
+        {/* User Profile at Bottom */}
+        <div className="absolute bottom-0 w-full p-6 border-t border-teal-600 bg-teal-800">
+          <div className="flex items-center gap-3 mb-4 p-3 bg-teal-700 rounded-lg">
+            <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-lg">
+                {adminUser?.firstName?.[0]}{adminUser?.lastName?.[0]}
+              </span>
             </div>
-            <div>
-              <p className="font-medium">{adminUser?.firstName} {adminUser?.lastName}</p>
-              <p className="text-xs text-teal-300">{adminUser?.email}</p>
+            <div className="flex-1">
+              <p className="font-semibold text-white">{adminUser?.firstName} {adminUser?.lastName}</p>
+              <p className="text-xs text-teal-200">{adminUser?.email}</p>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 w-full px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition"
+            className="flex items-center gap-2 w-full px-4 py-3 bg-red-500 hover:bg-red-600 rounded-lg transition shadow-md font-semibold"
           >
-            <LogOut className="w-4 h-4" />
-            <span>Logout</span>
+            <LogOut className="w-5 h-5" />
+            <span>Deconectare</span>
           </button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 lg:ml-64">
-        {/* Top Bar */}
-        <header className="bg-white shadow-sm p-4 flex items-center justify-between">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="lg:hidden text-gray-600 hover:text-gray-900"
-          >
-            {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-          <h1 className="text-2xl font-bold text-gray-900">
-            {menuItems.find(item => item.path === location.pathname)?.label || 'Admin Panel'}
-          </h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">Welcome, <strong>{adminUser?.firstName}</strong></span>
+      <div className="flex-1 lg:ml-72">
+        {/* Top Bar Modern */}
+        <header className="bg-white shadow-md sticky top-0 z-40">
+          <div className="px-6 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition"
+              >
+                {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  {menuItems.find(item => item.path === location.pathname)?.label || 'Panou Admin'}
+                </h1>
+                <p className="text-sm text-gray-500">Bine ai revenit, {adminUser?.firstName}!</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <button className="relative p-2 hover:bg-gray-100 rounded-lg transition">
+                <Bell className="w-6 h-6 text-gray-600" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+              </button>
+              <button className="p-2 hover:bg-gray-100 rounded-lg transition">
+                <Settings className="w-6 h-6 text-gray-600" />
+              </button>
+            </div>
           </div>
         </header>
 

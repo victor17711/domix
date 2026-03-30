@@ -16,12 +16,12 @@ const AdminLogin = () => {
 
     try {
       await adminLogin(email, password);
-      toast({ title: 'Success', description: 'Logged in as admin!' });
+      toast({ title: 'Succes', description: 'Logat ca administrator!' });
       navigate('/admin/dashboard');
     } catch (error) {
       toast({ 
-        title: 'Error', 
-        description: error.response?.data?.detail || 'Invalid credentials or not an admin user',
+        title: 'Eroare', 
+        description: error.response?.data?.detail || 'Email sau parolă greșită',
         variant: 'destructive'
       });
     } finally {
@@ -30,59 +30,54 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-600 to-teal-800 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-teal-600 via-teal-700 to-teal-800 flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="bg-teal-600 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-3xl font-bold">S</span>
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Login</h1>
-          <p className="text-gray-600">Sign in to access admin panel</p>
+          <img 
+            src="https://customer-assets.emergentagent.com/job_ecommerce-admin-55/artifacts/u4vrvwt1_Domix.png" 
+            alt="DOMIX Logo" 
+            className="h-24 mx-auto mb-4"
+          />
+          <p className="text-gray-600 text-lg">Loghează-te în panoul de administrare</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address
-            </label>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="admin@sellzy.com"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              placeholder="admin@domix.md"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Password
-            </label>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Parolă</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              placeholder="Enter your password"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              placeholder="Parola"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-teal-600 text-white py-3 rounded-lg hover:bg-teal-700 transition font-semibold disabled:opacity-50"
+            className="w-full bg-gradient-to-r from-teal-600 to-teal-700 text-white py-3 rounded-xl hover:from-teal-700 hover:to-teal-800 transition font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Logging in...' : 'Sign In'}
+            {loading ? 'Se încarcă...' : 'Loghează-te'}
           </button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-gray-600">
-          <p>Default credentials:</p>
-          <p className="font-mono bg-gray-100 p-2 rounded mt-2">
-            admin@sellzy.com / admin123
-          </p>
+        <div className="mt-6 text-center text-sm text-gray-500">
+          <p>© 2026 Domix. Toate drepturile rezervate.</p>
+          <p className="mt-1">Powered by <span className="text-teal-600 font-semibold">Nextlify</span></p>
         </div>
       </div>
     </div>
