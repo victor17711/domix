@@ -161,6 +161,7 @@ class MenuItem(BaseModel):
 class SettingsCreate(BaseModel):
     menuItems: List[MenuItem] = []
     categoryMenuItems: List[MenuItem] = []
+    featuredCategoryId: Optional[str] = None
 
 class Settings(SettingsCreate):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))

@@ -14,6 +14,7 @@ const Settings = () => {
   const [categoryItems, setCategoryItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [pages, setPages] = useState([]);
+  const [featuredCategoryId, setFeaturedCategoryId] = useState('');
   
   const [newMainItem, setNewMainItem] = useState({ 
     name: '', 
@@ -37,6 +38,7 @@ const Settings = () => {
       
       setMenuItems(settingsRes.data.menuItems || []);
       setCategoryItems(settingsRes.data.categoryMenuItems || []);
+      setFeaturedCategoryId(settingsRes.data.featuredCategoryId || '');
       setCategories(categoriesRes.data);
       setPages(pagesRes.data);
     } catch (error) {
@@ -173,7 +175,8 @@ const Settings = () => {
     try {
       await axios.post(`${API}/settings`, {
         menuItems,
-        categoryMenuItems: categoryItems
+        categoryMenuItems: categoryItems,
+        featuredCategoryId
       }, getAuthHeaders());
       
       toast({ title: 'Succes', description: 'Setările au fost salvate!' });
@@ -458,6 +461,36 @@ const Settings = () => {
               Click pe o categorie pentru a o adăuga. Categoriile cu subcategorii (+N) le vor include automat pentru hover menu.
             </p>
           </div>
+        </div>
+      </div>
+
+      {/* Featured Category for Homepage */}
+      <div className="bg-white rounded-2xl p-6 border-2 border-gray-100">
+        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <Folder className="w-6 h-6 text-teal-600" />
+          Categorie Featured Homepage
+        </h3>
+        <p className="text-sm text-gray-600 mb-4">
+          Selectează categoria de produse care va apărea în carousel-ul "Today's Hot Picks" pe pagina principală
+        </p>
+        
+        <div className="max-w-md">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Categorie Featured
+          </label>
+          <select
+            value={featuredCategoryId}
+            onChange={(e) => setFeaturedCategoryId(e.target.value)}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+          >
+            <option value="">Fără categorie (produse aleatorii)</option>
+            {getParentCategories().map((cat) => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
+          <p className="text-xs text-gray-500 mt-2">
+            Produsele din această categorie vor apărea în carousel pe homepage
+          </p>
         </div>
       </div>
 

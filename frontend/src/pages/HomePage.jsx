@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
 import HeroSlider from '../components/HeroSlider';
 import CategoryGrid from '../components/CategoryGrid';
 import ProductCard from '../components/ProductCard';
 import CountdownTimer from '../components/CountdownTimer';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -12,11 +17,29 @@ const API = `${BACKEND_URL}/api`;
 const HomePage = () => {
   const [activeTab, setActiveTab] = useState('mens');
   const [products, setProducts] = useState([]);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState(null);
   
   useEffect(() => {
+    fetchSettings();
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    if (settings?.featuredCategoryId) {
+      fetchFeaturedProducts();
+    }
+  }, [settings]);
+
+  const fetchSettings = async () => {
+    try {
+      const response = await axios.get(`${API}/settings`);
+      setSettings(response.data);
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -26,6 +49,21 @@ const HomePage = () => {
       console.error('Error fetching products:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchFeaturedProducts = async () => {
+    try {
+      // Fetch category details
+      const categoryRes = await axios.get(`${API}/categories`);
+      const category = categoryRes.data.find(cat => cat.id === settings.featuredCategoryId);
+      
+      if (category) {
+        const response = await axios.get(`${API}/products?category=${encodeURIComponent(category.name)}`);
+        setFeaturedProducts(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching featured products:', error);
     }
   };
 
@@ -59,7 +97,7 @@ const HomePage = () => {
       {/* Categories Grid */}
       <CategoryGrid />
 
-      {/* Today's Hot Picks Section */}
+      {/* Today's Hot Picks Section - Carousel */}
       <section className="py-12 bg-gray-50">
         <div className="w-full px-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
@@ -67,11 +105,34 @@ const HomePage = () => {
             <CountdownTimer targetDate={new Date(Date.now() + 24 * 60 * 60 * 1000)} />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-            {hotPicksProducts.map((product) => (
-              <ProductCard key={product.id} product={product} showProgress />
-            ))}
-          </div>
+          {featuredProducts.length > 0 ? (
+            <Swiper
+              modules={[Navigation, Pagination]}
+              spaceBetween={24}
+              slidesPerView={1}
+              navigation
+              pagination={{ clickable: true }}
+              breakpoints={{
+                640: { slidesPerView: 2 },
+                768: { slidesPerView: 3 },
+                1024: { slidesPerView: 4 },
+                1280: { slidesPerView: 5 }
+              }}
+              className="hot-picks-carousel"
+            >
+              {featuredProducts.map((product) => (
+                <SwiperSlide key={product.id}>
+                  <ProductCard product={product} showProgress />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+              {products.slice(0, 10).map((product) => (
+                <ProductCard key={product.id} product={product} showProgress />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -369,3 +430,30 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
+      <style jsx>{`
+        .hot-picks-carousel :global(.swiper-button-next),
+        .hot-picks-carousel :global(.swiper-button-prev) {
+          color: #0d9488;
+          background: white;
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .hot-picks-carousel :global(.swiper-button-next):after,
+        .hot-picks-carousel :global(.swiper-button-prev):after {
+          font-size: 20px;
+        }
+        
+        .hot-picks-carousel :global(.swiper-pagination-bullet) {
+          background: #0d9488;
+          width: 10px;
+          height: 10px;
+        }
+        
+        .hot-picks-carousel :global(.swiper-pagination) {
+          bottom: -10px;
+        }
+      `}</style>
