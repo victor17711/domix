@@ -31,6 +31,16 @@ class UserResponse(BaseModel):
     lastName: str
     role: str
 
+# Brand Models
+class BrandCreate(BaseModel):
+    name: str
+    logo: Optional[str] = ""
+    description: Optional[str] = ""
+
+class Brand(BrandCreate):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+
 # Product Models
 class ProductCreate(BaseModel):
     name: str
@@ -39,6 +49,7 @@ class ProductCreate(BaseModel):
     originalPrice: Optional[float] = None
     discount: Optional[int] = 0
     category: str
+    brandId: Optional[str] = None
     storeName: Optional[str] = ""
     image: str
     colors: Optional[List[str]] = []

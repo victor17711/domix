@@ -12,6 +12,7 @@ const ProductsManagement = () => {
   const { getAuthHeaders } = useAdmin();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -24,6 +25,7 @@ const ProductsManagement = () => {
     price: '',
     originalPrice: '',
     category: '',
+    brandId: '',
     storeName: '',
     image: '',
     available: 100,
@@ -33,6 +35,7 @@ const ProductsManagement = () => {
   useEffect(() => {
     fetchProducts();
     fetchCategories();
+    fetchBrands();
   }, []);
 
   const fetchProducts = async () => {
@@ -52,6 +55,15 @@ const ProductsManagement = () => {
       setCategories(response.data);
     } catch (error) {
       console.error('Error fetching categories:', error);
+    }
+  };
+
+  const fetchBrands = async () => {
+    try {
+      const response = await axios.get(`${API}/brands`);
+      setBrands(response.data);
+    } catch (error) {
+      console.error('Error fetching brands:', error);
     }
   };
 
@@ -122,6 +134,7 @@ const ProductsManagement = () => {
       price: product.price,
       originalPrice: product.originalPrice,
       category: product.category,
+      brandId: product.brandId || '',
       storeName: product.storeName || '',
       image: product.image,
       available: product.available,
@@ -138,6 +151,7 @@ const ProductsManagement = () => {
       price: '',
       originalPrice: '',
       category: '',
+      brandId: '',
       storeName: '',
       image: '',
       available: 100,
@@ -371,6 +385,19 @@ const ProductsManagement = () => {
                     <option value="">Selectează</option>
                     {categories.map(cat => (
                       <option key={cat.id} value={cat.name}>{cat.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Brand</label>
+                  <select
+                    value={formData.brandId}
+                    onChange={(e) => setFormData({...formData, brandId: e.target.value})}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  >
+                    <option value="">Fără brand</option>
+                    {brands.map(brand => (
+                      <option key={brand.id} value={brand.id}>{brand.name}</option>
                     ))}
                   </select>
                 </div>

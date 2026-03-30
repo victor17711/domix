@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Grid, List } from 'lucide-react';
+import { ChevronRight, SlidersHorizontal, X } from 'lucide-react';
+import ProductCard from '../components/ProductCard';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -10,17 +11,29 @@ const CategoryPage = () => {
   const { slug } = useParams();
   const [category, setCategory] = useState(null);
   const [products, setProducts] = useState([]);
+  const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [viewMode, setViewMode] = useState('grid');
+  const [filterOpen, setFilterOpen] = useState(false);
+  
+  // Filter states
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 });
+  const [selectedBrands, setSelectedBrands] = useState([]);
+  const [tempPriceRange, setTempPriceRange] = useState({ min: 0, max: 10000 });
 
   useEffect(() => {
     fetchCategoryAndProducts();
+    fetchBrands();
   }, [slug]);
+
+  useEffect(() => {
+    if (category) {
+      applyFilters();
+    }
+  }, [priceRange, selectedBrands, category]);
 
   const fetchCategoryAndProducts = async () => {
     try {
-      // Fetch all categories to find the one with this slug
       const categoriesRes = await axios.get(`${API}/categories`);
       const foundCategory = categoriesRes.data.find(cat => cat.slug === slug);
       
@@ -31,11 +44,6 @@ const CategoryPage = () => {
       }
 
       setCategory(foundCategory);
-
-      // Fetch products for this category
-      const productsRes = await axios.get(`${API}/products?category=${foundCategory.name}`);
-      setProducts(productsRes.data);
-      
       setError(null);
     } catch (error) {
       console.error('Error fetching category:', error);
@@ -43,6 +51,56 @@ const CategoryPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchBrands = async () => {
+    try {
+      const response = await axios.get(`${API}/brands`);
+      setBrands(response.data);
+    } catch (error) {
+      console.error('Error fetching brands:', error);
+    }
+  };
+
+  const applyFilters = async () => {
+    if (!category) return;
+    
+    try {
+      let url = `${API}/products?category=${encodeURIComponent(category.name)}&minPrice=${priceRange.min}&maxPrice=${priceRange.max}`;
+
+      // For multiple brands, we'll fetch all and filter client-side
+      const response = await axios.get(url);
+      let filteredProducts = response.data;
+
+      // Client-side brand filtering if brands are selected
+      if (selectedBrands.length > 0) {
+        filteredProducts = filteredProducts.filter(product => 
+          selectedBrands.includes(product.brandId)
+        );
+      }
+
+      setProducts(filteredProducts);
+    } catch (error) {
+      console.error('Error fetching filtered products:', error);
+    }
+  };
+
+  const handleBrandToggle = (brandId) => {
+    setSelectedBrands(prev => 
+      prev.includes(brandId) 
+        ? prev.filter(id => id !== brandId)
+        : [...prev, brandId]
+    );
+  };
+
+  const handlePriceRangeApply = () => {
+    setPriceRange(tempPriceRange);
+  };
+
+  const resetFilters = () => {
+    setPriceRange({ min: 0, max: 10000 });
+    setTempPriceRange({ min: 0, max: 10000 });
+    setSelectedBrands([]);
   };
 
   if (loading) {
@@ -62,12 +120,12 @@ const CategoryPage = () => {
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
           <p className="text-xl text-gray-600 mb-6">{error || 'Categoria nu a fost găsită'}</p>
-          <a
-            href="/"
+          <Link
+            to="/"
             className="bg-teal-600 text-white px-6 py-3 rounded-xl hover:bg-teal-700 transition font-semibold inline-block"
           >
             Înapoi la Acasă
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -75,13 +133,29 @@ const CategoryPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Breadcrumb */}
+      <div className="bg-white border-b">
+        <div className="w-full px-6 py-4">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <Link to="/" className="hover:text-teal-600">Acasă</Link>
+            <ChevronRight className="w-4 h-4" />
+            <div className="flex items-center gap-2">
+              {category.image && (
+                <img src={category.image} alt={category.name} className="w-6 h-6 rounded object-cover" />
+              )}
+              <span className="text-gray-900 font-semibold">{category.name}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="bg-gradient-to-r from-teal-600 to-teal-700 text-white">
-        <div className="max-w-7xl mx-auto px-6 py-12">
-          <div className="flex items-center gap-4 mb-4">
-            {category.icon && (
-              <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center text-4xl">
-                {category.icon}
+        <div className="w-full px-6 py-8">
+          <div className="flex items-center gap-4">
+            {category.image && (
+              <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center overflow-hidden">
+                <img src={category.image} alt={category.name} className="w-full h-full object-cover" />
               </div>
             )}
             <div>
@@ -92,91 +166,189 @@ const CategoryPage = () => {
         </div>
       </div>
 
-      {/* Products */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* View Toggle */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Produse</h2>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-lg transition ${
-                viewMode === 'grid'
-                  ? 'bg-teal-600 text-white'
-                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-              }`}
-            >
-              <Grid className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-2 rounded-lg transition ${
-                viewMode === 'list'
-                  ? 'bg-teal-600 text-white'
-                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-              }`}
-            >
-              <List className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
+      {/* Main Content */}
+      <div className="w-full px-6 py-8">
+        <div className="flex gap-8">
+          {/* Sidebar Filter - Desktop */}
+          <aside className="hidden lg:block w-80 flex-shrink-0">
+            <div className="bg-white rounded-2xl p-6 border-2 border-gray-100 sticky top-4">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <SlidersHorizontal className="w-5 h-5 text-teal-600" />
+                  Filtre
+                </h3>
+                <button 
+                  onClick={resetFilters}
+                  className="text-sm text-teal-600 hover:text-teal-700 font-semibold"
+                >
+                  Resetează
+                </button>
+              </div>
 
-        {products.length === 0 ? (
-          <div className="bg-white rounded-2xl p-12 text-center">
-            <p className="text-xl text-gray-600">Nu există produse în această categorie</p>
-          </div>
-        ) : (
-          <div
-            className={
-              viewMode === 'grid'
-                ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
-                : 'space-y-4'
-            }
-          >
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className={`bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition ${
-                  viewMode === 'list' ? 'flex' : ''
-                }`}
-              >
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className={
-                    viewMode === 'list'
-                      ? 'w-48 h-48 object-cover'
-                      : 'w-full h-64 object-cover'
-                  }
-                />
-                <div className="p-4 flex-1">
-                  {product.badge && (
-                    <span className="inline-block bg-red-500 text-white text-xs px-2 py-1 rounded-full mb-2">
-                      {product.badge}
-                    </span>
-                  )}
-                  <h3 className="font-bold text-lg text-gray-900 mb-2">{product.name}</h3>
-                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-2xl font-bold text-teal-600">
-                        {product.price} MDL
-                      </div>
-                      {product.originalPrice && (
-                        <div className="text-sm text-gray-500 line-through">
-                          {product.originalPrice} MDL
-                        </div>
-                      )}
-                    </div>
-                    <button className="bg-teal-600 text-white px-4 py-2 rounded-xl hover:bg-teal-700 transition font-semibold">
-                      Adaugă
-                    </button>
+              {/* Price Filter */}
+              <div className="mb-6 pb-6 border-b">
+                <h4 className="font-bold text-gray-900 mb-4">Preț (MDL)</h4>
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      placeholder="Min"
+                      value={tempPriceRange.min}
+                      onChange={(e) => setTempPriceRange({ ...tempPriceRange, min: Number(e.target.value) })}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Max"
+                      value={tempPriceRange.max}
+                      onChange={(e) => setTempPriceRange({ ...tempPriceRange, max: Number(e.target.value) })}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
                   </div>
+                  <button
+                    onClick={handlePriceRangeApply}
+                    className="w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 transition font-semibold"
+                  >
+                    Aplică
+                  </button>
                 </div>
               </div>
-            ))}
+
+              {/* Brand Filter */}
+              {brands.length > 0 && (
+                <div>
+                  <h4 className="font-bold text-gray-900 mb-4">Brand</h4>
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {brands.map((brand) => (
+                      <label key={brand.id} className="flex items-center gap-3 cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          checked={selectedBrands.includes(brand.id)}
+                          onChange={() => handleBrandToggle(brand.id)}
+                          className="w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
+                        />
+                        <div className="flex items-center gap-2 flex-1">
+                          {brand.logo && (
+                            <img src={brand.logo} alt={brand.name} className="w-6 h-6 object-contain" />
+                          )}
+                          <span className="text-gray-700 group-hover:text-teal-600 transition">{brand.name}</span>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </aside>
+
+          {/* Mobile Filter Button */}
+          <button
+            onClick={() => setFilterOpen(true)}
+            className="lg:hidden fixed bottom-6 right-6 bg-teal-600 text-white p-4 rounded-full shadow-lg hover:bg-teal-700 transition z-40"
+          >
+            <SlidersHorizontal className="w-6 h-6" />
+          </button>
+
+          {/* Mobile Filter Drawer */}
+          {filterOpen && (
+            <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+              <div className="absolute right-0 top-0 h-full w-80 bg-white shadow-xl overflow-y-auto">
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-bold text-gray-900">Filtre</h3>
+                    <button onClick={() => setFilterOpen(false)}>
+                      <X className="w-6 h-6" />
+                    </button>
+                  </div>
+
+                  {/* Same filters as desktop */}
+                  <div className="mb-6 pb-6 border-b">
+                    <h4 className="font-bold text-gray-900 mb-4">Preț (MDL)</h4>
+                    <div className="space-y-3">
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          placeholder="Min"
+                          value={tempPriceRange.min}
+                          onChange={(e) => setTempPriceRange({ ...tempPriceRange, min: Number(e.target.value) })}
+                          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        />
+                        <input
+                          type="number"
+                          placeholder="Max"
+                          value={tempPriceRange.max}
+                          onChange={(e) => setTempPriceRange({ ...tempPriceRange, max: Number(e.target.value) })}
+                          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        />
+                      </div>
+                      <button
+                        onClick={() => {
+                          handlePriceRangeApply();
+                          setFilterOpen(false);
+                        }}
+                        className="w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 transition font-semibold"
+                      >
+                        Aplică
+                      </button>
+                    </div>
+                  </div>
+
+                  {brands.length > 0 && (
+                    <div>
+                      <h4 className="font-bold text-gray-900 mb-4">Brand</h4>
+                      <div className="space-y-2">
+                        {brands.map((brand) => (
+                          <label key={brand.id} className="flex items-center gap-3 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={selectedBrands.includes(brand.id)}
+                              onChange={() => handleBrandToggle(brand.id)}
+                              className="w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
+                            />
+                            <div className="flex items-center gap-2">
+                              {brand.logo && (
+                                <img src={brand.logo} alt={brand.name} className="w-6 h-6 object-contain" />
+                              )}
+                              <span className="text-gray-700">{brand.name}</span>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={resetFilters}
+                    className="w-full mt-6 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition font-semibold"
+                  >
+                    Resetează Filtre
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Products Grid */}
+          <div className="flex-1">
+            {products.length === 0 ? (
+              <div className="bg-white rounded-2xl p-12 text-center">
+                <p className="text-xl text-gray-600">Nu există produse în această categorie</p>
+                <button
+                  onClick={resetFilters}
+                  className="mt-4 text-teal-600 hover:text-teal-700 font-semibold"
+                >
+                  Resetează filtrele
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {products.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

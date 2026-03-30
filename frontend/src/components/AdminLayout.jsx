@@ -12,7 +12,8 @@ import {
   X,
   Settings,
   Bell,
-  FileText
+  FileText,
+  Tag
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -31,6 +32,7 @@ const AdminLayout = ({ children }) => {
     { path: '/admin/dashboard', label: 'Tablou de Bord', icon: LayoutDashboard, roles: ['admin', 'manager'] },
     { path: '/admin/products', label: 'Produse', icon: Package, roles: ['admin', 'manager'] },
     { path: '/admin/categories', label: 'Categorii', icon: FolderOpen, roles: ['admin'] },
+    { path: '/admin/brands', label: 'Branduri', icon: Tag, roles: ['admin'] },
     { path: '/admin/orders', label: 'Comenzi', icon: ShoppingCart, roles: ['admin', 'manager'] },
     { path: '/admin/users', label: 'Utilizatori', icon: Users, roles: ['admin'] },
     { path: '/admin/pages', label: 'Pagini', icon: FileText, roles: ['admin'] },

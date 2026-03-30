@@ -12,6 +12,7 @@ import uuid
 
 from models import (
     UserCreate, User, UserLogin, UserResponse,
+    BrandCreate, Brand,
     ProductCreate, Product,
     CategoryCreate, Category,
     AddToCartRequest, Cart, CartItem,
@@ -121,6 +122,9 @@ async def get_me(authorization: Optional[str] = Header(None)):
 async def get_products(
     category: Optional[str] = None,
     search: Optional[str] = None,
+    minPrice: Optional[float] = None,
+    maxPrice: Optional[float] = None,
+    brandId: Optional[str] = None,
     skip: int = 0,
     limit: int = 50
 ):
@@ -133,7 +137,17 @@ async def get_products(
     if search:
         query["name"] = {"$regex": search, "$options": "i"}
     
-    products = await db.products.find(query).skip(skip).limit(limit).to_list(limit)
+    if minPrice is not None or maxPrice is not None:
+        query["price"] = {}
+        if minPrice is not None:
+            query["price"]["$gte"] = minPrice
+        if maxPrice is not None:
+            query["price"]["$lte"] = maxPrice
+    
+    if brandId:
+        query["brandId"] = brandId
+    
+    products = await db.products.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
     return [Product(**product) for product in products]
 
 
@@ -305,6 +319,88 @@ async def delete_category(
     await db.categories.delete_one({"id": category_id})
     
     return {"message": "Category deleted successfully"}
+
+
+# ==================== BRANDS ENDPOINTS ====================
+
+@api_router.get("/brands", response_model=List[Brand])
+async def get_brands():
+    """Get all brands"""
+    brands = await db.brands.find({}, {"_id": 0}).to_list(100)
+    return [Brand(**brand) for brand in brands]
+
+
+@api_router.get("/brands/{brand_id}", response_model=Brand)
+async def get_brand(brand_id: str):
+    """Get brand by ID"""
+    brand = await db.brands.find_one({"id": brand_id}, {"_id": 0})
+    if not brand:
+        raise HTTPException(status_code=404, detail="Brand not found")
+    return Brand(**brand)
+
+
+@api_router.post("/brands", response_model=Brand)
+async def create_brand(
+    brand: BrandCreate,
+    authorization: Optional[str] = Header(None)
+):
+    """Create a new brand (admin only)"""
+    current_user = await get_current_user(authorization, db)
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # Check if brand already exists
+    existing = await db.brands.find_one({"name": brand.name})
+    if existing:
+        raise HTTPException(status_code=400, detail="Brand already exists")
+    
+    new_brand = Brand(**brand.dict())
+    await db.brands.insert_one(new_brand.dict())
+    
+    return new_brand
+
+
+@api_router.put("/brands/{brand_id}", response_model=Brand)
+async def update_brand(
+    brand_id: str,
+    brand: BrandCreate,
+    authorization: Optional[str] = Header(None)
+):
+    """Update a brand (admin only)"""
+    current_user = await get_current_user(authorization, db)
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    existing_brand = await db.brands.find_one({"id": brand_id})
+    if not existing_brand:
+        raise HTTPException(status_code=404, detail="Brand not found")
+    
+    await db.brands.update_one(
+        {"id": brand_id},
+        {"$set": brand.dict()}
+    )
+    
+    updated_brand = await db.brands.find_one({"id": brand_id}, {"_id": 0})
+    return Brand(**updated_brand)
+
+
+@api_router.delete("/brands/{brand_id}")
+async def delete_brand(
+    brand_id: str,
+    authorization: Optional[str] = Header(None)
+):
+    """Delete a brand (admin only)"""
+    current_user = await get_current_user(authorization, db)
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    existing_brand = await db.brands.find_one({"id": brand_id})
+    if not existing_brand:
+        raise HTTPException(status_code=404, detail="Brand not found")
+    
+    await db.brands.delete_one({"id": brand_id})
+    
+    return {"message": "Brand deleted successfully"}
 
 
 # ==================== CART ENDPOINTS ====================

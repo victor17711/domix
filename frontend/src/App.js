@@ -13,6 +13,7 @@ import AdminLogin from './pages/admin/AdminLogin';
 import Dashboard from './pages/admin/Dashboard';
 import ProductsManagement from './pages/admin/ProductsManagement';
 import CategoriesManagement from './pages/admin/CategoriesManagement';
+import BrandsManagement from './pages/admin/BrandsManagement';
 import UsersManagement from './pages/admin/UsersManagement';
 import OrdersManagement from './pages/admin/OrdersManagement';
 import Settings from './pages/admin/Settings';
@@ -84,6 +85,12 @@ function App() {
                 <Route path="/admin/categories" element={
                   <AdminProtectedRoute>
                     <CategoriesManagement />
+                  </AdminProtectedRoute>
+                } />
+                
+                <Route path="/admin/brands" element={
+                  <AdminProtectedRoute>
+                    <BrandsManagement />
                   </AdminProtectedRoute>
                 } />
                 

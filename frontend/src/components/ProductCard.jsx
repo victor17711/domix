@@ -101,9 +101,13 @@ const ProductCard = ({ product, showProgress = false }) => {
 
           {/* Price */}
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-lg font-bold text-gray-900">${product.price}</span>
-            <span className="text-sm text-gray-400 line-through">${product.originalPrice}</span>
-            <span className="text-xs font-semibold text-green-600">{discountPercent}% OFF</span>
+            <span className="text-lg font-bold text-gray-900">{product.price} MDL</span>
+            {product.originalPrice && (
+              <>
+                <span className="text-sm text-gray-400 line-through">{product.originalPrice} MDL</span>
+                <span className="text-xs font-semibold text-green-600">{discountPercent}% OFF</span>
+              </>
+            )}
           </div>
 
           {/* Progress Bar (if enabled) */}
