@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper/modules';
+import { Navigation, Autoplay } from 'swiper/modules';
 import HeroSlider from '../components/HeroSlider';
 import CategoryGrid from '../components/CategoryGrid';
 import ProductCard from '../components/ProductCard';
@@ -9,7 +9,6 @@ import CountdownTimer from '../components/CountdownTimer';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import 'swiper/css/pagination';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -107,11 +106,17 @@ const HomePage = () => {
 
           {featuredProducts.length > 0 ? (
             <Swiper
-              modules={[Navigation, Pagination]}
+              modules={[Navigation, Autoplay]}
               spaceBetween={24}
               slidesPerView={1}
               navigation
-              pagination={{ clickable: true }}
+              speed={900}
+              autoplay={{ 
+                delay: 4500, 
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true 
+              }}
+              loop={true}
               breakpoints={{
                 640: { slidesPerView: 2 },
                 768: { slidesPerView: 3 },
@@ -434,26 +439,42 @@ export default HomePage;
       <style jsx>{`
         .hot-picks-carousel :global(.swiper-button-next),
         .hot-picks-carousel :global(.swiper-button-prev) {
-          color: #0d9488;
-          background: white;
-          width: 44px;
-          height: 44px;
+          color: white;
+          background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+          width: 56px;
+          height: 56px;
           border-radius: 50%;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          box-shadow: 0 6px 20px rgba(13, 148, 136, 0.35);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .hot-picks-carousel :global(.swiper-button-next):hover,
+        .hot-picks-carousel :global(.swiper-button-prev):hover {
+          transform: scale(1.15);
+          box-shadow: 0 8px 25px rgba(13, 148, 136, 0.5);
+          background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
         }
         
         .hot-picks-carousel :global(.swiper-button-next):after,
         .hot-picks-carousel :global(.swiper-button-prev):after {
-          font-size: 20px;
+          font-size: 22px;
+          font-weight: bold;
         }
         
-        .hot-picks-carousel :global(.swiper-pagination-bullet) {
-          background: #0d9488;
-          width: 10px;
-          height: 10px;
+        .hot-picks-carousel :global(.swiper-button-next) {
+          right: 10px;
         }
         
-        .hot-picks-carousel :global(.swiper-pagination) {
-          bottom: -10px;
+        .hot-picks-carousel :global(.swiper-button-prev) {
+          left: 10px;
+        }
+        
+        .hot-picks-carousel :global(.swiper-button-disabled) {
+          opacity: 0.3;
+          cursor: not-allowed;
+        }
+        
+        .hot-picks-carousel :global(.swiper-slide) {
+          transition: transform 0.3s ease;
         }
       `}</style>

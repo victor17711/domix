@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import { Navigation, Autoplay } from 'swiper/modules';
 import axios from 'axios';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import 'swiper/css/pagination';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -49,12 +48,17 @@ const CategoryGrid = () => {
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Explorează Categoriile</h2>
         
         <Swiper
-          modules={[Navigation, Pagination, Autoplay]}
+          modules={[Navigation, Autoplay]}
           spaceBetween={16}
           slidesPerView={2}
           navigation
-          pagination={{ clickable: true }}
-          autoplay={{ delay: 3000, disableOnInteraction: false }}
+          speed={800}
+          autoplay={{ 
+            delay: 4000, 
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true 
+          }}
+          loop={true}
           breakpoints={{
             640: { slidesPerView: 3 },
             768: { slidesPerView: 4 },
@@ -95,25 +99,31 @@ const CategoryGrid = () => {
       <style jsx>{`
         .category-carousel :global(.swiper-button-next),
         .category-carousel :global(.swiper-button-prev) {
-          color: #0d9488;
-          background: white;
-          width: 40px;
-          height: 40px;
+          color: white;
+          background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+          width: 50px;
+          height: 50px;
           border-radius: 50%;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          box-shadow: 0 4px 15px rgba(13, 148, 136, 0.4);
+          transition: all 0.3s ease;
+        }
+        
+        .category-carousel :global(.swiper-button-next):hover,
+        .category-carousel :global(.swiper-button-prev):hover {
+          transform: scale(1.1);
+          box-shadow: 0 6px 20px rgba(13, 148, 136, 0.6);
+          background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
         }
         
         .category-carousel :global(.swiper-button-next):after,
         .category-carousel :global(.swiper-button-prev):after {
-          font-size: 18px;
+          font-size: 20px;
+          font-weight: bold;
         }
         
-        .category-carousel :global(.swiper-pagination-bullet) {
-          background: #0d9488;
-        }
-        
-        .category-carousel :global(.swiper-pagination) {
-          bottom: -5px;
+        .category-carousel :global(.swiper-button-disabled) {
+          opacity: 0.3;
+          cursor: not-allowed;
         }
       `}</style>
     </section>
