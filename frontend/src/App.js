@@ -14,6 +14,7 @@ import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import ContactPage from './pages/ContactPage';
+import BrandsPage from './pages/BrandsPage';
 import AdminLogin from './pages/admin/AdminLogin';
 import Dashboard from './pages/admin/Dashboard';
 import ProductsManagement from './pages/admin/ProductsManagement';
@@ -71,6 +72,15 @@ function App() {
                   <>
                     <Navbar />
                     <ContactPage />
+                    <Footer />
+                  </>
+                } />
+
+                {/* Brands Page Route */}
+                <Route path="/brands" element={
+                  <>
+                    <Navbar />
+                    <BrandsPage />
                     <Footer />
                   </>
                 } />

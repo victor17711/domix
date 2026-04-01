@@ -99,7 +99,7 @@ const Navbar = () => {
 
               {/* Links */}
               <Link to="/about" className="hover:text-yellow-400 transition text-sm">Termeni și condiții</Link>
-              <Link to="/wishlist" className="hover:text-yellow-400 transition text-sm">Livrare & returnare</Link>
+              <Link to="/brands" className="hover:text-yellow-400 transition text-sm">Branduri</Link>
               <Link to="/contact" className="hover:text-yellow-400 transition text-sm">Contact</Link>
               {/* <Link to="/track-order" className="hover:text-yellow-400 transition text-sm">Order Tracking</Link> */}
             </div>
