@@ -66,6 +66,15 @@ function App() {
                   </>
                 } />
 
+                {/* Contact Page Route - MUST be before /page/:slug */}
+                <Route path="/contact" element={
+                  <>
+                    <Navbar />
+                    <ContactPage />
+                    <Footer />
+                  </>
+                } />
+
                 {/* Dynamic Page Route */}
                 <Route path="/page/:slug" element={
                   <>
@@ -116,15 +125,6 @@ function App() {
                   <>
                     <Navbar />
                     <OrderSuccessPage />
-                    <Footer />
-                  </>
-                } />
-
-                {/* Contact Page Route */}
-                <Route path="/contact" element={
-                  <>
-                    <Navbar />
-                    <ContactPage />
                     <Footer />
                   </>
                 } />
