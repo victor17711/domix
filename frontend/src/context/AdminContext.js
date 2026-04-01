@@ -73,9 +73,14 @@ export const AdminProvider = ({ children }) => {
   };
 
   const getAuthHeaders = () => {
+    const currentToken = token || localStorage.getItem('adminToken');
+    if (!currentToken) {
+      console.warn('No admin token available');
+      return { headers: {} };
+    }
     return {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${currentToken}`
       }
     };
   };

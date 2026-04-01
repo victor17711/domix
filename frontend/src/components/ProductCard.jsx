@@ -103,7 +103,7 @@ const ProductCard = ({ product, showProgress = false }) => {
               <span className="text-xs text-gray-500">({product.reviews})</span>
             </div>
 
-            {/* Colors */}
+            {/* Colors
             {product.colors && (
               <div className="flex gap-1 mb-3">
                 {product.colors.slice(0, 4).map((color, index) => (
@@ -115,7 +115,7 @@ const ProductCard = ({ product, showProgress = false }) => {
                   />
                 ))}
               </div>
-            )}
+            )} */}
 
             {/* Price */}
             <div className="flex items-center gap-2 mb-3">
@@ -123,7 +123,7 @@ const ProductCard = ({ product, showProgress = false }) => {
               {product.originalPrice && (
                 <>
                   <span className="text-sm text-gray-400 line-through">{product.originalPrice} MDL</span>
-                  <span className="text-xs font-semibold text-green-600">{discountPercent}% OFF</span>
+                  {/* <span className="text-xs font-semibold text-green-600">{discountPercent}% OFF</span> */}
                 </>
               )}
             </div>
@@ -132,8 +132,8 @@ const ProductCard = ({ product, showProgress = false }) => {
             {showProgress && product.sold !== undefined && (
               <div className="mb-3">
                 <div className="flex justify-between text-xs text-gray-600 mb-1">
-                  <span>Sold: <strong>{product.sold}</strong></span>
-                  <span>Available: <strong>{product.available}</strong></span>
+                  <span>Vândut: <strong>{product.sold}</strong></span>
+                  <span>Disponibil: <strong>{product.available}</strong></span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
@@ -147,10 +147,10 @@ const ProductCard = ({ product, showProgress = false }) => {
             {/* Add to Cart Button */}
             <button
               onClick={handleAddToCart}
-              className="w-full bg-teal-600 text-white py-2 rounded-md hover:bg-teal-700 transition flex items-center justify-center gap-2"
+              className="w-full bg-teal-600 text-white font-bold py-2 rounded-md hover:bg-teal-700 transition flex items-center justify-center gap-2"
             >
-              <ShoppingCart className="w-4 h-4" />
-              Add to Cart
+              <ShoppingCart className="w-4 h-4 font-bold" />
+              Cumpără
             </button>
           </div>
         </div>

@@ -25,15 +25,15 @@ const Footer = () => {
   return (
     <>
       {/* Newsletter Section */}
-      <section className="bg-[#f5f5f5] pt-12 md:pt-16">
+      <section className="bg-[#f5f5f5] pt-12 pb-12 md:pt-16">
         <div className="max-w-[1320px] mx-auto px-4">
           <div className="text-center">
             <h2 className="text-[#1d2433] text-[30px] md:text-[38px] font-bold leading-tight">
-              Subscribe to our newsletter
+              Abonează-te la noutăți
             </h2>
 
             <p className="mt-5 text-[#94A3B8] text-[15px] md:text-[16px] leading-[1.7]">
-              Stay updated! Subscribe to our mailing list for news, updates, and exclusive offers.
+              Abonează-te la lista noastră de email pentru noutăți, actualizări și oferte exclusive.
             </p>
 
             <form
@@ -47,7 +47,7 @@ const Footer = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
+                  placeholder="Adresa de email"
                   required
                   className="flex-1 h-full bg-transparent outline-none px-4 text-[16px] text-[#64748B] placeholder:text-[#94A3B8]"
                 />
@@ -56,7 +56,7 @@ const Footer = () => {
                   type="submit"
                   className="h-[42px] px-7 md:px-9 rounded-full bg-[#0f8b8d] text-white font-semibold text-[16px] hover:bg-[#0d7c7e] transition"
                 >
-                  Subscribe
+                  Abonează-te
                 </button>
               </div>
             </form>
