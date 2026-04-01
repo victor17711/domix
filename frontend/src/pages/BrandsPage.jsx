@@ -86,9 +86,23 @@ const BrandsPage = () => {
                   className="group bg-white rounded-2xl p-8 shadow-md hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-teal-500"
                 >
                   <div className="flex flex-col items-center text-center">
-                    {/* Brand Icon */}
-                    <div className="w-24 h-24 bg-gradient-to-br from-teal-100 to-teal-50 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border-4 border-teal-200">
-                      <Tag className="w-12 h-12 text-teal-600" />
+                    {/* Brand Logo/Icon */}
+                    <div className="w-32 h-32 mb-6 rounded-2xl overflow-hidden bg-gray-50 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                      {brand.logo ? (
+                        <img 
+                          src={brand.logo} 
+                          alt={brand.name}
+                          className="w-full h-full object-contain p-4"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.parentElement.innerHTML = `<div class="w-24 h-24 bg-gradient-to-br from-teal-100 to-teal-50 rounded-full flex items-center justify-center border-4 border-teal-200"><svg class="w-12 h-12 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg></div>`;
+                          }}
+                        />
+                      ) : (
+                        <div className="w-24 h-24 bg-gradient-to-br from-teal-100 to-teal-50 rounded-full flex items-center justify-center border-4 border-teal-200">
+                          <Tag className="w-12 h-12 text-teal-600" />
+                        </div>
+                      )}
                     </div>
 
                     {/* Brand Name */}
