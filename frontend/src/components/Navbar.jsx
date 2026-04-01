@@ -100,6 +100,7 @@ const Navbar = () => {
               {/* Links */}
               <Link to="/about" className="hover:text-yellow-400 transition text-sm">Termeni și condiții</Link>
               <Link to="/wishlist" className="hover:text-yellow-400 transition text-sm">Livrare & returnare</Link>
+              <Link to="/contact" className="hover:text-yellow-400 transition text-sm">Contact</Link>
               {/* <Link to="/track-order" className="hover:text-yellow-400 transition text-sm">Order Tracking</Link> */}
             </div>
           </div>
@@ -288,7 +289,7 @@ const Navbar = () => {
                 <Link
                   key={item.id}
                   to={item.url}
-                  className="text-gray-700 hover:text-teal-600 transition flex items-center gap-1"
+                  className="text-gray-700 hover:text-teal-600 font-bold transition flex items-center gap-1"
                 >
                   {item.icon && <span className="text-lg">{item.icon}</span>}
                   {item.name}

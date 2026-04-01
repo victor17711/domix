@@ -13,6 +13,7 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
+import ContactPage from './pages/ContactPage';
 import AdminLogin from './pages/admin/AdminLogin';
 import Dashboard from './pages/admin/Dashboard';
 import ProductsManagement from './pages/admin/ProductsManagement';
@@ -115,6 +116,15 @@ function App() {
                   <>
                     <Navbar />
                     <OrderSuccessPage />
+                    <Footer />
+                  </>
+                } />
+
+                {/* Contact Page Route */}
+                <Route path="/contact" element={
+                  <>
+                    <Navbar />
+                    <ContactPage />
                     <Footer />
                   </>
                 } />

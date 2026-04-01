@@ -102,7 +102,7 @@ const HomePage = () => {
       <section className="py-12 bg-gray-50">
         <div className="w-full px-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-            <h2 className="text-3xl font-bold mb-4 md:mb-0">Today's Hot Picks</h2>
+            <h2 className="text-3xl font-bold mb-4 md:mb-0">Cele mai vândute</h2>
             <CountdownTimer targetDate={new Date(Date.now() + 24 * 60 * 60 * 1000)} />
           </div>
 

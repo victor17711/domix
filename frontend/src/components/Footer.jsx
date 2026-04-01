@@ -315,7 +315,7 @@ const Footer = () => {
           <div className="text-center text-white pt-[22px] pb-px bg-no-repeat bg-center relative">
             <div className="absolute left-1/2 -translate-x-1/2 top-0 w-full max-w-[520px] h-[48px] border-t border-[#1b7a7f] rounded-t-[120px]" />
             <p className="relative z-10 text-[15px] text-[#EAF6F2]">
-              2026 Copyright By Themeforest Powered By Createuiux
+              2026 Domix. Powered By Nextify
             </p>
           </div>
         </div>

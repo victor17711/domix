@@ -19,6 +19,14 @@ const Pages = () => {
     content: '',
     isPublished: true
   });
+  const [isContactPage, setIsContactPage] = useState(false);
+  const [contactData, setContactData] = useState({
+    address: '',
+    phone: '',
+    email: '',
+    hours: '',
+    mapUrl: ''
+  });
 
   useEffect(() => {
     fetchPages();
@@ -44,17 +52,26 @@ const Pages = () => {
     }
 
     try {
+      let dataToSend = { ...formData };
+      
+      // If editing contact page, convert contactData to JSON string
+      if (isContactPage) {
+        dataToSend.content = JSON.stringify(contactData);
+      }
+
       if (editingPage) {
-        await axios.put(`${API}/pages/${editingPage.id}`, formData, getAuthHeaders());
+        await axios.put(`${API}/pages/${editingPage.id}`, dataToSend, getAuthHeaders());
         toast({ title: 'Succes', description: 'Pagina a fost actualizată!' });
       } else {
-        await axios.post(`${API}/pages`, formData, getAuthHeaders());
+        await axios.post(`${API}/pages`, dataToSend, getAuthHeaders());
         toast({ title: 'Succes', description: 'Pagina a fost creată!' });
       }
       
       setShowModal(false);
       setEditingPage(null);
+      setIsContactPage(false);
       setFormData({ title: '', slug: '', content: '', isPublished: true });
+      setContactData({ address: '', phone: '', email: '', hours: '', mapUrl: '' });
       fetchPages();
     } catch (error) {
       toast({ 
@@ -85,6 +102,26 @@ const Pages = () => {
       content: page.content,
       isPublished: page.isPublished
     });
+    
+    // Check if this is the contact page
+    if (page.slug === 'contact') {
+      setIsContactPage(true);
+      try {
+        const parsed = JSON.parse(page.content);
+        setContactData({
+          address: parsed.address || '',
+          phone: parsed.phone || '',
+          email: parsed.email || '',
+          hours: parsed.hours || '',
+          mapUrl: parsed.mapUrl || ''
+        });
+      } catch {
+        setContactData({ address: '', phone: '', email: '', hours: '', mapUrl: '' });
+      }
+    } else {
+      setIsContactPage(false);
+    }
+    
     setShowModal(true);
   };
 
@@ -252,12 +289,77 @@ const Pages = () => {
                 <label className="block text-sm font-bold text-gray-900 mb-2">
                   Conținut
                 </label>
-                <textarea
-                  value={formData.content}
-                  onChange={(e) => setFormData({...formData, content: e.target.value})}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 min-h-[300px]"
-                  placeholder="Scrie conținutul paginii aici..."
-                />
+                {isContactPage ? (
+                  <div className="space-y-4 border-2 border-gray-200 rounded-xl p-6 bg-gray-50">
+                    <p className="text-sm text-gray-600 mb-4">📝 Editează datele de contact pentru pagina de contact:</p>
+                    
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Adresă</label>
+                      <input
+                        type="text"
+                        value={contactData.address}
+                        onChange={(e) => setContactData({...contactData, address: e.target.value})}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        placeholder="Str. Principală nr. 123, Chișinău, Moldova"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Telefon</label>
+                        <input
+                          type="text"
+                          value={contactData.phone}
+                          onChange={(e) => setContactData({...contactData, phone: e.target.value})}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                          placeholder="+373 69 123 456"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                        <input
+                          type="email"
+                          value={contactData.email}
+                          onChange={(e) => setContactData({...contactData, email: e.target.value})}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                          placeholder="contact@sellzy.md"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Program</label>
+                      <input
+                        type="text"
+                        value={contactData.hours}
+                        onChange={(e) => setContactData({...contactData, hours: e.target.value})}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        placeholder="Luni - Vineri: 09:00 - 18:00"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Google Maps Embed URL</label>
+                      <textarea
+                        value={contactData.mapUrl}
+                        onChange={(e) => setContactData({...contactData, mapUrl: e.target.value})}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        rows="3"
+                        placeholder="https://www.google.com/maps/embed?pb=..."
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Obține URL-ul de la Google Maps → Share → Embed a map → Copy HTML
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <textarea
+                    value={formData.content}
+                    onChange={(e) => setFormData({...formData, content: e.target.value})}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 min-h-[300px]"
+                    placeholder="Scrie conținutul paginii aici..."
+                  />
+                )}
               </div>
 
               <div className="flex items-center gap-3">
