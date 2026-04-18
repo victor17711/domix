@@ -202,11 +202,17 @@ class HeroBanner(BaseModel):
     badge: Optional[str] = ""
     order: Optional[int] = 0
 
+class ServiceAlbum(BaseModel):
+    title: str
+    coverImage: str
+    galleryImages: List[str] = []
+
 class SettingsCreate(BaseModel):
     menuItems: List[MenuItem] = []
     categoryMenuItems: List[MenuItem] = []
     featuredCategoryId: Optional[str] = None
     heroBanners: Optional[List[HeroBanner]] = []
+    albums: Optional[List[ServiceAlbum]] = []
 
 class Settings(SettingsCreate):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
