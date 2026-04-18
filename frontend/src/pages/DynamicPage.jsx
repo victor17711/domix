@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
+import { ChevronRight, FileText } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -58,25 +59,37 @@ const DynamicPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            {page.title}
-          </h1>
-          
-          <div className="prose prose-lg max-w-none">
-            <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-              {page.content}
-            </div>
+      {/* HERO */}
+      <div className="relative bg-gradient-to-r from-teal-600 to-teal-700 text-white py-14">
+        <div className="w-full px-4 md:px-6">
+          <div className="flex items-center gap-3 mb-3">
+            <FileText className="w-10 h-10" />
+            <h1 className="text-3xl md:text-4xl font-bold">{page.title}</h1>
           </div>
+          <p className="text-teal-100">
+            Informații și detalii despre Domix
+          </p>
+        </div>
+      </div>
 
-          <div className="mt-8 pt-8 border-t border-gray-200">
-            <a
-              href="/"
-              className="text-teal-600 hover:text-teal-700 font-semibold transition"
-            >
-              ← Înapoi la Acasă
-            </a>
+      {/* BREADCRUMB */}
+      <div className="relative bg-white border-b">
+        <div className="w-full px-4 md:px-6 py-4">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <Link to="/" className="hover:text-teal-600 transition">
+              Acasă
+            </Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-gray-900 font-semibold">{page.title}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* CONTENT */}
+      <div className="w-full px-4 md:px-6 py-8 md:py-12">
+        <div className="bg-white rounded-2xl shadow-sm p-6 md:p-10">
+          <div className="text-gray-700 leading-relaxed whitespace-pre-wrap text-[15px] md:text-base">
+            {page.content}
           </div>
         </div>
       </div>

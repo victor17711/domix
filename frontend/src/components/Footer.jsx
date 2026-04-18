@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Printer,
-  BadgeDollarSign,
-  ChevronRight,
-} from 'lucide-react';
+import { Mail, Phone, MapPin, Printer, BadgeDollarSign, ChevronRight, Facebook, Instagram, Music2, Globe } from 'lucide-react';
 import { toast } from '../hooks/use-toast';
+import logo from '../assets/images/logo.png';
+import { FaFacebookF, FaInstagram, FaTiktok } from 'react-icons/fa';
 
 const Footer = () => {
   const [email, setEmail] = useState('');
@@ -40,8 +35,9 @@ const Footer = () => {
               onSubmit={handleSubscribe}
               className="mt-7 mx-auto w-full max-w-[500px]"
             >
-              <div className="h-[58px] rounded-full border border-[#D9E0E7] bg-white flex items-center pl-5 pr-[7px] shadow-[0_4px_18px_rgba(15,92,92,0.06)]">
-                <Mail className="w-5 h-5 text-[#4B5563] shrink-0" />
+              <div className="h-[58px] rounded-full border border-[#D9E0E7] bg-white flex items-center pl-3 md:pl-5 pr-2 md:pr-[7px] shadow-[0_4px_18px_rgba(15,92,92,0.06)]">
+
+                <Mail className="w-4 h-4 md:w-5 md:h-5 text-[#4B5563] shrink-0" />
 
                 <input
                   type="email"
@@ -49,12 +45,22 @@ const Footer = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Adresa de email"
                   required
-                  className="flex-1 h-full bg-transparent outline-none px-4 text-[16px] text-[#64748B] placeholder:text-[#94A3B8]"
+                  className="flex-1 h-full bg-transparent outline-none px-2 md:px-4 text-[14px] md:text-[16px] text-[#64748B] placeholder:text-[#94A3B8]"
                 />
 
                 <button
                   type="submit"
-                  className="h-[42px] px-7 md:px-9 rounded-full bg-[#0f8b8d] text-white font-semibold text-[16px] hover:bg-[#0d7c7e] transition"
+                  className="
+      h-[36px] md:h-[42px]
+      px-4 md:px-7
+      text-[14px] md:text-[16px]
+      rounded-full
+      bg-[#16a085]
+      text-white font-semibold
+      hover:bg-[#0d7c7e]
+      transition
+      whitespace-nowrap
+    "
                 >
                   Abonează-te
                 </button>
@@ -65,63 +71,55 @@ const Footer = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#0d5c63] pt-10 md:pt-12 pb-[100px] md:pb-14 xl:rounded-tr-[22px] xl:rounded-tl-[22px] relative">
+      <footer className="bg-[#16a085] pt-10 md:pt-12 pb-[50px] md:pb-12 xl:rounded-tr-[22px] xl:rounded-tl-[22px] relative">
         <div className="max-w-[1320px] mx-auto px-4">
           <div className="grid grid-cols-12 gap-x-6 gap-y-10 pb-9">
             {/* Column 1 */}
             <div className="col-span-12 md:col-span-12 xl:col-span-3 flex flex-col gap-y-6">
               <div>
-                <Link to="/" className="inline-flex items-center gap-2">
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-[#FFD65A] flex items-center justify-center text-[#0d5c63] font-bold text-[22px] leading-none">
-                      S
-                    </div>
-                    <span className="ml-2 text-[#FFD65A] text-[28px] font-bold leading-none">
-                      Sellzy
-                    </span>
-                  </div>
+                <Link to="/" className="inline-flex items-center">
+                  <img
+                    src={logo}
+                    alt="Domix"
+                    className="h-16 md:h-16 object-contain invert brightness-0"
+                  />
                 </Link>
               </div>
 
               <p className="text-[#D8ECE6] text-base leading-[1.8] max-w-[330px]">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                Partenerul tău de încredere în construcții. Oferim o gamă variată de materiale de calitate pentru proiecte durabile, la prețuri competitive.
               </p>
 
               <div className="flex flex-wrap gap-x-4 gap-y-4">
-                {/* <a
-                  href="#"
-                  className="inline-flex items-center justify-center size-10 rounded-full bg-[rgba(145,158,171,0.16)]"
+                <a
+                  href="https://www.facebook.com/profile.php?id=61574327334921"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center size-10 rounded-full bg-white/20 hover:bg-white/30 transition-all duration-300 hover:scale-110"
                 >
-                  <Facebook className="w-5 h-5 text-white" />
+                  <FaFacebookF className="w-4 h-4 text-white" />
                 </a>
+
                 <a
-                  href="#"
-                  className="inline-flex items-center justify-center size-10 rounded-full bg-[rgba(145,158,171,0.16)]"
+                  href="https://instagram.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center size-10 rounded-full bg-white/20 hover:bg-white/30 transition-all duration-300 hover:scale-110"
                 >
-                  <Instagram className="w-5 h-5 text-white" />
+                  <FaInstagram className="w-4 h-4 text-white" />
                 </a>
+
                 <a
-                  href="#"
-                  className="inline-flex items-center justify-center size-10 rounded-full bg-[rgba(145,158,171,0.16)]"
+                  href="https://tiktok.com/@domix.md2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center size-10 rounded-full bg-white/20 hover:bg-white/30 transition-all duration-300 hover:scale-110"
                 >
-                  <Linkedin className="w-5 h-5 text-white" />
-                </a>
-                <a
-                  href="#"
-                  className="inline-flex items-center justify-center size-10 rounded-full bg-[rgba(145,158,171,0.16)]"
-                >
-                  <Pinterest className="w-5 h-5 text-white" />
-                </a> */}
-                <a
-                  href="#"
-                  className="inline-flex items-center justify-center size-10 rounded-full bg-[rgba(145,158,171,0.16)]"
-                >
-                  <BadgeDollarSign className="w-5 h-5 text-white" />
+                  <FaTiktok className="w-4 h-4 text-white" />
                 </a>
               </div>
 
-              <div className="flex flex-col gap-y-[15px]">
+              {/* <div className="flex flex-col gap-y-[15px]">
                 <p className="text-base font-semibold text-[#D8ECE6]">
                   Download Our App:
                 </p>
@@ -142,23 +140,22 @@ const Footer = () => {
                     />
                   </a>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {/* Column 2 */}
             <div className="col-span-12 md:col-span-6 xl:col-span-2">
-              <h5 className="text-[#D8ECE6] text-[18px] font-semibold pb-6 border-b border-[rgba(145,158,171,0.24)]">
-                About
+              <h5 className="text-[#D8ECE6] text-[20px] font-semibold pb-0 border-b border-[rgba(145,158,171,0.24)]">
+                Link-uri utile
               </h5>
 
               <ul className="flex flex-col gap-y-1.5 pt-4">
                 {[
-                  { to: '/about', label: 'About Us' },
-                  { to: '/terms', label: 'Terms & Conditions' },
-                  { to: '/careers', label: 'Careers' },
-                  { to: '/news', label: 'Latest News' },
-                  { to: '/contact', label: 'Contact Us' },
-                  { to: '/privacy', label: 'Privacy Policy' },
+                  { to: '/despre-noi', label: 'Despre Noi' },
+                  { to: '/catalog', label: 'Catalog' },
+                  { to: '/servicii', label: 'Servicii' },
+                  { to: '/brands', label: 'Branduri' },
+                  { to: '/contact', label: 'Contacte' },
                 ].map((item) => (
                   <li key={item.label} className="py-1.5 flex items-center gap-x-2">
                     <span className="inline-flex items-center">
@@ -177,18 +174,17 @@ const Footer = () => {
 
             {/* Column 3 */}
             <div className="col-span-12 md:col-span-6 xl:col-span-2">
-              <h5 className="text-[#D8ECE6] text-[18px] font-semibold pb-6 border-b border-[rgba(145,158,171,0.24)]">
-                My Account
+              <h5 className="text-[#D8ECE6] text-[20px] font-semibold pb-0 border-b border-[rgba(145,158,171,0.24)]">
+                Informații
               </h5>
 
               <ul className="flex flex-col gap-y-1.5 pt-4">
                 {[
-                  { to: '/account', label: 'Your Account' },
-                  { to: '/return-policy', label: 'Return Policies' },
-                  { to: '/become-vendor', label: 'Become a Vendor' },
-                  { to: '/wishlist', label: 'Wishlist' },
-                  { to: '/affiliate', label: 'Affiliate Program' },
-                  { to: '/faqs', label: 'FAQs' },
+                  { to: '/page/termeni-si-conditii', label: 'Termeni și condiții' },
+                  { to: '/page/politica-de-confidentialitate', label: 'Politica de conf.' },
+                  { to: '/page/politica-cookie', label: 'Politica Cookie' },
+                  { to: '/page/livrare-si-plata', label: 'Livrare și plata' },
+                  { to: '/intrebari-frecvente', label: 'Întrebări frecvente' },
                 ].map((item) => (
                   <li key={item.label} className="py-1.5 flex items-center gap-x-2">
                     <span className="inline-flex items-center">
@@ -207,28 +203,27 @@ const Footer = () => {
 
             {/* Column 4 */}
             <div className="col-span-12 md:col-span-6 xl:col-span-2">
-              <h5 className="text-[#D8ECE6] text-[18px] font-semibold pb-6 border-b border-[rgba(145,158,171,0.24)]">
-                Categories
+              <h5 className="text-[#D8ECE6] text-[20px] font-semibold pb-0 border-b border-[rgba(145,158,171,0.24)]">
+                Categorii
               </h5>
 
               <ul className="flex flex-col gap-y-1.5 pt-4">
                 {[
-                  'Healthcare',
-                  'Fashion',
-                  'Organic',
-                  'Beauty',
-                  'Groceries',
-                  'Fahion',
+                  { to: '/toate-produsele', label: 'Toate produsele' },
+                  { to: '/produse-cu-reducere', label: 'Produse cu reducere' },
+                  { to: '/cele-mai-vandute', label: 'Cele mai vândute' },
+                  { to: '/produse-noi', label: 'Produse noi' },
+                  // { to: '/intrebari-frecvente', label: 'Întrebări frecvente' },
                 ].map((item) => (
-                  <li key={item} className="py-1.5 flex items-center gap-x-2">
+                  <li key={item.label} className="py-1.5 flex items-center gap-x-2">
                     <span className="inline-flex items-center">
                       <ChevronRight className="w-5 h-5 text-[#D8ECE6]" />
                     </span>
                     <Link
-                      to="#"
+                      to={item.to}
                       className="text-[#D8ECE6] font-semibold hover:underline"
                     >
-                      {item}
+                      {item.label}
                     </Link>
                   </li>
                 ))}
@@ -237,49 +232,49 @@ const Footer = () => {
 
             {/* Column 5 */}
             <div className="col-span-12 md:col-span-6 xl:col-span-3">
-              <h5 className="text-[#D8ECE6] text-[18px] font-semibold pb-6 border-b border-[rgba(145,158,171,0.24)]">
-                Contact Information&apos;s
+              <h5 className="text-[#D8ECE6] text-[20px] font-semibold pb-o border-b border-[rgba(145,158,171,0.24)]">
+                Contacte
               </h5>
 
               <ul className="flex flex-col gap-y-3 py-4">
                 <li className="flex items-center gap-x-3">
-                  <span className="size-10 inline-flex items-center justify-center rounded-full bg-[rgba(145,158,171,0.16)] shrink-0">
+                  <span className="size-10 inline-flex items-center justify-center rounded-full bg-[#ffffff]/20 shrink-0">
                     <MapPin className="w-5 h-5 text-[#D8ECE6]" />
                   </span>
                   <p className="text-[#D8ECE6] font-semibold leading-[1.6]">
-                    2715 Ash Dr. San Jose, South Dakota 83475
+                    Republica Moldova, or. Chișinău, str. Calea Ieșilor 2A
                   </p>
                 </li>
 
                 <li className="flex items-center gap-x-3">
-                  <span className="size-10 inline-flex items-center justify-center rounded-full bg-[rgba(145,158,171,0.16)] shrink-0">
+                  <span className="size-10 inline-flex items-center justify-center rounded-full bg-[#ffffff]/20 shrink-0">
                     <Phone className="w-5 h-5 text-[#D8ECE6]" />
                   </span>
                   <p className="text-[#D8ECE6] font-semibold">
-                    Call Us: (239) 555-0108
+                    Sună: (373) 697 11 967
                   </p>
                 </li>
 
                 <li className="flex items-center gap-x-3">
-                  <span className="size-10 inline-flex items-center justify-center rounded-full bg-[rgba(145,158,171,0.16)] shrink-0">
+                  <span className="size-10 inline-flex items-center justify-center rounded-full bg-[#ffffff]/20 shrink-0">
                     <Mail className="w-5 h-5 text-[#D8ECE6]" />
                   </span>
                   <p className="text-[#D8ECE6] font-semibold">
-                    sara.cruz@example.com
+                    support@domix.md
                   </p>
                 </li>
 
                 <li className="flex items-center gap-x-3">
-                  <span className="size-10 inline-flex items-center justify-center rounded-full bg-[rgba(145,158,171,0.16)] shrink-0">
-                    <Printer className="w-5 h-5 text-[#D8ECE6]" />
+                  <span className="size-10 inline-flex items-center justify-center rounded-full bg-[#ffffff]/20 shrink-0">
+                    <Mail className="w-5 h-5 text-[#D8ECE6]" />
                   </span>
                   <p className="text-[#D8ECE6] font-semibold">
-                    sara.cruz@example.com
+                    comenzi@domix.md
                   </p>
                 </li>
               </ul>
 
-              <div className="pt-2">
+              {/* <div className="pt-2">
                 <div className="flex flex-wrap items-center gap-3">
                   <img
                     src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png"
@@ -307,15 +302,23 @@ const Footer = () => {
                     className="h-9 w-auto object-contain bg-[#1F2937] rounded px-3 py-2"
                   />
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 
           {/* Bottom */}
           <div className="text-center text-white pt-[22px] pb-px bg-no-repeat bg-center relative">
-            <div className="absolute left-1/2 -translate-x-1/2 top-0 w-full max-w-[520px] h-[48px] border-t border-[#1b7a7f] rounded-t-[120px]" />
+            <div className="absolute left-1/2 -translate-x-1/2 top-0 w-full max-w-[520px] h-[48px] border-t border-[#fff] rounded-t-[120px]" />
             <p className="relative z-10 text-[15px] text-[#EAF6F2]">
-              2026 Domix. Powered By Nextify
+              © 2026 Domix. Powered By{" "}
+              <a
+                href="https://nextify.md"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-white transition"
+              >
+                Nextify
+              </a>
             </p>
           </div>
         </div>

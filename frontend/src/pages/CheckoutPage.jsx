@@ -262,7 +262,7 @@ const CheckoutPage = () => {
 
               {/* Order Summary */}
               <div className="lg:col-span-1">
-                <div className="bg-white rounded-2xl p-6 border-2 border-gray-100 sticky top-4">
+                <div className="bg-white rounded-2xl p-6 border-2 border-gray-100 sticky top-24">
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">Sumar Comandă</h2>
 
                   {/* Products */}
@@ -310,7 +310,7 @@ const CheckoutPage = () => {
                   </button>
 
                   <p className="text-xs text-gray-500 text-center mt-4">
-                    Prin plasarea comenzii, accepți <a href="#" className="text-teal-600 hover:underline">Termenii și Condițiile</a> noastre
+                    Prin plasarea comenzii, accepți <a href="/termeni-si-conditii" className="text-teal-600 hover:underline">Termenii și Condițiile</a> noastre
                   </p>
                 </div>
               </div>

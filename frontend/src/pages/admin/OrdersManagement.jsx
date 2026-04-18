@@ -64,38 +64,38 @@ const OrdersManagement = () => {
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Orders Management</h2>
-        <p className="text-gray-600">Manage customer orders</p>
+<div>
+  <div className="mb-6">
+    <h2 className="text-2xl font-bold text-gray-900">Gestionare comenzi</h2>
+    <p className="text-gray-600">Administrează comenzile clienților</p>
+  </div>
+
+  <div className="bg-white rounded-xl shadow-md p-6">
+    <div className="mb-4">
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <input
+          type="text"
+          placeholder="Caută comenzi..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+        />
       </div>
+    </div>
 
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <div className="mb-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search orders..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Order ID</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Total</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Items</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Status</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Date</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Actions</th>
-              </tr>
-            </thead>
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">ID comandă</th>
+            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Total</th>
+            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Produse</th>
+            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Status</th>
+            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Data</th>
+            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Acțiuni</th>
+          </tr>
+        </thead>
             <tbody className="divide-y divide-gray-200">
               {filteredOrders.map((order) => (
                 <tr key={order.id} className="hover:bg-gray-50">

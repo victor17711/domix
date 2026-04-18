@@ -154,12 +154,16 @@ const CategoryPage = () => {
         <div className="w-full px-6 py-8">
           <div className="flex items-center gap-4">
             {category.image && (
-              <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center overflow-hidden">
-                <img src={category.image} alt={category.name} className="w-full h-full object-cover" />
-              </div>
-            )}
+  <div className="w-16 h-16 flex-shrink-0 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center overflow-hidden">
+    <img 
+      src={category.image} 
+      alt={category.name} 
+      className="w-full h-full object-contain" 
+    />
+  </div>
+)}
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold">{category.name}</h1>
+              <h1 className="text-3xl md:text-5xl font-bold">{category.name}</h1>
               <p className="text-teal-100 mt-2">{products.length} produse disponibile</p>
             </div>
           </div>
@@ -341,7 +345,7 @@ const CategoryPage = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}

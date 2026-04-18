@@ -149,11 +149,11 @@ const ProductDetailPage = () => {
               <img 
                 src={images[selectedImage]} 
                 alt={product.name}
-                className="w-full h-[500px] object-cover"
+                className="w-full h-[300px] md:h-[600px] object-cover"
               />
             </div>
             {images.length > 1 && (
-              <div className="grid grid-cols-5 gap-3">
+              <div className="grid grid-cols-5 gap-2">
                 {images.map((img, idx) => (
                   <button
                     key={idx}
@@ -162,7 +162,7 @@ const ProductDetailPage = () => {
                       selectedImage === idx ? 'border-teal-600' : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
-                    <img src={img} alt="" className="w-full h-20 object-cover" />
+                    <img src={img} alt="" className="w-full h-[60px] md:h-[100px] object-cover" />
                   </button>
                 ))}
               </div>
@@ -176,7 +176,7 @@ const ProductDetailPage = () => {
                 {product.badge}
               </span>
             )}
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">{product.name}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{product.name}</h1>
             
             {/* Rating */}
             <div className="flex items-center gap-4 mb-6">
@@ -201,11 +201,11 @@ const ProductDetailPage = () => {
             {/* Price */}
             <div className="mb-6">
               <div className="flex items-baseline gap-4">
-                <span className="text-4xl font-bold text-teal-600">{product.price * quantity} MDL</span>
+                <span className="text-2xl md:text-4xl font-bold text-teal-600">{product.price * quantity} MDL</span>
                 {product.originalPrice && (
                   <>
-                    <span className="text-2xl text-gray-400 line-through">{product.originalPrice * quantity} MDL</span>
-                    <span className="text-xl font-semibold text-green-600">
+                    <span className="text-xl md:text-2xl text-gray-400 line-through">{product.originalPrice * quantity} MDL</span>
+                    <span className="text-l md:text-xl font-semibold text-green-600">
                       -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
                     </span>
                   </>
@@ -222,14 +222,14 @@ const ProductDetailPage = () => {
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     className="p-3 hover:bg-gray-100 transition"
                   >
-                    <Minus className="w-5 h-5" />
+                    <Minus className="w-4 h-4 md:w-5 md:h-5" />
                   </button>
-                  <span className="px-6 py-2 font-bold text-lg">{quantity}</span>
+                  <span className="px-2 md:px-6 py-2 font-bold text-lg">{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
                     className="p-3 hover:bg-gray-100 transition"
                   >
-                    <Plus className="w-5 h-5" />
+                    <Plus className="w-4 h-4 md:w-5 md:h-5" />
                   </button>
                 </div>
                 <span className="text-gray-600">
@@ -243,23 +243,23 @@ const ProductDetailPage = () => {
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={handleAddToCart}
-                  className="bg-white border-2 border-teal-600 text-teal-600 py-4 rounded-xl hover:bg-teal-50 transition font-bold text-lg flex items-center justify-center gap-2"
+                  className="bg-white border-2 border-teal-600 text-teal-600 py-4 rounded-xl hover:bg-teal-50 transition font-bold text-l md:text-lg flex items-center justify-center gap-2"
                 >
-                  <ShoppingCart className="w-6 h-6" />
+                  <ShoppingCart className="w-4 h-4 md:w-6 md:h-6" />
                   Adaugă în Coș
                 </button>
                 <button
                   onClick={handleBuyNow}
-                  className="bg-teal-600 text-white py-4 rounded-xl hover:bg-teal-700 transition font-bold text-lg"
+                  className="bg-teal-600 text-white py-4 rounded-xl hover:bg-teal-700 transition font-bold text-l md:text-lg"
                 >
                   Cumpără Acum
                 </button>
               </div>
               <button
                 onClick={handleAddToWishlist}
-                className="w-full py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition font-semibold flex items-center justify-center gap-2"
+                className="bg-white w-full py-2 md:py-4 border-2 border-teal-600 text-teal-600 rounded-xl hover:bg-teal-50 transition font-bold md:text-lg text-sm flex items-center justify-center gap-2"
               >
-                <Heart className="w-5 h-5" />
+                <Heart className="w-4 h-4 md:w-6 md:h-6" />
                 Adaugă la Favorite
               </button>
             </div>
@@ -462,7 +462,7 @@ const ProductDetailPage = () => {
         {relatedProducts.length > 0 && (
           <div>
             <h2 className="text-3xl font-bold text-gray-900 mb-8">Produse Similare</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
               {relatedProducts.map((prod) => (
                 <ProductCard key={prod.id} product={prod} />
               ))}

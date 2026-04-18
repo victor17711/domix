@@ -84,11 +84,11 @@ const CategoryGrid = () => {
                   className="bg-gray-50 rounded-xl p-6 text-center hover:shadow-lg transition group block h-full"
                 >
                   {category.image ? (
-                    <div className="w-20 h-20 mx-auto mb-3 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center group-hover:scale-110 transition">
+                    <div className="w-20 h-20 mx-auto mb-3 overflow-hidden flex items-center justify-center group-hover:scale-110 transition">
                       <img 
                         src={category.image} 
                         alt={category.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                     </div>
                   ) : category.icon ? (

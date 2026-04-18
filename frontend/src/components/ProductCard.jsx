@@ -60,12 +60,12 @@ const ProductCard = ({ product, showProgress = false }) => {
             >
               <Heart className="w-4 h-4" fill={inWishlist ? 'currentColor' : 'none'} />
             </button>
-            <button
+            {/* <button
               onClick={handleQuickView}
               className="bg-white text-gray-600 p-2 rounded-full shadow-md hover:scale-110 transition"
             >
               <Eye className="w-4 h-4" />
-            </button>
+            </button> */}
           </div>
 
           {/* Product Image */}
@@ -118,7 +118,7 @@ const ProductCard = ({ product, showProgress = false }) => {
             )} */}
 
             {/* Price */}
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 mb-3">
               <span className="text-lg font-bold text-gray-900">{product.price} MDL</span>
               {product.originalPrice && (
                 <>
@@ -129,7 +129,7 @@ const ProductCard = ({ product, showProgress = false }) => {
             </div>
 
             {/* Progress Bar (if enabled) */}
-            {showProgress && product.sold !== undefined && (
+            {/* {showProgress && product.sold !== undefined && (
               <div className="mb-3">
                 <div className="flex justify-between text-xs text-gray-600 mb-1">
                   <span>Vândut: <strong>{product.sold}</strong></span>
@@ -142,14 +142,14 @@ const ProductCard = ({ product, showProgress = false }) => {
                   />
                 </div>
               </div>
-            )}
+            )} */}
 
             {/* Add to Cart Button */}
             <button
               onClick={handleAddToCart}
               className="w-full bg-teal-600 text-white font-bold py-2 rounded-md hover:bg-teal-700 transition flex items-center justify-center gap-2"
             >
-              <ShoppingCart className="w-4 h-4 font-bold" />
+              <ShoppingCart className="w-4 h-4" strokeWidth={2.5} />
               Cumpără
             </button>
           </div>

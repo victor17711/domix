@@ -31,7 +31,7 @@ const CountdownTimer = ({ targetDate }) => {
 
   return (
     <div className="inline-flex items-center gap-2 bg-red-100 text-red-600 px-4 py-2 rounded-full">
-      <span className="font-semibold">Ends in:</span>
+      <span className="font-semibold">Reducere:</span>
       <div className="flex items-center gap-1">
         <span className="font-bold">{formatNumber(timeLeft.days || 259)}</span>
         <span>:</span>

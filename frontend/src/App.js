@@ -1,17 +1,25 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { AdminProvider, useAdmin } from './context/AdminContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import AdminLayout from './components/AdminLayout';
+import Preloader from './components/Preloader';
+import ScrollToTop from './components/ScrollToTop';
 import HomePage from './pages/HomePage';
 import DynamicPage from './pages/DynamicPage';
 import CategoryPage from './pages/CategoryPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
+import ServicesPage from './pages/ServicesPage';
+import AboutUsPage from './pages/AboutUsPage';
+import CatalogPage from './pages/CatalogPage';
+import MyAccountPage from './pages/MyAccountPage';
+import CatalogCategoryPage from './pages/CatalogCategoryPage';
+import FAQPage from './pages/FAQPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import ContactPage from './pages/ContactPage';
 import BrandsPage from './pages/BrandsPage';
@@ -26,6 +34,27 @@ import Settings from './pages/admin/Settings';
 import Pages from './pages/admin/Pages';
 import { Toaster } from './components/ui/toaster';
 import './App.css';
+
+// Wrapper component to handle route changes and preloader
+const RouteChangeHandler = ({ children }) => {
+  const location = useLocation();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000); // 1 second preloader
+
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
+
+  if (loading) {
+    return <Preloader />;
+  }
+
+  return children;
+};
 
 // Protected Route Component for Admin
 const AdminProtectedRoute = ({ children }) => {
@@ -57,15 +86,17 @@ function App() {
         <AdminProvider>
           <CartProvider>
             <div className="App">
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={
-                  <>
-                    <Navbar />
-                    <HomePage />
-                    <Footer />
-                  </>
-                } />
+              <ScrollToTop />
+              <RouteChangeHandler>
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/" element={
+                    <>
+                      <Navbar />
+                      <HomePage />
+                      <Footer />
+                    </>
+                  } />
 
                 {/* Contact Page Route - MUST be before /page/:slug */}
                 <Route path="/contact" element={
@@ -130,11 +161,65 @@ function App() {
                   </>
                 } />
 
+                {/* Services Page Route */}
+                <Route path="/servicii" element={
+                  <>
+                    <Navbar />
+                    <ServicesPage />
+                    <Footer />
+                  </>
+                } />
+
+                {/* About Us Page Route */}
+                <Route path="/despre-noi" element={
+                  <>
+                    <Navbar />
+                    <AboutUsPage />
+                    <Footer />
+                  </>
+                } />
+
+                {/* Catalog Page Route */}
+                <Route path="/catalog" element={
+                  <>
+                    <Navbar />
+                    <CatalogPage />
+                    <Footer />
+                  </>
+                } />
+
+                {/* Catalog Page Detail Route */}
+                <Route path="/catalog/:categoryId" element={
+                  <>
+                    <Navbar />
+                    <CatalogCategoryPage />
+                    <Footer />
+                  </>
+                } />
+
+                {/* FAQ Page Route */}
+                <Route path="/intrebari-frecvente" element={
+                  <>
+                    <Navbar />
+                    <FAQPage />
+                    <Footer />
+                  </>
+                } />
+
                 {/* Order Success Page Route */}
                 <Route path="/order-success" element={
                   <>
                     <Navbar />
                     <OrderSuccessPage />
+                    <Footer />
+                  </>
+                } />
+
+                {/* My Account Page Route */}
+                <Route path="/contul-meu" element={
+                  <>
+                    <Navbar />
+                    <MyAccountPage />
                     <Footer />
                   </>
                 } />
@@ -193,6 +278,7 @@ function App() {
                 {/* Redirect /admin to /admin/dashboard */}
                 <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
               </Routes>
+              </RouteChangeHandler>
               
               <Toaster />
             </div>

@@ -19,8 +19,8 @@ const AdminLogin = () => {
       toast({ title: 'Succes', description: 'Logat ca administrator!' });
       navigate('/admin/dashboard');
     } catch (error) {
-      toast({ 
-        title: 'Eroare', 
+      toast({
+        title: 'Eroare',
         description: error.response?.data?.detail || 'Email sau parolă greșită',
         variant: 'destructive'
       });
@@ -33,9 +33,9 @@ const AdminLogin = () => {
     <div className="min-h-screen bg-gradient-to-br from-teal-600 via-teal-700 to-teal-800 flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-md">
         <div className="text-center mb-8">
-          <img 
-            src="https://customer-assets.emergentagent.com/job_ecommerce-admin-55/artifacts/u4vrvwt1_Domix.png" 
-            alt="DOMIX Logo" 
+          <img
+            src="https://customer-assets.emergentagent.com/job_ecommerce-admin-55/artifacts/u4vrvwt1_Domix.png"
+            alt="DOMIX Logo"
             className="h-24 mx-auto mb-4"
           />
           <p className="text-gray-600 text-lg">Loghează-te în panoul de administrare</p>
@@ -77,7 +77,17 @@ const AdminLogin = () => {
 
         <div className="mt-6 text-center text-sm text-gray-500">
           <p>© 2026 Domix. Toate drepturile rezervate.</p>
-          <p className="mt-1">Powered by <span className="text-teal-600 font-semibold">Nextlify</span></p>
+          <p className="mt-1">
+            Powered by{" "}
+            <a
+              href="https://nextify.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-teal-600 font-semibold hover:underline transition"
+            >
+              Nextify
+            </a>
+          </p>
         </div>
       </div>
     </div>

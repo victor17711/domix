@@ -21,21 +21,21 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
     try {
       if (mode === 'login') {
         await login(formData.email, formData.password);
-        toast({ title: 'Success', description: 'Logged in successfully!' });
+        toast({ title: 'Succes', description: 'Autentificare realizată cu succes!' });
         onClose();
       } else if (mode === 'register') {
         if (formData.password !== formData.confirmPassword) {
-          toast({ title: 'Error', description: 'Passwords do not match!', variant: 'destructive' });
+          toast({ title: 'Eroare', description: 'Parolele nu coincid!', variant: 'destructive' });
           return;
         }
         await register(formData.firstName, formData.lastName, formData.email, formData.password);
-        toast({ title: 'Success', description: 'Account created successfully!' });
+        toast({ title: 'Succes', description: 'Cont creat cu succes!' });
         onClose();
       }
     } catch (error) {
       toast({ 
-        title: 'Error', 
-        description: error.response?.data?.detail || 'An error occurred. Please try again.',
+        title: 'Eroare', 
+        description: error.response?.data?.detail || 'A apărut o eroare. Încearcă din nou.',
         variant: 'destructive' 
       });
     }
@@ -57,7 +57,7 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
 
         {mode === 'login' && (
           <>
-            <h2 className="text-2xl font-bold mb-6">Log In</h2>
+            <h2 className="text-2xl font-bold mb-6">Autentificare</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Email *</label>
@@ -71,7 +71,7 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Password *</label>
+                <label className="block text-sm font-medium mb-1">Parolă *</label>
                 <input
                   type="password"
                   name="password"
@@ -86,22 +86,22 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
                 onClick={() => setMode('forgot')}
                 className="text-sm text-teal-600 hover:underline"
               >
-                Forgot Password?
+                Ai uitat parola?
               </button>
               <button
                 type="submit"
                 className="w-full bg-teal-600 text-white py-2 rounded-md hover:bg-teal-700 transition"
               >
-                Sign In
+                Conectează-te
               </button>
             </form>
             <p className="mt-4 text-center text-sm">
-              Don't have an account?{' '}
+              Nu ai cont?{' '}
               <button
                 onClick={() => setMode('register')}
                 className="text-teal-600 hover:underline font-semibold"
               >
-                Sign Up
+                Creează cont
               </button>
             </p>
           </>
@@ -109,11 +109,11 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
 
         {mode === 'register' && (
           <>
-            <h2 className="text-2xl font-bold mb-6">Create an Account</h2>
+            <h2 className="text-2xl font-bold mb-6">Creează un cont</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">First Name *</label>
+                  <label className="block text-sm font-medium mb-1">Prenume *</label>
                   <input
                     type="text"
                     name="firstName"
@@ -124,7 +124,7 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Last Name *</label>
+                  <label className="block text-sm font-medium mb-1">Nume *</label>
                   <input
                     type="text"
                     name="lastName"
@@ -147,7 +147,7 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Password *</label>
+                <label className="block text-sm font-medium mb-1">Parolă *</label>
                 <input
                   type="password"
                   name="password"
@@ -158,7 +158,7 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Confirm Password *</label>
+                <label className="block text-sm font-medium mb-1">Confirmă parola *</label>
                 <input
                   type="password"
                   name="confirmPassword"
@@ -172,16 +172,16 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
                 type="submit"
                 className="w-full bg-teal-600 text-white py-2 rounded-md hover:bg-teal-700 transition"
               >
-                Create Account
+                Creează cont
               </button>
             </form>
             <p className="mt-4 text-center text-sm">
-              Already have an account?{' '}
+              Ai deja cont?{' '}
               <button
                 onClick={() => setMode('login')}
                 className="text-teal-600 hover:underline font-semibold"
               >
-                Sign In
+                Conectează-te
               </button>
             </p>
           </>
@@ -189,8 +189,8 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
 
         {mode === 'forgot' && (
           <>
-            <h2 className="text-2xl font-bold mb-6">Forgot Password</h2>
-            <form onSubmit={(e) => { e.preventDefault(); toast({ title: 'Success', description: 'Reset link sent to your email!' }); }} className="space-y-4">
+            <h2 className="text-2xl font-bold mb-6">Ai uitat parola</h2>
+            <form onSubmit={(e) => { e.preventDefault(); toast({ title: 'Succes', description: 'Link de resetare trimis pe email!' }); }} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Email *</label>
                 <input
@@ -204,14 +204,14 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
                 type="submit"
                 className="w-full bg-teal-600 text-white py-2 rounded-md hover:bg-teal-700 transition"
               >
-                Reset Password
+                Resetează parola
               </button>
             </form>
             <button
               onClick={() => setMode('login')}
               className="mt-4 text-sm text-teal-600 hover:underline"
             >
-              Back to Login
+              Înapoi la autentificare
             </button>
           </>
         )}

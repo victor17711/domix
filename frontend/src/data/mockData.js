@@ -174,23 +174,25 @@ export const sliderData = [
     badge: "Get up to 30% of on your first $150 purchase",
     title: "Discover the Season's Newest Styles",
     description: "Explore a fresh collection of trends, colors, and silhouettes curated to elevate your everyday look.",
-    image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800",
-    bgColor: "#F7DC6F"
+    image: "https://www.ro.weber/files/ro/styles/1920x1080/public/pictures/2025-09/banner%20weberfloor%20fast%201920x1080.jpg.webp?itok=l-4LiKiu",
+    bgColor: "#F7DC6F",
+    buttonText: "Shop Now"
   },
   {
     id: 2,
     badge: "Get up to 30% of on your first $150 purchase",
     title: "Stay Warm for Less",
     description: "Grab exclusive deals on sweaters, hoodies, coats, and cold-weather must-haves before the season ends.",
-    image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800",
-    bgColor: "#F7DC6F"
+    image: "https://panourisandwich.md/wp-content/uploads/2022/04/banner-oficiu-modular-ro.jpg",
+    bgColor: "#F7DC6F",
+    buttonText: "Shop Now"
   },
   {
     id: 3,
     badge: "Get up to 30% of on your first $150 purchase",
     title: "Fashion for the Modern Elite",
     description: "Experience luxury craftsmanship, timeless silhouettes, and high-quality fabrics made for a refined wardrobe.",
-    image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800",
+    image: "https://macrinashop.ro/wp-content/uploads/2021/08/macrina-materiale-de-constructii-adeplast-banner-1.jpg",
     bgColor: "#F7DC6F"
   },
   {
@@ -198,16 +200,12 @@ export const sliderData = [
     badge: "Get up to 30% of on your first $150 purchase",
     title: "Wrap Yourself in Winter Elegance",
     description: "Handcrafted designs & premium fabrics for a timeless look.",
-    image: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800",
+    image: "https://panourisandwich.md/wp-content/uploads/2022/12/banner-1920x650-site-ro-100000-lei.jpg",
     bgColor: "#F7DC6F"
   },
   {
     id: 5,
-    badge: "Get up to 30% of on your first $150 purchase",
-    title: "Big Savings, Bigger Style",
-    description: "Grab your favorite fashion picks at incredible prices — limited stock on bestselling designs.",
-    image: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=800",
-    bgColor: "#F7DC6F"
+    image: "https://img.freepik.com/premium-psd/youtube-video-thumbnail-web-banner-template-business-video-youtube-marketing-graphic-channel_797457-127.jpg?semt=ais_hybrid&w=740&q=80",
   }
 ];
 
