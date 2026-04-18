@@ -132,7 +132,9 @@ const ProductDetailPage = () => {
     );
   }
 
-  const images = product.images && product.images.length > 0 ? product.images : [product.image];
+  const images = product.images && product.images.length > 0 
+    ? product.images 
+    : (product.image ? [product.image] : ['https://via.placeholder.com/600x600?text=No+Image']);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -198,7 +200,7 @@ const ProductDetailPage = () => {
                   <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{productName}</h1>
             
             {/* Rating - Only show if reviews exist */}
-            {product.reviews > 0 && (
+            {reviews.length > 0 && (
               <div className="flex items-center gap-4 mb-6">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
@@ -212,7 +214,7 @@ const ProductDetailPage = () => {
                     />
                   ))}
                 </div>
-                <span className="text-gray-600">({product.reviews || 0} recenzii)</span>
+                <span className="text-gray-600">({reviews.length} recenzii)</span>
                 {product.sold && (
                   <span className="text-teal-600 font-semibold">{product.sold} vândute</span>
                 )}
@@ -220,7 +222,7 @@ const ProductDetailPage = () => {
             )}
             
             {/* Show sold count even if no reviews */}
-            {product.reviews === 0 && product.sold && (
+            {reviews.length === 0 && product.sold && (
               <div className="mb-6">
                 <span className="text-teal-600 font-semibold">{product.sold} vândute</span>
               </div>
