@@ -483,19 +483,35 @@ async def delete_brand(
 
 # ==================== CART ENDPOINTS ====================
 
-@api_router.get("/cart", response_model=Cart)
+@api_router.get("/cart")
 async def get_cart(authorization: Optional[str] = Header(None)):
-    """Get user cart"""
+    """Get user cart with populated product data"""
     current_user = await get_current_user(authorization, db)
     
-    cart = await db.carts.find_one({"userId": current_user["id"]})
+    cart = await db.carts.find_one({"userId": current_user["id"]}, {"_id": 0})
     if not cart:
         # Create empty cart
-        new_cart = Cart(userId=current_user["id"])
-        await db.carts.insert_one(new_cart.dict())
-        return new_cart
+        return {"userId": current_user["id"], "items": [], "total": 0.0}
     
-    return Cart(**cart)
+    # Populate items with product data
+    populated_items = []
+    for item in cart.get("items", []):
+        product = await db.products.find_one({"id": item["productId"]}, {"_id": 0})
+        if product:
+            populated_item = {
+                **item,
+                "id": product["id"],
+                "name": product["name"],
+                "image": product["image"],
+                "images": product.get("images", []),
+                "specifications": product.get("specifications", []),
+                "category": product.get("category", ""),
+                "description": product.get("description", "")
+            }
+            populated_items.append(populated_item)
+    
+    cart["items"] = populated_items
+    return cart
 
 
 @api_router.post("/cart/add")

@@ -48,16 +48,25 @@ const CartPage = () => {
 
                   {/* Info */}
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{item.name}</h3>
+                    <Link to={`/product/${item.id}`}>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2 hover:text-teal-600 transition">
+                        {item.name}
+                      </h3>
+                    </Link>
+                    
                     <div className="text-sm text-gray-600 space-y-1 mb-4">
-                      {item.selectedSize && <div>Mărime: <span className="font-semibold">{item.selectedSize}</span></div>}
-                      {item.selectedColor && (
-                        <div className="flex items-center gap-2">
-                          Culoare: 
-                          <div 
-                            className="w-5 h-5 rounded-full border-2 border-gray-300"
-                            style={{ backgroundColor: item.selectedColor }}
-                          />
+                      {item.specifications && item.specifications.length > 0 && (
+                        <div className="space-y-1">
+                          {item.specifications.slice(0, 3).map((spec, index) => (
+                            <div key={index}>
+                              <span className="font-semibold">{spec.title}:</span> {spec.value}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {item.category && (
+                        <div className="text-xs text-gray-500 mt-2">
+                          Categorie: {item.category}
                         </div>
                       )}
                     </div>

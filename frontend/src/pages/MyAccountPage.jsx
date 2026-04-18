@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { User, Package, MapPin, Settings, LogOut, Edit, Save, X, Eye, Clock } from 'lucide-react';
+import { User, ChevronRight, Package, MapPin, Settings, LogOut, Edit, Save, X, Eye, Clock } from 'lucide-react';
 import { toast } from '../hooks/use-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -151,11 +151,28 @@ const MyAccountPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-teal-600 to-teal-700 text-white py-12">
-        <div className="w-full px-6">
-          <h1 className="text-4xl font-bold mb-2">Contul Meu</h1>
-          <p className="text-teal-100">Bun venit, {user.firstName}!</p>
+      {/* HERO */}
+      <div className="relative bg-gradient-to-r from-teal-600 to-teal-700 text-white py-14">
+        <div className="w-full px-4 md:px-6">
+          <div className="flex items-center gap-3 mb-3">
+            <User className="w-10 h-10" />
+            <h1 className="text-3xl md:text-4xl font-bold">Contul meu</h1>
+          </div>
+          <p className="text-teal-100">
+            Bun venit, {user.firstName}
+          </p>
+        </div>
+      </div>
+            {/* BREADCRUMB */}
+      <div className="relative bg-white border-b">
+        <div className="w-full px-6 py-4">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <Link to="/" className="hover:text-teal-600">
+              Acasă
+            </Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-gray-900 font-semibold">Contul meu</span>
+          </div>
         </div>
       </div>
 
