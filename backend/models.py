@@ -59,6 +59,7 @@ class ProductSpecification(BaseModel):
 class ProductCreate(BaseModel):
     name: str
     nameRu: Optional[str] = ""  # Russian translation
+    slug: Optional[str] = ""  # URL-friendly name (auto-generated if empty)
     description: Optional[str] = ""
     descriptionRu: Optional[str] = ""  # Russian translation
     price: float

@@ -47,7 +47,7 @@ const ProductCard = ({ product, showProgress = false }) => {
 
   return (
     <>
-      <Link to={`/product/${product.id}`} className="block">
+      <Link to={`/product/${product.slug || product.id}`} className="block">
         <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition group relative">
           {/* Badge */}
           {productBadge && (

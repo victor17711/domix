@@ -12,6 +12,8 @@ from datetime import datetime, timezone
 import uuid
 from openpyxl import Workbook, load_workbook
 from io import BytesIO
+import re
+import unicodedata
 
 from models import (
     UserCreate, User, UserLogin, UserResponse,
@@ -47,6 +49,17 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
 security = HTTPBearer()
+
+# Helper function to generate slug from text
+def generate_slug(text: str) -> str:
+    """Generate URL-friendly slug from text"""
+    # Normalize unicode characters
+    text = unicodedata.normalize('NFKD', text)
+    # Convert to lowercase and remove non-alphanumeric chars
+    text = re.sub(r'[^\w\s-]', '', text).strip().lower()
+    # Replace spaces with hyphens
+    text = re.sub(r'[-\s]+', '-', text)
+    return text
 
 # Configure logging
 logging.basicConfig(
@@ -182,12 +195,19 @@ async def get_products(
     return [Product(**product) for product in products]
 
 
-@api_router.get("/products/{product_id}", response_model=Product)
-async def get_product(product_id: str):
-    """Get product by ID"""
-    product = await db.products.find_one({"id": product_id})
+@api_router.get("/products/{product_identifier}", response_model=Product)
+async def get_product(product_identifier: str):
+    """Get product by ID or slug"""
+    # Try to find by slug first, then by ID
+    product = await db.products.find_one({"slug": product_identifier}, {"_id": 0})
+    
+    if not product:
+        # Fallback to ID for backward compatibility
+        product = await db.products.find_one({"id": product_identifier}, {"_id": 0})
+    
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
+    
     return Product(**product)
 
 
@@ -201,7 +221,19 @@ async def create_product(
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    new_product = Product(**product.dict())
+    # Generate slug if not provided
+    product_dict = product.dict()
+    if not product_dict.get("slug"):
+        product_dict["slug"] = generate_slug(product.name)
+    
+    # Ensure slug is unique
+    base_slug = product_dict["slug"]
+    counter = 1
+    while await db.products.find_one({"slug": product_dict["slug"]}):
+        product_dict["slug"] = f"{base_slug}-{counter}"
+        counter += 1
+    
+    new_product = Product(**product_dict)
     await db.products.insert_one(new_product.dict())
     
     # Update category item count
@@ -229,6 +261,24 @@ async def update_product(
         raise HTTPException(status_code=404, detail="Product not found")
     
     updated_product = product.dict()
+    
+    # Generate slug if not provided or name changed
+    if not updated_product.get("slug") or product.name != existing_product.get("name"):
+        updated_product["slug"] = generate_slug(product.name)
+        
+        # Ensure slug is unique (exclude current product)
+        base_slug = updated_product["slug"]
+        counter = 1
+        while True:
+            existing_slug = await db.products.find_one({
+                "slug": updated_product["slug"],
+                "id": {"$ne": product_id}
+            })
+            if not existing_slug:
+                break
+            updated_product["slug"] = f"{base_slug}-{counter}"
+            counter += 1
+    
     updated_product["updatedAt"] = datetime.utcnow()
     
     await db.products.update_one(
