@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAdmin } from '../../context/AdminContext';
 import axios from 'axios';
-import { Save, Plus, X, Menu as MenuIcon, ArrowUp, ArrowDown, Folder, Globe, Image as ImageIcon } from 'lucide-react';
+import { Save, Plus, X, Menu as MenuIcon, ArrowUp, ArrowDown, Folder, Globe, Image as ImageIcon, Download, Upload } from 'lucide-react';
 import { toast } from '../../hooks/use-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -17,6 +17,9 @@ const Settings = () => {
   const [featuredCategoryId, setFeaturedCategoryId] = useState('');
   const [websiteName, setWebsiteName] = useState('DOMIX');
   const [favicon, setFavicon] = useState('');
+  const [importFile, setImportFile] = useState(null);
+  const [importing, setImporting] = useState(false);
+  const [exporting, setExporting] = useState(false);
   
   const [newMainItem, setNewMainItem] = useState({ 
     name: '', 

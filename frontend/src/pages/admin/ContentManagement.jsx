@@ -616,13 +616,13 @@ const ContentManagement = () => {
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
           <button
             onClick={() => toggleSection('faqs')}
-            className="w-full px-6 py-5 flex items-center justify-between bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-700 hover:to-indigo-800 transition"
+            className="w-full px-6 py-5 flex items-center justify-between bg-gradient-to-r from-teal-600 to-teal-700 text-white hover:from-teal-700 hover:to-teal-800 transition"
           >
             <div className="flex items-center gap-3">
               <HelpCircle className="w-6 h-6" />
               <div className="text-left">
                 <h2 className="text-xl font-bold">Întrebări Frecvente (FAQs)</h2>
-                <p className="text-sm text-indigo-100">
+                <p className="text-sm text-teal-100">
                   {faqs.length} {faqs.length === 1 ? 'întrebare' : 'întrebări'}
                 </p>
               </div>
@@ -646,7 +646,7 @@ const ContentManagement = () => {
                     setFaqForm({ question: '', answer: '' });
                     setShowFaqModal(true);
                   }}
-                  className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition font-semibold"
+                  className="flex items-center gap-2 bg-teal-600 text-white px-6 py-3 rounded-xl hover:bg-teal-700 transition font-semibold"
                 >
                   <Plus className="w-5 h-5" />
                   Adaugă FAQ
@@ -662,7 +662,7 @@ const ContentManagement = () => {
               ) : (
                 <div className="space-y-4">
                   {faqs.map((faq, index) => (
-                    <div key={index} className="bg-gray-50 rounded-xl p-4 border-2 border-gray-200 hover:border-indigo-500 transition">
+                    <div key={index} className="bg-gray-50 rounded-xl p-4 border-2 border-gray-200 hover:border-teal-500 transition">
                       <div className="flex justify-between items-start gap-4">
                         <div className="flex-1">
                           <h4 className="font-bold text-gray-900 mb-2">{faq.question}</h4>
@@ -671,7 +671,7 @@ const ContentManagement = () => {
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleEditFaq(index)}
-                            className="p-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition"
+                            className="p-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition"
                           >
                             <Edit className="w-4 h-4" />
                           </button>
@@ -695,13 +695,13 @@ const ContentManagement = () => {
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
           <button
             onClick={() => toggleSection('contactInfo')}
-            className="w-full px-6 py-5 flex items-center justify-between bg-gradient-to-r from-orange-600 to-orange-700 text-white hover:from-orange-700 hover:to-orange-800 transition"
+            className="w-full px-6 py-5 flex items-center justify-between bg-gradient-to-r from-teal-600 to-teal-700 text-white hover:from-teal-700 hover:to-teal-800 transition"
           >
             <div className="flex items-center gap-3">
               <Phone className="w-6 h-6" />
               <div className="text-left">
                 <h2 className="text-xl font-bold">Date de Contact</h2>
-                <p className="text-sm text-orange-100">Telefon, email, adresă, social media</p>
+                <p className="text-sm text-teal-100">Telefon, email, adresă, social media</p>
               </div>
             </div>
             {expandedSections.contactInfo ? (
@@ -724,7 +724,7 @@ const ContentManagement = () => {
                     type="text"
                     value={contactInfo.phone}
                     onChange={(e) => setContactInfo({...contactInfo, phone: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                     placeholder="+373 69 123 456"
                   />
                 </div>
@@ -735,7 +735,7 @@ const ContentManagement = () => {
                     type="email"
                     value={contactInfo.email}
                     onChange={(e) => setContactInfo({...contactInfo, email: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                     placeholder="contact@domix.md"
                   />
                 </div>
@@ -746,7 +746,7 @@ const ContentManagement = () => {
                     type="text"
                     value={contactInfo.address}
                     onChange={(e) => setContactInfo({...contactInfo, address: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                     placeholder="Str. Principală nr. 123, Chișinău"
                   />
                 </div>
@@ -757,7 +757,7 @@ const ContentManagement = () => {
                     type="text"
                     value={contactInfo.hours}
                     onChange={(e) => setContactInfo({...contactInfo, hours: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                     placeholder="Luni - Vineri: 09:00 - 18:00"
                   />
                 </div>
@@ -768,7 +768,7 @@ const ContentManagement = () => {
                     type="url"
                     value={contactInfo.facebook}
                     onChange={(e) => setContactInfo({...contactInfo, facebook: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                     placeholder="https://facebook.com/..."
                   />
                 </div>
@@ -779,7 +779,7 @@ const ContentManagement = () => {
                     type="url"
                     value={contactInfo.instagram}
                     onChange={(e) => setContactInfo({...contactInfo, instagram: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                     placeholder="https://instagram.com/..."
                   />
                 </div>
@@ -790,7 +790,7 @@ const ContentManagement = () => {
                     type="url"
                     value={contactInfo.tiktok}
                     onChange={(e) => setContactInfo({...contactInfo, tiktok: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                     placeholder="https://tiktok.com/@..."
                   />
                 </div>
@@ -798,7 +798,7 @@ const ContentManagement = () => {
 
               <button
                 onClick={handleContactInfoSave}
-                className="w-full bg-orange-600 text-white py-3 rounded-xl hover:bg-orange-700 transition font-semibold flex items-center justify-center gap-2"
+                className="w-full bg-teal-600 text-white py-3 rounded-xl hover:bg-teal-700 transition font-semibold flex items-center justify-center gap-2"
               >
                 <Save className="w-5 h-5" />
                 Salvează Date Contact
@@ -1178,7 +1178,7 @@ const ContentManagement = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-semibold flex items-center gap-2"
+                  className="px-6 py-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition font-semibold flex items-center gap-2"
                 >
                   <Save className="w-5 h-5" />
                   {editingFaq !== null ? 'Actualizează' : 'Salvează'}

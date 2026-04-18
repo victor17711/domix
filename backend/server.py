@@ -1,4 +1,5 @@
-from fastapi import FastAPI, APIRouter, HTTPException, status, Depends, Header
+from fastapi import FastAPI, APIRouter, HTTPException, status, Depends, Header, File, UploadFile
+from fastapi.responses import StreamingResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -9,6 +10,8 @@ from pathlib import Path
 from typing import List, Optional
 from datetime import datetime
 import uuid
+from openpyxl import Workbook, load_workbook
+from io import BytesIO
 
 from models import (
     UserCreate, User, UserLogin, UserResponse,
@@ -240,6 +243,170 @@ async def update_product(
 
 
 @api_router.delete("/products/{product_id}")
+
+
+# ==================== PRODUCTS IMPORT/EXPORT ENDPOINTS ====================
+
+@api_router.get("/admin/products/export")
+async def export_products(
+    current_admin: dict = Depends(get_current_admin_user)
+):
+    """Export all products to Excel file (admin only)"""
+    try:
+        # Fetch all products
+        products = await db.products.find({}, {"_id": 0}).to_list(None)
+        
+        # Create workbook
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Products"
+        
+        # Headers
+        headers = [
+            "ID", "Name", "Description", "Price", "Stock", "Category ID", 
+            "Brand ID", "SKU", "Is Active", "Images (comma-separated)", 
+            "Specifications (JSON)"
+        ]
+        ws.append(headers)
+        
+        # Add product data
+        for product in products:
+            # Convert images list to comma-separated string
+            images_str = ",".join(product.get("images", []))
+            
+            # Convert specifications to JSON string
+            specs = product.get("specifications", [])
+            specs_str = str(specs) if specs else ""
+            
+            row = [
+                product.get("id", ""),
+                product.get("name", ""),
+                product.get("description", ""),
+                product.get("price", 0),
+                product.get("stock", 0),
+                product.get("categoryId", ""),
+                product.get("brandId", ""),
+                product.get("sku", ""),
+                product.get("isActive", True),
+                images_str,
+                specs_str
+            ]
+            ws.append(row)
+        
+        # Save to BytesIO
+        excel_file = BytesIO()
+        wb.save(excel_file)
+        excel_file.seek(0)
+        
+        # Return as downloadable file
+        return StreamingResponse(
+            excel_file,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": "attachment; filename=products.xlsx"}
+        )
+        
+    except Exception as e:
+        logger.error(f"Error exporting products: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Nu s-au putut exporta produsele: {str(e)}"
+        )
+
+
+@api_router.post("/admin/products/import")
+async def import_products(
+    file: UploadFile = File(...),
+    current_admin: dict = Depends(get_current_admin_user)
+):
+    """Import products from Excel file (admin only)"""
+    try:
+        # Read uploaded file
+        contents = await file.read()
+        excel_file = BytesIO(contents)
+        
+        # Load workbook
+        wb = load_workbook(excel_file)
+        ws = wb.active
+        
+        # Skip header row
+        rows = list(ws.iter_rows(min_row=2, values_only=True))
+        
+        imported_count = 0
+        updated_count = 0
+        errors = []
+        
+        for idx, row in enumerate(rows, start=2):
+            try:
+                if not row[0]:  # Skip empty rows
+                    continue
+                    
+                product_id = row[0]
+                
+                # Parse images (comma-separated)
+                images = []
+                if row[9]:  # Images column
+                    images = [img.strip() for img in str(row[9]).split(",") if img.strip()]
+                
+                # Parse specifications
+                specifications = []
+                if row[10]:  # Specifications column
+                    try:
+                        import ast
+                        specifications = ast.literal_eval(str(row[10]))
+                    except:
+                        specifications = []
+                
+                # Create product dict
+                product_data = {
+                    "id": str(product_id),
+                    "name": str(row[1]) if row[1] else "",
+                    "description": str(row[2]) if row[2] else "",
+                    "price": float(row[3]) if row[3] else 0,
+                    "stock": int(row[4]) if row[4] else 0,
+                    "categoryId": str(row[5]) if row[5] else "",
+                    "brandId": str(row[6]) if row[6] else "",
+                    "sku": str(row[7]) if row[7] else "",
+                    "isActive": bool(row[8]) if row[8] is not None else True,
+                    "images": images,
+                    "specifications": specifications,
+                    "createdAt": datetime.now(timezone.utc).isoformat()
+                }
+                
+                # Check if product exists
+                existing = await db.products.find_one({"id": product_id})
+                
+                if existing:
+                    # Update existing product
+                    await db.products.update_one(
+                        {"id": product_id},
+                        {"$set": product_data}
+                    )
+                    updated_count += 1
+                else:
+                    # Insert new product
+                    await db.products.insert_one(product_data)
+                    imported_count += 1
+                    
+            except Exception as e:
+                errors.append(f"Row {idx}: {str(e)}")
+                continue
+        
+        result = {
+            "message": f"Import finalizat! {imported_count} produse noi, {updated_count} actualizate",
+            "imported": imported_count,
+            "updated": updated_count,
+            "errors": errors[:10] if errors else []  # Return first 10 errors
+        }
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error importing products: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Nu s-au putut importa produsele: {str(e)}"
+        )
+
 async def delete_product(
     product_id: str,
     authorization: Optional[str] = Header(None)
