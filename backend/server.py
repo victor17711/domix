@@ -1035,27 +1035,6 @@ async def delete_page(
     return {"message": "Page deleted successfully"}
 
 
-@api_router.get("/")
-async def root():
-    return {"message": "Sellzy eCommerce API"}
-
-
-# Include the router in the main app
-app.include_router(api_router)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    pass
-
-
 # ==================== CONTACT REQUESTS ENDPOINTS ====================
 
 @api_router.post("/contact/submit")
@@ -1182,3 +1161,29 @@ async def delete_newsletter_subscription(
         )
 
     client.close()
+@api_router.get("/")
+async def root():
+    return {"message": "Sellzy eCommerce API"}
+
+
+# Include the router in the main app
+app.include_router(api_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.on_event("startup")
+async def startup_db_client():
+    global db
+    db = client[os.environ['DB_NAME']]
+    logger.info("MongoDB connected")
+
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    logger.info("Shutting down")
+
