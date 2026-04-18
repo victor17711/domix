@@ -152,15 +152,13 @@ const UsersManagement = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    {user.role !== 'admin' && (
-                      <button
-                        onClick={() => handleDelete(user.id)}
-                        className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                        title="Șterge utilizator"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
+                    <button
+                      onClick={() => handleDelete(user.id)}
+                      className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                      title="Șterge utilizator"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </td>
                 </tr>
               ))}

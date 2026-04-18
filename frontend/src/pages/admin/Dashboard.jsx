@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAdmin } from '../../context/AdminContext';
 import axios from 'axios';
-import { Package, Users, ShoppingCart, TrendingUp, AlertCircle, DollarSign, Calendar } from 'lucide-react';
+import { Package, Users, ShoppingCart, TrendingUp, AlertCircle, DollarSign, Calendar, CheckCircle, Clock } from 'lucide-react';
+import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -10,10 +11,12 @@ const Dashboard = () => {
   const { getAuthHeaders } = useAdmin();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState('today');
+  const [dateRange, setDateRange] = useState('week');
+  const [ordersData, setOrdersData] = useState([]);
 
   useEffect(() => {
     fetchStats();
+    fetchOrders();
   }, [dateRange]);
 
   const fetchStats = async () => {
@@ -27,6 +30,15 @@ const Dashboard = () => {
     }
   };
 
+  const fetchOrders = async () => {
+    try {
+      const response = await axios.get(`${API}/admin/orders`, getAuthHeaders());
+      setOrdersData(response.data || []);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -35,69 +47,118 @@ const Dashboard = () => {
     );
   }
 
+  // Calculate last 7 days orders
+  const getLast7DaysData = () => {
+    const days = ['Dum', 'Lun', 'Mar', 'Mie', 'Joi', 'Vin', 'Sâm'];
+    const today = new Date();
+    const last7Days = [];
+
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dayName = days[date.getDay()];
+      
+      const ordersCount = ordersData.filter(order => {
+        const orderDate = new Date(order.createdAt);
+        return orderDate.toDateString() === date.toDateString();
+      }).length;
+
+      last7Days.push({
+        name: dayName,
+        comenzi: ordersCount
+      });
+    }
+
+    return last7Days;
+  };
+
+  // Calculate orders by status for pie chart
+  const getOrdersByStatus = () => {
+    const statusMap = {
+      pending: { name: 'În Așteptare', value: 0, color: '#F59E0B' },
+      processing: { name: 'În Procesare', value: 0, color: '#3B82F6' },
+      completed: { name: 'Finalizate', value: 0, color: '#10B981' },
+      cancelled: { name: 'Anulate', value: 0, color: '#EF4444' }
+    };
+
+    ordersData.forEach(order => {
+      if (statusMap[order.status]) {
+        statusMap[order.status].value++;
+      }
+    });
+
+    return Object.values(statusMap).filter(s => s.value > 0);
+  };
+
+  const last7DaysData = getLast7DaysData();
+  const orderStatusData = getOrdersByStatus();
+
   const statCards = [
-    { title: 'Total Utilizatori', value: stats?.totalUsers || 0, icon: Users, color: 'from-blue-500 to-blue-600', bgColor: 'bg-blue-50', textColor: 'text-blue-600' },
-    { title: 'Total Produse', value: stats?.totalProducts || 0, icon: Package, color: 'from-green-500 to-green-600', bgColor: 'bg-green-50', textColor: 'text-green-600' },
-    { title: 'Total Comenzi', value: stats?.totalOrders || 0, icon: ShoppingCart, color: 'from-purple-500 to-purple-600', bgColor: 'bg-purple-50', textColor: 'text-purple-600' },
-    { title: 'Venit Total', value: `${(stats?.totalRevenue || 0).toFixed(2)} MDL`, icon: DollarSign, color: 'from-yellow-500 to-yellow-600', bgColor: 'bg-yellow-50', textColor: 'text-yellow-600' },
-    { title: 'Comenzi în Așteptare', value: stats?.pendingOrders || 0, icon: AlertCircle, color: 'from-orange-500 to-orange-600', bgColor: 'bg-orange-50', textColor: 'text-orange-600' },
-    { title: 'Stoc Redus', value: stats?.lowStockProducts || 0, icon: TrendingUp, color: 'from-red-500 to-red-600', bgColor: 'bg-red-50', textColor: 'text-red-600' }
+    { title: 'TOTAL UTILIZATORI', value: stats?.totalUsers || 0, icon: Users, color: '#F59E0B', bgColor: 'bg-gradient-to-br from-gray-800 to-gray-900' },
+    { title: 'TOTAL PRODUSE', value: stats?.totalProducts || 0, icon: Package, color: '#EF4444', bgColor: 'bg-gradient-to-br from-gray-800 to-gray-900' },
+    { title: 'COMENZI FINALIZATE', value: ordersData.filter(o => o.status === 'completed').length, icon: CheckCircle, color: '#10B981', bgColor: 'bg-gradient-to-br from-gray-800 to-gray-900' },
+    { title: 'TOTAL COMENZI', value: stats?.totalOrders || 0, icon: ShoppingCart, color: '#3B82F6', bgColor: 'bg-gradient-to-br from-gray-800 to-gray-900' }
   ];
 
-  // Mock data for charts
-  const salesData = [
-    { day: 'Lun', sales: 4500 },
-    { day: 'Mar', sales: 5200 },
-    { day: 'Mie', sales: 4800 },
-    { day: 'Joi', sales: 6100 },
-    { day: 'Vin', sales: 7300 },
-    { day: 'Sâm', sales: 8200 },
-    { day: 'Dum', sales: 7800 }
-  ];
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-gray-900 border border-gray-700 rounded-lg p-3 shadow-xl">
+          <p className="text-white font-semibold">{`${payload[0].value} comenzi`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
 
-  const maxSales = Math.max(...salesData.map(d => d.sales));
+  const RADIAN = Math.PI / 180;
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" className="font-bold text-sm">
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
+  };
 
   return (
     <div className="space-y-6">
-      {/* Welcome Banner with Date Filter */}
+      {/* Welcome Banner */}
       <div className="bg-gradient-to-r from-teal-600 to-teal-700 rounded-2xl p-6 text-white">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-3xl font-bold mb-2">Bine ai revenit! 👋</h2>
-            <p className="text-teal-100">Aici este o prezentare generală a magazinului DOMIX</p>
+            <h2 className="text-3xl font-bold mb-2">Dashboard</h2>
+            <p className="text-teal-100">Prezentare generală a magazinului</p>
           </div>
           <div className="flex items-center gap-3 bg-white/20 rounded-xl px-4 py-2">
             <Calendar className="w-5 h-5" />
-            <select 
-              value={dateRange}
-              onChange={(e) => setDateRange(e.target.value)}
-              className="bg-transparent border-none text-white font-semibold focus:outline-none cursor-pointer"
-            >
-              <option value="today" className="text-gray-900">Astăzi</option>
-              <option value="week" className="text-gray-900">Săptămâna aceasta</option>
-              <option value="month" className="text-gray-900">Luna aceasta</option>
-              <option value="year" className="text-gray-900">Anul acesta</option>
-            </select>
+            <span className="font-semibold">{new Date().toLocaleDateString('ro-RO', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
           </div>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
             <div 
               key={index} 
-              className="bg-white rounded-2xl p-6 border-2 border-gray-100"
+              className={`${stat.bgColor} rounded-2xl p-6 text-white relative overflow-hidden`}
             >
-              <div className="flex items-center justify-between mb-4">
-                <div className={`${stat.bgColor} p-4 rounded-xl`}>
-                  <Icon className={`w-8 h-8 ${stat.textColor}`} />
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="p-3 rounded-xl" style={{ backgroundColor: `${stat.color}20` }}>
+                    <Icon className="w-8 h-8" style={{ color: stat.color }} />
+                  </div>
                 </div>
+                <p className="text-gray-400 text-xs font-semibold uppercase tracking-wide mb-2">{stat.title}</p>
+                <p className="text-4xl font-bold">{stat.value}</p>
               </div>
-              <h3 className="text-gray-600 text-sm font-medium mb-1">{stat.title}</h3>
-              <p className={`text-3xl font-bold ${stat.textColor}`}>{stat.value}</p>
+              <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-20" style={{ backgroundColor: stat.color }}></div>
             </div>
           );
         })}
@@ -105,82 +166,68 @@ const Dashboard = () => {
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Bar Chart - Sales */}
-        <div className="bg-white rounded-2xl p-6 border-2 border-gray-100">
-          <h3 className="text-xl font-bold text-gray-900 mb-6">Vânzări Săptămânale</h3>
-          <div className="space-y-4">
-            {salesData.map((data, index) => (
-              <div key={index} className="flex items-center gap-4">
-                <div className="w-12 text-sm font-semibold text-gray-600">{data.day}</div>
-                <div className="flex-1 bg-gray-100 rounded-full h-8 overflow-hidden">
-                  <div 
-                    className="bg-gradient-to-r from-teal-500 to-teal-600 h-full rounded-full flex items-center justify-end pr-3 text-white text-sm font-bold transition-all duration-500"
-                    style={{ width: `${(data.sales / maxSales) * 100}%` }}
-                  >
-                    {data.sales} MDL
-                  </div>
-                </div>
-              </div>
-            ))}
+        {/* Bar Chart - Last 7 Days Orders */}
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-6 text-white">
+          <div className="flex items-center gap-3 mb-6">
+            <TrendingUp className="w-6 h-6 text-yellow-400" />
+            <h3 className="text-xl font-bold">Comenzi pe zile (ultimele 7 zile)</h3>
           </div>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={last7DaysData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <XAxis dataKey="name" stroke="#9CA3AF" />
+              <YAxis stroke="#9CA3AF" />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: '#1F2937' }} />
+              <Bar dataKey="comenzi" fill="#F59E0B" radius={[8, 8, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
 
-        {/* Line Chart - Orders Trend */}
-        <div className="bg-white rounded-2xl p-6 border-2 border-gray-100">
-          <h3 className="text-xl font-bold text-gray-900 mb-6">Tendință Comenzi</h3>
-          <div className="relative h-64">
-            <svg className="w-full h-full" viewBox="0 0 400 200">
-              {/* Grid lines */}
-              <line x1="0" y1="50" x2="400" y2="50" stroke="#e5e7eb" strokeWidth="1" />
-              <line x1="0" y1="100" x2="400" y2="100" stroke="#e5e7eb" strokeWidth="1" />
-              <line x1="0" y1="150" x2="400" y2="150" stroke="#e5e7eb" strokeWidth="1" />
-              
-              {/* Line */}
-              <polyline
-                points="50,120 100,80 150,100 200,60 250,70 300,40 350,50"
-                fill="none"
-                stroke="url(#gradient)"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              
-              {/* Area under line */}
-              <polygon
-                points="50,120 100,80 150,100 200,60 250,70 300,40 350,50 350,200 50,200"
-                fill="url(#areaGradient)"
-              />
-              
-              {/* Points */}
-              <circle cx="50" cy="120" r="5" fill="#0d9488" />
-              <circle cx="100" cy="80" r="5" fill="#0d9488" />
-              <circle cx="150" cy="100" r="5" fill="#0d9488" />
-              <circle cx="200" cy="60" r="5" fill="#0d9488" />
-              <circle cx="250" cy="70" r="5" fill="#0d9488" />
-              <circle cx="300" cy="40" r="5" fill="#0d9488" />
-              <circle cx="350" cy="50" r="5" fill="#0d9488" />
-              
-              <defs>
-                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#0d9488" />
-                  <stop offset="100%" stopColor="#14b8a6" />
-                </linearGradient>
-                <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#0d9488" stopOpacity="0.3" />
-                  <stop offset="100%" stopColor="#0d9488" stopOpacity="0.05" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <div className="flex justify-between mt-4 text-xs text-gray-500 font-semibold">
-              <span>Lun</span>
-              <span>Mar</span>
-              <span>Mie</span>
-              <span>Joi</span>
-              <span>Vin</span>
-              <span>Sâm</span>
-              <span>Dum</span>
-            </div>
+        {/* Doughnut Chart - Order Status Distribution */}
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-6 text-white">
+          <div className="flex items-center gap-3 mb-6">
+            <ShoppingCart className="w-6 h-6 text-blue-400" />
+            <h3 className="text-xl font-bold">Distribuție Comenzi</h3>
           </div>
+          {orderStatusData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={orderStatusData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={renderCustomizedLabel}
+                  outerRadius={100}
+                  innerRadius={60}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {orderStatusData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
+                  itemStyle={{ color: '#fff' }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex items-center justify-center h-[300px] text-gray-400">
+              <p>Nicio comandă disponibilă</p>
+            </div>
+          )}
+          {orderStatusData.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-4 mt-4">
+              {orderStatusData.map((entry, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }}></div>
+                  <span className="text-sm text-gray-300">{entry.name}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -220,7 +267,7 @@ const Dashboard = () => {
           </h3>
           <div className="space-y-4">
             <div className="flex items-start gap-4 p-4 bg-orange-50 rounded-xl border-l-4 border-orange-500">
-              <AlertCircle className="w-6 h-6 text-orange-500 flex-shrink-0 mt-1" />
+              <Clock className="w-6 h-6 text-orange-500 flex-shrink-0 mt-1" />
               <div>
                 <p className="font-semibold text-gray-900">Comenzi în Așteptare</p>
                 <p className="text-sm text-gray-600">{stats?.pendingOrders || 0} comenzi așteaptă procesarea</p>
@@ -233,11 +280,11 @@ const Dashboard = () => {
                 <p className="text-sm text-gray-600">{stats?.lowStockProducts || 0} produse cu stoc redus</p>
               </div>
             </div>
-            <div className="flex items-start gap-4 p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500">
-              <TrendingUp className="w-6 h-6 text-blue-500 flex-shrink-0 mt-1" />
+            <div className="flex items-start gap-4 p-4 bg-green-50 rounded-xl border-l-4 border-green-500">
+              <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0 mt-1" />
               <div>
-                <p className="font-semibold text-gray-900">Performanță Bună</p>
-                <p className="text-sm text-gray-600">Vânzările au crescut cu 15% {dateRange === 'week' ? 'săptămâna aceasta' : dateRange === 'month' ? 'luna aceasta' : 'astăzi'}</p>
+                <p className="font-semibold text-gray-900">Comenzi Finalizate</p>
+                <p className="text-sm text-gray-600">{ordersData.filter(o => o.status === 'completed').length} comenzi finalizate cu succes</p>
               </div>
             </div>
           </div>

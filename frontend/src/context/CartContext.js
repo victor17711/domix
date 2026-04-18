@@ -129,8 +129,14 @@ export const CartProvider = ({ children }) => {
   const removeFromCart = async (productId, selectedSize = null, selectedColor = null) => {
     if (isAuthenticated) {
       try {
+        // Build query params only if values exist
+        const params = new URLSearchParams();
+        if (selectedSize) params.append('selectedSize', selectedSize);
+        if (selectedColor) params.append('selectedColor', selectedColor);
+        const queryString = params.toString() ? `?${params.toString()}` : '';
+        
         await axios.delete(
-          `${API}/cart/remove/${productId}?selectedSize=${selectedSize || ''}&selectedColor=${selectedColor || ''}`, 
+          `${API}/cart/remove/${productId}${queryString}`, 
           getAuthHeaders()
         );
         
@@ -153,8 +159,14 @@ export const CartProvider = ({ children }) => {
   const updateQuantity = async (productId, quantity, selectedSize = null, selectedColor = null) => {
     if (isAuthenticated) {
       try {
+        const params = new URLSearchParams();
+        params.append('productId', productId);
+        params.append('quantity', quantity);
+        if (selectedSize) params.append('selectedSize', selectedSize);
+        if (selectedColor) params.append('selectedColor', selectedColor);
+        
         await axios.put(
-          `${API}/cart/update?productId=${productId}&quantity=${quantity}&selectedSize=${selectedSize || ''}&selectedColor=${selectedColor || ''}`,
+          `${API}/cart/update?${params.toString()}`,
           {},
           getAuthHeaders()
         );

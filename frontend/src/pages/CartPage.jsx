@@ -56,19 +56,19 @@ const CartPage = () => {
                     
                     <div className="text-sm text-gray-600 space-y-1 mb-4">
                       {item.specifications && item.specifications.length > 0 && (
-                        <div className="space-y-1">
-                          {item.specifications.slice(0, 3).map((spec, index) => (
-                            <div key={index}>
-                              <span className="font-semibold">{spec.title}:</span> {spec.value}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      {item.category && (
+  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 mb-4">
+    {item.specifications.slice(0, 3).map((spec, index) => (
+      <div key={index} className="whitespace-nowrap">
+        <span className="font-semibold">{spec.title}:</span> {spec.value}
+      </div>
+    ))}
+  </div>
+)}
+                      {/* {item.category && (
                         <div className="text-xs text-gray-500 mt-2">
                           Categorie: {item.category}
                         </div>
-                      )}
+                      )} */}
                     </div>
 
                     <div className="flex items-center justify-between">

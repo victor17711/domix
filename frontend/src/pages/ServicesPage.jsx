@@ -69,7 +69,7 @@ const ServicesPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-gray-50">
       {/* HERO */}
       <div className="bg-gradient-to-r from-teal-600 to-teal-700 text-white py-10 md:py-14">
         <div className="w-full px-6">

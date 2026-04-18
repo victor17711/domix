@@ -46,7 +46,7 @@ const RouteChangeHandler = ({ children }) => {
     setLoading(true);
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1000); // 1 second preloader
+    }, 2000); // 2 seconds preloader
 
     return () => clearTimeout(timer);
   }, [location.pathname]);

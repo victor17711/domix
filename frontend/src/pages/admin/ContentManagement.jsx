@@ -393,13 +393,13 @@ const ContentManagement = () => {
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
           <button
             onClick={() => toggleSection('serviceAlbums')}
-            className="w-full px-6 py-5 flex items-center justify-between bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition"
+            className="w-full px-6 py-5 flex items-center justify-between bg-gradient-to-r from-teal-600 to-teal-700 text-white hover:from-teal-700 hover:to-teal-800 transition"
           >
             <div className="flex items-center gap-3">
               <Images className="w-6 h-6" />
               <div className="text-left">
                 <h2 className="text-xl font-bold">Albume Servicii</h2>
-                <p className="text-sm text-blue-100">
+                <p className="text-sm text-teal-100">
                   {albums.length} {albums.length === 1 ? 'album' : 'albume'}
                 </p>
               </div>
@@ -428,7 +428,7 @@ const ContentManagement = () => {
                     setTempGalleryUrl('');
                     setShowAlbumModal(true);
                   }}
-                  className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition font-semibold"
+                  className="flex items-center gap-2 bg-teal-600 text-white px-6 py-3 rounded-xl hover:bg-teal-700 transition font-semibold"
                 >
                   <Plus className="w-5 h-5" />
                   Adaugă Album
@@ -444,7 +444,7 @@ const ContentManagement = () => {
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {albums.map((album, index) => (
-                    <div key={index} className="bg-gray-50 rounded-xl overflow-hidden border-2 border-gray-200 hover:border-blue-500 transition">
+                    <div key={index} className="bg-gray-50 rounded-xl overflow-hidden border-2 border-gray-200 hover:border-teal-500 transition">
                       {album.coverImage && (
                         <div className="h-48 overflow-hidden bg-gray-200">
                           <img 
@@ -462,7 +462,7 @@ const ContentManagement = () => {
                         <div className="flex gap-2 pt-3 border-t">
                           <button
                             onClick={() => handleEditAlbum(index)}
-                            className="flex-1 flex items-center justify-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                            className="flex-1 flex items-center justify-center gap-2 bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition"
                           >
                             <Edit className="w-4 h-4" />
                             Editează
@@ -731,13 +731,13 @@ const ContentManagement = () => {
                         addGalleryImage();
                       }
                     }}
-                    className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                     placeholder="Adaugă URL imagine galerie"
                   />
                   <button
                     type="button"
                     onClick={addGalleryImage}
-                    className="px-5 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-semibold"
+                    className="px-5 py-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition font-semibold"
                   >
                     <Plus className="w-5 h-5" />
                   </button>
@@ -782,7 +782,7 @@ const ContentManagement = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-semibold flex items-center gap-2"
+                  className="px-6 py-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition font-semibold flex items-center gap-2"
                 >
                   <Save className="w-5 h-5" />
                   {editingAlbum !== null ? 'Actualizează' : 'Salvează'}
