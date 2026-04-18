@@ -35,13 +35,32 @@ const ContentManagement = () => {
 
   const fetchContent = async () => {
     try {
-      const response = await axios.get(`${API}/settings`, getAuthHeaders());
+      const response = await axios.get(`${API}/settings`);
       setBanners(response.data.heroBanners || []);
     } catch (error) {
       console.error('Error fetching content:', error);
       setBanners([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const saveSettings = async (updatedBanners) => {
+    try {
+      // Fetch current settings first
+      const currentSettings = await axios.get(`${API}/settings`);
+      
+      // Merge with existing settings
+      const mergedSettings = {
+        ...currentSettings.data,
+        heroBanners: updatedBanners
+      };
+
+      await axios.post(`${API}/settings`, mergedSettings, getAuthHeaders());
+      return true;
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      throw error;
     }
   };
 
@@ -79,11 +98,7 @@ const ContentManagement = () => {
         updatedBanners = [...banners, bannerForm];
       }
 
-      await axios.post(
-        `${API}/settings`,
-        { heroBanners: updatedBanners },
-        getAuthHeaders()
-      );
+      await saveSettings(updatedBanners);
 
       toast({ 
         title: 'Succes', 
@@ -124,11 +139,7 @@ const ContentManagement = () => {
 
     try {
       const updatedBanners = banners.filter((_, idx) => idx !== index);
-      await axios.post(
-        `${API}/settings`,
-        { heroBanners: updatedBanners },
-        getAuthHeaders()
-      );
+      await saveSettings(updatedBanners);
 
       toast({ title: 'Succes', description: 'Banner șters!' });
       setBanners(updatedBanners);
