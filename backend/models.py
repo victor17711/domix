@@ -52,11 +52,15 @@ class Brand(BrandCreate):
 # Product Models
 class ProductSpecification(BaseModel):
     title: str
+    titleRu: Optional[str] = ""  # Russian translation
     value: str
+    valueRu: Optional[str] = ""  # Russian translation
 
 class ProductCreate(BaseModel):
     name: str
+    nameRu: Optional[str] = ""  # Russian translation
     description: Optional[str] = ""
+    descriptionRu: Optional[str] = ""  # Russian translation
     price: float
     originalPrice: Optional[float] = None
     discount: Optional[int] = 0
@@ -78,6 +82,7 @@ class ProductCreate(BaseModel):
     isActive: Optional[bool] = True  # Support isActive field from Excel
     sku: Optional[str] = ""  # Support SKU field from Excel
     badge: Optional[str] = ""
+    badgeRu: Optional[str] = ""  # Russian translation for badge
 
 class Product(ProductCreate):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -87,6 +92,7 @@ class Product(ProductCreate):
 # Category Models
 class CategoryCreate(BaseModel):
     name: str
+    nameRu: Optional[str] = ""  # Russian translation
     slug: str
     icon: Optional[str] = ""
     image: Optional[str] = ""

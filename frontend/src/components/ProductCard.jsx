@@ -86,22 +86,24 @@ const ProductCard = ({ product, showProgress = false }) => {
               {product.name}
             </h3>
 
-            {/* Rating */}
-            <div className="flex items-center gap-2 mb-2">
-              <div className="flex items-center">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-3 h-3 ${
-                      i < Math.floor(product.rating)
-                        ? 'text-yellow-400 fill-yellow-400'
-                        : 'text-gray-300'
-                    }`}
-                  />
-                ))}
+            {/* Rating - Only show if reviews exist */}
+            {product.reviews > 0 && (
+              <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-3 h-3 ${
+                        i < Math.floor(product.rating)
+                          ? 'text-yellow-400 fill-yellow-400'
+                          : 'text-gray-300'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="text-xs text-gray-500">({product.reviews})</span>
               </div>
-              <span className="text-xs text-gray-500">({product.reviews})</span>
-            </div>
+            )}
 
             {/* Colors
             {product.colors && (

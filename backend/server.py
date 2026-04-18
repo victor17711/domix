@@ -263,9 +263,9 @@ async def export_products(
         
         # Headers
         headers = [
-            "ID", "Name", "Description", "Price", "Stock", "Category ID", 
+            "ID", "Name", "Name RU", "Description", "Description RU", "Price", "Stock", "Category ID", 
             "Brand ID", "SKU", "Is Active", "Images (comma-separated)", 
-            "Specifications (JSON)"
+            "Specifications (JSON)", "Badge", "Badge RU"
         ]
         ws.append(headers)
         
@@ -281,7 +281,9 @@ async def export_products(
             row = [
                 product.get("id", ""),
                 product.get("name", ""),
+                product.get("nameRu", ""),
                 product.get("description", ""),
+                product.get("descriptionRu", ""),
                 product.get("price", 0),
                 product.get("stock", 0),
                 product.get("categoryId", ""),
@@ -289,7 +291,9 @@ async def export_products(
                 product.get("sku", ""),
                 product.get("isActive", True),
                 images_str,
-                specs_str
+                specs_str,
+                product.get("badge", ""),
+                product.get("badgeRu", "")
             ]
             ws.append(row)
         
@@ -342,17 +346,17 @@ async def import_products(
                     
                 product_id = row[0]
                 
-                # Parse images (comma-separated)
+                # Parse images (comma-separated) - now at column 11
                 images = []
-                if row[9]:  # Images column
-                    images = [img.strip() for img in str(row[9]).split(",") if img.strip()]
+                if len(row) > 11 and row[11]:
+                    images = [img.strip() for img in str(row[11]).split(",") if img.strip()]
                 
-                # Parse specifications
+                # Parse specifications - now at column 12
                 specifications = []
-                if row[10]:  # Specifications column
+                if len(row) > 12 and row[12]:
                     try:
                         import ast
-                        specifications = ast.literal_eval(str(row[10]))
+                        specifications = ast.literal_eval(str(row[12]))
                     except:
                         specifications = []
                 
@@ -360,15 +364,19 @@ async def import_products(
                 product_data = {
                     "id": str(product_id),
                     "name": str(row[1]) if row[1] else "",
-                    "description": str(row[2]) if row[2] else "",
-                    "price": float(row[3]) if row[3] else 0,
-                    "stock": int(row[4]) if row[4] else 0,
-                    "categoryId": str(row[5]) if row[5] else "",
-                    "brandId": str(row[6]) if row[6] else "",
-                    "sku": str(row[7]) if row[7] else "",
-                    "isActive": bool(row[8]) if row[8] is not None else True,
+                    "nameRu": str(row[2]) if len(row) > 2 and row[2] else "",
+                    "description": str(row[3]) if len(row) > 3 and row[3] else "",
+                    "descriptionRu": str(row[4]) if len(row) > 4 and row[4] else "",
+                    "price": float(row[5]) if len(row) > 5 and row[5] else 0,
+                    "stock": int(row[6]) if len(row) > 6 and row[6] else 0,
+                    "categoryId": str(row[7]) if len(row) > 7 and row[7] else "",
+                    "brandId": str(row[8]) if len(row) > 8 and row[8] else "",
+                    "sku": str(row[9]) if len(row) > 9 and row[9] else "",
+                    "isActive": bool(row[10]) if len(row) > 10 and row[10] is not None else True,
                     "images": images,
                     "specifications": specifications,
+                    "badge": str(row[13]) if len(row) > 13 and row[13] else "",
+                    "badgeRu": str(row[14]) if len(row) > 14 and row[14] else "",
                     "createdAt": datetime.now(timezone.utc).isoformat()
                 }
                 
