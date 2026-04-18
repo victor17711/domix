@@ -11,6 +11,7 @@ const RequestsManagement = () => {
   const { getAuthHeaders } = useAdmin();
   const [contactRequests, setContactRequests] = useState([]);
   const [newsletterSubscriptions, setNewsletterSubscriptions] = useState([]);
+  const [installmentRequests, setInstallmentRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('contact');
 
@@ -20,12 +21,14 @@ const RequestsManagement = () => {
 
   const fetchRequests = async () => {
     try {
-      const [contactRes, newsletterRes] = await Promise.all([
+      const [contactRes, newsletterRes, installmentRes] = await Promise.all([
         axios.get(`${API}/admin/contact-requests`, getAuthHeaders()),
-        axios.get(`${API}/admin/newsletter-subscriptions`, getAuthHeaders())
+        axios.get(`${API}/admin/newsletter-subscriptions`, getAuthHeaders()),
+        axios.get(`${API}/admin/installment-requests`, getAuthHeaders())
       ]);
       setContactRequests(contactRes.data);
       setNewsletterSubscriptions(newsletterRes.data);
+      setInstallmentRequests(installmentRes.data);
     } catch (error) {
       toast({ title: 'Eroare', description: 'Nu s-au putut încărca solicitările', variant: 'destructive' });
     } finally {
@@ -54,6 +57,28 @@ const RequestsManagement = () => {
       fetchRequests();
     } catch (error) {
       toast({ title: 'Eroare', description: 'Nu s-a putut șterge abonamentul', variant: 'destructive' });
+    }
+  };
+
+  const handleDeleteInstallment = async (id) => {
+    if (!window.confirm('Sigur doriți să ștergeți această cerere?')) return;
+
+    try {
+      await axios.delete(`${API}/admin/installment-requests/${id}`, getAuthHeaders());
+      toast({ title: 'Succes', description: 'Cerere ștearsă!' });
+      fetchRequests();
+    } catch (error) {
+      toast({ title: 'Eroare', description: 'Nu s-a putut șterge cererea', variant: 'destructive' });
+    }
+  };
+
+  const handleMarkInstallmentAsContacted = async (id) => {
+    try {
+      await axios.put(`${API}/admin/installment-requests/${id}/status?status=contacted`, {}, getAuthHeaders());
+      toast({ title: 'Succes', description: 'Marcat ca contactat!' });
+      fetchRequests();
+    } catch (error) {
+      toast({ title: 'Eroare', description: 'Nu s-a putut actualiza statusul', variant: 'destructive' });
     }
   };
 
@@ -95,7 +120,7 @@ const RequestsManagement = () => {
         >
           <div className="flex items-center justify-center gap-2">
             <MessageSquare className="w-5 h-5" />
-            <span>Solicitări Contact ({contactRequests.length})</span>
+            <span>Contact ({contactRequests.length})</span>
           </div>
         </button>
         <button
@@ -108,7 +133,22 @@ const RequestsManagement = () => {
         >
           <div className="flex items-center justify-center gap-2">
             <Mail className="w-5 h-5" />
-            <span>Abonări Newsletter ({newsletterSubscriptions.length})</span>
+            <span>Newsletter ({newsletterSubscriptions.length})</span>
+          </div>
+        </button>
+        <button
+          onClick={() => setActiveTab('installment')}
+          className={`flex-1 px-6 py-3 rounded-xl font-semibold transition ${
+            activeTab === 'installment'
+              ? 'bg-teal-600 text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          <div className="flex items-center justify-center gap-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span>Plată în Rate ({installmentRequests.length})</span>
           </div>
         </button>
       </div>
@@ -255,6 +295,105 @@ const RequestsManagement = () => {
                   ))}
                 </tbody>
               </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Installment Requests */}
+      {activeTab === 'installment' && (
+        <div className="bg-white rounded-2xl overflow-hidden">
+          {installmentRequests.length === 0 ? (
+            <div className="text-center py-20">
+              <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <p className="text-gray-600 font-semibold">Nicio cerere de plată în rate</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-100">
+              {installmentRequests.map((request) => (
+                <div key={request.id} className="p-6 hover:bg-gray-50 transition">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className={`px-3 py-1 rounded-full text-xs font-bold ${
+                          request.status === 'new' 
+                            ? 'bg-orange-100 text-orange-700' 
+                            : request.status === 'contacted'
+                            ? 'bg-blue-100 text-blue-700'
+                            : request.status === 'approved'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-red-100 text-red-700'
+                        }`}>
+                          {request.status === 'new' ? 'NOU' : 
+                           request.status === 'contacted' ? 'CONTACTAT' : 
+                           request.status === 'approved' ? 'APROBAT' : 'RESPINS'}
+                        </div>
+                        <span className="text-sm text-gray-500">
+                          {new Date(request.createdAt).toLocaleDateString('ro-RO', { 
+                            day: 'numeric', 
+                            month: 'long', 
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </span>
+                      </div>
+
+                      {/* Product Info */}
+                      <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-4 mb-3">
+                        <h3 className="text-lg font-bold text-gray-900 mb-2">
+                          📦 Produs: {request.productName}
+                        </h3>
+                        <div className="flex items-center gap-6">
+                          <div>
+                            <span className="text-sm text-gray-600">Preț Total:</span>{' '}
+                            <span className="text-xl font-bold text-orange-600">{request.productPrice} MDL</span>
+                          </div>
+                          <div>
+                            <span className="text-sm text-gray-600">Rată Lunară:</span>{' '}
+                            <span className="text-xl font-bold text-teal-600">{(request.productPrice / 3).toFixed(2)} MDL</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Client Info */}
+                      <div className="grid grid-cols-2 gap-4 mb-3 text-sm">
+                        <div>
+                          <span className="text-gray-600">Nume:</span>{' '}
+                          <span className="font-semibold text-gray-900">{request.name}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Telefon:</span>{' '}
+                          <a href={`tel:${request.phone}`} className="font-semibold text-teal-600 hover:text-teal-700">
+                            {request.phone}
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      {request.status === 'new' && (
+                        <button
+                          onClick={() => handleMarkInstallmentAsContacted(request.id)}
+                          className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition whitespace-nowrap text-sm"
+                          title="Marchează ca contactat"
+                        >
+                          ✓ Contactat
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleDeleteInstallment(request.id)}
+                        className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                        title="Șterge"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

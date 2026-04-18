@@ -571,14 +571,30 @@ const ProductDetailPage = () => {
               {/* Application Form */}
               <div className="bg-teal-50 border-2 border-teal-200 rounded-xl p-6 mb-4">
                 <h4 className="text-lg font-bold text-gray-900 mb-4">Trimite Cerere</h4>
-                <form className="space-y-4" onSubmit={(e) => {
+                <form className="space-y-4" onSubmit={async (e) => {
                   e.preventDefault();
-                  toast({ 
-                    title: 'Cerere trimisă!', 
-                    description: `Vom contacta ${installmentForm.name} în curând la ${installmentForm.phone}` 
-                  });
-                  setShowInstallmentModal(false);
-                  setInstallmentForm({ name: '', phone: '' });
+                  try {
+                    await axios.post(`${API}/installment/request`, {
+                      productId: product.id,
+                      productName: product.name,
+                      productPrice: product.price,
+                      name: installmentForm.name,
+                      phone: installmentForm.phone
+                    });
+                    
+                    toast({ 
+                      title: 'Cerere trimisă!', 
+                      description: `Mulțumim ${installmentForm.name}! Vă vom contacta în curând la ${installmentForm.phone}` 
+                    });
+                    setShowInstallmentModal(false);
+                    setInstallmentForm({ name: '', phone: '' });
+                  } catch (error) {
+                    toast({ 
+                      title: 'Eroare', 
+                      description: 'Nu s-a putut trimite cererea. Te rog încearcă din nou.',
+                      variant: 'destructive'
+                    });
+                  }
                 }}>
                   <div>
                     <label className="block text-sm font-bold text-gray-900 mb-2">Nume Complet *</label>

@@ -23,7 +23,8 @@ from models import (
     MenuItem, HeroBanner, ServiceAlbum, FAQ, ContactInfo, SettingsCreate, Settings,
     PageCreate, Page,
     ContactRequestCreate, ContactRequest,
-    NewsletterSubscriptionCreate, NewsletterSubscription
+    NewsletterSubscriptionCreate, NewsletterSubscription,
+    InstallmentRequestCreate, InstallmentRequest
 )
 from auth_utils import verify_password, get_password_hash, create_access_token
 from dependencies import get_current_user, get_current_admin_user
@@ -1165,6 +1166,78 @@ async def delete_newsletter_subscription(
 async def root():
     return {"message": "Sellzy eCommerce API"}
 
+
+
+
+# ==================== INSTALLMENT REQUESTS ENDPOINTS ====================
+
+@api_router.post("/installment/request")
+async def submit_installment_request(request: InstallmentRequestCreate):
+    """Submit an installment payment request"""
+    try:
+        installment_request = InstallmentRequest(**request.dict())
+        await db.installment_requests.insert_one(installment_request.dict())
+        return {"message": "Cererea de plată în rate a fost trimisă cu succes"}
+    except Exception as e:
+        logger.error(f"Error submitting installment request: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Nu s-a putut trimite cererea"
+        )
+
+
+@api_router.get("/admin/installment-requests")
+async def get_installment_requests(
+    current_admin: dict = Depends(get_current_admin_user)
+):
+    """Get all installment requests (admin only)"""
+    try:
+        requests = await db.installment_requests.find({}, {"_id": 0}).sort("createdAt", -1).to_list(1000)
+        return requests
+    except Exception as e:
+        logger.error(f"Error fetching installment requests: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Nu s-au putut încărca cererile"
+        )
+
+
+@api_router.put("/admin/installment-requests/{request_id}/status")
+async def update_installment_request_status(
+    request_id: str,
+    status: str,
+    current_admin: dict = Depends(get_current_admin_user)
+):
+    """Update installment request status (admin only)"""
+    try:
+        await db.installment_requests.update_one(
+            {"id": request_id},
+            {"$set": {"status": status}}
+        )
+        return {"message": "Status actualizat"}
+    except Exception as e:
+        logger.error(f"Error updating installment request status: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Nu s-a putut actualiza statusul"
+        )
+
+
+@api_router.delete("/admin/installment-requests/{request_id}")
+async def delete_installment_request(
+    request_id: str,
+    current_admin: dict = Depends(get_current_admin_user)
+):
+    """Delete installment request (admin only)"""
+    try:
+        await db.installment_requests.delete_one({"id": request_id})
+        return {"message": "Cerere ștearsă"}
+    except Exception as e:
+        logger.error(f"Error deleting installment request: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Nu s-a putut șterge cererea"
+        )
 
 # Include the router in the main app
 app.include_router(api_router)

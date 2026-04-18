@@ -271,5 +271,18 @@ class NewsletterSubscription(NewsletterSubscriptionCreate):
     createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     status: str = "active"  # active, unsubscribed
 
+# Installment Request Models
+class InstallmentRequestCreate(BaseModel):
+    productId: str
+    productName: str
+    productPrice: float
+    name: str
+    phone: str
+
+class InstallmentRequest(InstallmentRequestCreate):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    status: str = "new"  # new, contacted, approved, rejected
+
 # Rebuild MenuItem model to resolve forward references for recursive children
 MenuItem.model_rebuild()
