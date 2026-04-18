@@ -15,6 +15,7 @@ const ProductDetailPage = () => {
   const { addToCart, addToWishlist } = useCart();
   const { language } = useLanguage();
   const [product, setProduct] = useState(null);
+  const [brand, setBrand] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,6 +53,16 @@ const ProductDetailPage = () => {
     try {
       const response = await axios.get(`${API}/products/${id}`);
       setProduct(response.data);
+      
+      // Fetch brand if product has brandId
+      if (response.data.brandId) {
+        try {
+          const brandRes = await axios.get(`${API}/brands/${response.data.brandId}`);
+          setBrand(brandRes.data);
+        } catch (error) {
+          console.error('Error fetching brand:', error);
+        }
+      }
       
       // Fetch related products from same category (exclude current product by ID)
       const relatedRes = await axios.get(`${API}/products?category=${encodeURIComponent(response.data.category)}`);
@@ -219,7 +230,10 @@ const ProductDetailPage = () => {
                       {productBadge}
                     </span>
                   )}
-                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{productName}</h1>
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-4">
+                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+                    {productName}
+                  </h1>
             
             {/* Rating - Only show if reviews exist */}
             {reviews.length > 0 && (
@@ -291,34 +305,39 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Actions */}
-<div className="space-y-3 mb-4">
-  <div className="grid grid-cols-2 gap-3">
-    <button
-      onClick={handleAddToCart}
-      className="bg-white border-2 border-teal-600 text-teal-600 py-4 rounded-xl hover:bg-teal-50 transition font-bold text-l md:text-lg flex items-center justify-center gap-2"
-    >
-      <ShoppingCart className="w-4 h-4 md:w-6 md:h-6" />
-      Adaugă în Coș
-    </button>
+            <div className="flex flex-col gap-3 mb-4">
+              {/* Butoane Adaugă/Cumpără - order-1 pe mobile, order-2 pe desktop */}
+              <div className="grid grid-cols-2 gap-3 order-1 md:order-2">
+                <button
+                  onClick={handleAddToCart}
+                  className="bg-white border-2 border-teal-600 text-teal-600 py-4 rounded-xl hover:bg-teal-50 transition font-bold text-l md:text-lg flex items-center justify-center gap-2"
+                >
+                  <ShoppingCart className="w-4 h-4 md:w-6 md:h-6" />
+                  Adaugă în Coș
+                </button>
 
-    <button
-      onClick={handleBuyNow}
-      className="bg-teal-600 text-white py-4 rounded-xl hover:bg-teal-700 transition font-bold text-l md:text-lg"
-    >
-      Cumpără Acum
-    </button>
-  </div>
+                <button
+                  onClick={handleBuyNow}
+                  className="bg-teal-600 text-white py-4 rounded-xl hover:bg-teal-700 transition font-bold text-l md:text-lg"
+                >
+                  Cumpără Acum
+                </button>
+              </div>
 
-  {/* 
-  <button
-    onClick={handleAddToWishlist}
-    className="bg-white w-full py-2 md:py-4 border-2 border-teal-600 text-teal-600 rounded-xl hover:bg-teal-50 transition font-bold md:text-lg text-sm flex items-center justify-center gap-2"
-  >
-    <Heart className="w-4 h-4 md:w-6 md:h-6" />
-    Adaugă la Favorite
-  </button>
-  */}
-</div>
+              {/* Comandă prin telefon - order-2 pe mobile (sub butoane), order-1 pe desktop (deasupra) */}
+              <a
+                href="tel:+37369711967"
+                className="flex items-center justify-center gap-3 border-2 border-indigo-500 rounded-2xl px-4 md:px-6 py-3 md:py-4 transition hover:shadow-md order-2 md:order-1"
+              >
+                <span className="text-base md:text-lg font-semibold text-indigo-500">
+                  Comandă prin telefon
+                </span>
+                <span className="text-indigo-500 text-xl">📞</span>
+                <span className="text-base md:text-lg font-bold text-pink-600 underline">
+                  +373 69 711 967
+                </span>
+              </a>
+            </div>
 
 {/* Installment Plan Box - pe o linie */}
 <div className="bg-gradient-to-r from-orange-50 to-orange-100 border-2 border-orange-300 rounded-2xl px-4 md:px-6 py-3 mb-8">
