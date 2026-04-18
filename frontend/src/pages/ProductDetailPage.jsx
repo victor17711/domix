@@ -239,26 +239,36 @@ const ProductDetailPage = () => {
                     
                     {/* Brand Logo + Favorite Icon - în dreapta numelui */}
                     <div className="flex items-center gap-3">
-                      {/* Brand Logo */}
-                      {brand && brand.logo && (
-                        <div className="bg-white border-2 border-gray-200 rounded-xl px-4 py-2 flex items-center justify-center">
-                          <img 
-                            src={brand.logo} 
-                            alt={brand.name}
-                            className="h-8 md:h-10 object-contain"
-                          />
-                        </div>
-                      )}
-                      
-                      {/* Favorite Icon - doar icon cu border, fără text */}
-                      <button
-                        onClick={handleAddToWishlist}
-                        className="bg-white border-2 border-gray-200 rounded-xl p-3 md:p-4 hover:border-red-400 hover:bg-red-50 transition group"
-                      >
-                        <Heart className="w-6 h-6 md:w-7 md:h-7 text-gray-600 group-hover:text-red-500 group-hover:fill-red-500 transition" />
-                      </button>
-                    </div>
+  
+  {/* Brand Logo */}
+  {brand && brand.logo && (
+    <div className="bg-white border-2 border-teal-500 rounded-xl px-5 md:px-12 py-3 md:py-4 flex items-center justify-center">
+  <img 
+    src={brand.logo} 
+    alt={brand.name}
+    className="h-10 md:h-7 max-h-full object-contain"
+  />
+</div>
+  )}
+  
+  {/* Favorite Icon */}
+  <button
+    onClick={handleAddToWishlist}
+    className="bg-white border-2 border-red-500 rounded-xl p-3 md:p-4 hover:bg-red-50 transition group"
+  >
+    <Heart className="w-6 h-6 md:w-7 md:h-7 text-red-500 group-hover:fill-red-500 transition" />
+  </button>
+
+</div>
                   </div>
+
+                  {/* SKU - Codul produsului */}
+                  {product.sku && (
+                    <div className="mb-4 flex items-center gap-2 text-gray-600">
+                      <span className="font-semibold">Codul produsului:</span>
+                      <span className="text-gray-800">{product.sku}</span>
+                    </div>
+                  )}
             
             {/* Rating - Only show if reviews exist */}
             {reviews.length > 0 && (
@@ -283,11 +293,13 @@ const ProductDetailPage = () => {
             )}
             
             {/* Show sold count even if no reviews */}
-            {reviews.length === 0 && product.sold && (
-              <div className="mb-6">
-                <span className="text-teal-600 font-semibold">{product.sold} vândute</span>
-              </div>
-            )}
+            {reviews.length === 0 && product.sold != null && (
+  <div className="mb-6">
+    <span className="text-teal-600 font-semibold">
+      {product.sold} vândute
+    </span>
+  </div>
+)}
 
             {/* Price */}
             <div className="mb-6">
