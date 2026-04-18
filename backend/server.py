@@ -20,7 +20,7 @@ from models import (
     ReviewCreate, Review,
     OrderCreate, Order,
     DashboardStats,
-    MenuItem, SettingsCreate, Settings,
+    MenuItem, HeroBanner, SettingsCreate, Settings,
     PageCreate, Page
 )
 from auth_utils import verify_password, get_password_hash, create_access_token

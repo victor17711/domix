@@ -184,10 +184,21 @@ class MenuItem(BaseModel):
     parentId: Optional[str] = None
 
 # Settings Models
+class HeroBanner(BaseModel):
+    title: Optional[str] = ""
+    subtitle: Optional[str] = ""
+    description: Optional[str] = ""
+    buttonText: Optional[str] = ""
+    buttonLink: Optional[str] = ""
+    image: Optional[str] = ""
+    badge: Optional[str] = ""
+    order: Optional[int] = 0
+
 class SettingsCreate(BaseModel):
     menuItems: List[MenuItem] = []
     categoryMenuItems: List[MenuItem] = []
     featuredCategoryId: Optional[str] = None
+    heroBanners: Optional[List[HeroBanner]] = []
 
 class Settings(SettingsCreate):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
