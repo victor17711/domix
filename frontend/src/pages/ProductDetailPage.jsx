@@ -231,9 +231,34 @@ const ProductDetailPage = () => {
                     </span>
                   )}
                   
-                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                    {productName}
-                  </h1>
+                  {/* Nume produs + Brand Logo + Favorite */}
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+                      {productName}
+                    </h1>
+                    
+                    {/* Brand Logo + Favorite Icon - în dreapta numelui */}
+                    <div className="flex items-center gap-3">
+                      {/* Brand Logo */}
+                      {brand && brand.logo && (
+                        <div className="bg-white border-2 border-gray-200 rounded-xl px-4 py-2 flex items-center justify-center">
+                          <img 
+                            src={brand.logo} 
+                            alt={brand.name}
+                            className="h-8 md:h-10 object-contain"
+                          />
+                        </div>
+                      )}
+                      
+                      {/* Favorite Icon - doar icon cu border, fără text */}
+                      <button
+                        onClick={handleAddToWishlist}
+                        className="bg-white border-2 border-gray-200 rounded-xl p-3 md:p-4 hover:border-red-400 hover:bg-red-50 transition group"
+                      >
+                        <Heart className="w-6 h-6 md:w-7 md:h-7 text-gray-600 group-hover:text-red-500 group-hover:fill-red-500 transition" />
+                      </button>
+                    </div>
+                  </div>
             
             {/* Rating - Only show if reviews exist */}
             {reviews.length > 0 && (
@@ -306,6 +331,20 @@ const ProductDetailPage = () => {
 
             {/* Actions */}
             <div className="flex flex-col gap-3 mb-4">
+              {/* Comandă prin telefon - order-2 pe mobile (după butoane), order-1 pe desktop (înainte) */}
+              <a
+                href="tel:+37369711967"
+                className="flex items-center justify-center gap-3 border-2 border-indigo-500 rounded-2xl px-4 md:px-6 py-3 md:py-4 transition hover:shadow-md order-2 md:order-1"
+              >
+                <span className="text-base md:text-lg font-semibold text-indigo-500">
+                  Comandă prin telefon
+                </span>
+                <span className="text-indigo-500 text-xl">📞</span>
+                <span className="text-base md:text-lg font-bold text-pink-600 underline">
+                  +373 69 711 967
+                </span>
+              </a>
+
               {/* Butoane Adaugă/Cumpără - order-1 pe mobile (prima), order-2 pe desktop */}
               <div className="grid grid-cols-2 gap-3 order-1 md:order-2">
                 <button
@@ -322,44 +361,6 @@ const ProductDetailPage = () => {
                 >
                   Cumpără Acum
                 </button>
-              </div>
-
-              {/* Comandă prin telefon - order-2 pe mobile (după butoane), order-1 pe desktop (înainte) */}
-              <div className="order-2 md:order-1">
-                <a
-                  href="tel:+37369711967"
-                  className="flex items-center justify-center gap-3 border-2 border-indigo-500 rounded-2xl px-4 md:px-6 py-3 md:py-4 transition hover:shadow-md mb-3"
-                >
-                  <span className="text-base md:text-lg font-semibold text-indigo-500">
-                    Comandă prin telefon
-                  </span>
-                  <span className="text-indigo-500 text-xl">📞</span>
-                  <span className="text-base md:text-lg font-bold text-pink-600 underline">
-                    +373 69 711 967
-                  </span>
-                </a>
-
-                {/* Brand Logo + Favorite Icon - doar icon cu border */}
-                <div className="flex items-center gap-3">
-                  {/* Brand Logo */}
-                  {brand && brand.logo && (
-                    <div className="flex-1 bg-white border-2 border-gray-200 rounded-xl p-3 flex items-center justify-center">
-                      <img 
-                        src={brand.logo} 
-                        alt={brand.name}
-                        className="h-8 md:h-10 object-contain"
-                      />
-                    </div>
-                  )}
-                  
-                  {/* Favorite Icon - doar icon cu border, fără text */}
-                  <button
-                    onClick={handleAddToWishlist}
-                    className="bg-white border-2 border-gray-200 rounded-xl p-3 md:p-4 hover:border-red-400 hover:bg-red-50 transition group"
-                  >
-                    <Heart className="w-6 h-6 md:w-7 md:h-7 text-gray-600 group-hover:text-red-500 group-hover:fill-red-500 transition" />
-                  </button>
-                </div>
               </div>
             </div>
 
