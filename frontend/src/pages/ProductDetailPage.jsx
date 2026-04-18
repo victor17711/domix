@@ -28,6 +28,11 @@ const ProductDetailPage = () => {
     comment: ''
   });
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [showInstallmentModal, setShowInstallmentModal] = useState(false);
+  const [installmentForm, setInstallmentForm] = useState({
+    name: '',
+    phone: ''
+  });
 
   useEffect(() => {
     fetchProduct();
@@ -264,6 +269,32 @@ const ProductDetailPage = () => {
               </button>
             </div>
 
+            {/* Installment Plan Box */}
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-300 rounded-2xl p-6 mb-8">
+              <div className="flex items-start gap-4">
+                <div className="bg-orange-500 text-white p-3 rounded-xl">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">Achită în 3 rate</h3>
+                  <p className="text-gray-700 mb-1">
+                    <span className="text-2xl font-bold text-orange-600">{(product.price / 3).toFixed(2)} MDL</span>
+                    <span className="text-sm text-gray-600"> / lună</span>
+                  </p>
+                  <p className="text-sm text-gray-600 mb-3">Fără dobândă • Fără comisioane</p>
+                  <button
+                    onClick={() => setShowInstallmentModal(true)}
+                    className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition font-semibold flex items-center gap-2"
+                  >
+                    Află mai multe
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
             {/* Features */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t">
               <div className="flex items-center gap-3">
@@ -470,6 +501,150 @@ const ProductDetailPage = () => {
           </div>
         )}
       </div>
+
+      {/* Installment Plan Modal */}
+      {showInstallmentModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+              <h3 className="text-2xl font-bold text-gray-900">Plată în Rate - {product.name}</h3>
+              <button
+                onClick={() => setShowInstallmentModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="p-6">
+              {/* Plan Details */}
+              <div className="mb-6">
+                <h4 className="text-lg font-bold text-gray-900 mb-4">Plan de Plată</h4>
+                <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-4 mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-semibold text-gray-900">Preț Total:</span>
+                    <span className="text-2xl font-bold text-orange-600">{product.price} MDL</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-gray-900">Rata Lunară:</span>
+                    <span className="text-xl font-bold text-teal-600">{(product.price / 3).toFixed(2)} MDL</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Payment Schedule with Pie Charts */}
+              <div className="mb-6">
+                <h4 className="text-lg font-bold text-gray-900 mb-4">Calendar Plăți</h4>
+                <div className="grid grid-cols-3 gap-4">
+                  {[1, 2, 3].map((month) => (
+                    <div key={month} className="bg-gray-50 rounded-xl p-4 text-center">
+                      {/* Simple Pie Chart Representation */}
+                      <div className="relative w-24 h-24 mx-auto mb-3">
+                        <svg viewBox="0 0 100 100" className="transform -rotate-90">
+                          <circle cx="50" cy="50" r="40" fill="none" stroke="#E5E7EB" strokeWidth="10" />
+                          <circle
+                            cx="50"
+                            cy="50"
+                            r="40"
+                            fill="none"
+                            stroke={month === 1 ? '#F97316' : month === 2 ? '#14B8A6' : '#06B6D4'}
+                            strokeWidth="10"
+                            strokeDasharray={`${(month / 3) * 251.2} 251.2`}
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-2xl font-bold text-gray-900">{month}/3</span>
+                        </div>
+                      </div>
+                      <p className="font-bold text-gray-900 mb-1">Luna {month}</p>
+                      <p className="text-lg font-bold text-teal-600">{(product.price / 3).toFixed(2)} MDL</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {new Date(Date.now() + month * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' })}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Application Form */}
+              <div className="bg-teal-50 border-2 border-teal-200 rounded-xl p-6 mb-4">
+                <h4 className="text-lg font-bold text-gray-900 mb-4">Trimite Cerere</h4>
+                <form className="space-y-4" onSubmit={(e) => {
+                  e.preventDefault();
+                  toast({ 
+                    title: 'Cerere trimisă!', 
+                    description: `Vom contacta ${installmentForm.name} în curând la ${installmentForm.phone}` 
+                  });
+                  setShowInstallmentModal(false);
+                  setInstallmentForm({ name: '', phone: '' });
+                }}>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-900 mb-2">Nume Complet *</label>
+                    <input
+                      type="text"
+                      required
+                      value={installmentForm.name}
+                      onChange={(e) => setInstallmentForm({...installmentForm, name: e.target.value})}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      placeholder="Ion Popescu"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-900 mb-2">Telefon *</label>
+                    <input
+                      type="tel"
+                      required
+                      value={installmentForm.phone}
+                      onChange={(e) => setInstallmentForm({...installmentForm, phone: e.target.value})}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      placeholder="+373 69 123 456"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full bg-teal-600 text-white py-3 rounded-xl hover:bg-teal-700 transition font-bold text-lg"
+                  >
+                    Trimite Cererea
+                  </button>
+                  <p className="text-xs text-gray-600 text-center">
+                    Vă vom contacta în cel mai scurt timp pentru a finaliza cererea de plată în rate.
+                  </p>
+                </form>
+              </div>
+
+              {/* Benefits */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-center gap-2 text-sm text-gray-700">
+                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Fără dobândă</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-700">
+                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Fără comisioane</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-700">
+                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Aprobare rapidă</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-700">
+                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>100% online</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

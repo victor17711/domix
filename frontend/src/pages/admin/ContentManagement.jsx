@@ -1116,9 +1116,6 @@ const ContentManagement = () => {
           </div>
         </div>
       )}
-    </div>
-  );
-
 
       {/* FAQ Modal */}
       {showFaqModal && (
@@ -1191,7 +1188,8 @@ const ContentManagement = () => {
           </div>
         </div>
       )}
-
+    </div>
+  );
 };
 
 export default ContentManagement;

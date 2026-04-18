@@ -11,6 +11,15 @@ const API = `${BACKEND_URL}/api`;
 
 const ContactPage = () => {
   const [pageData, setPageData] = useState(null);
+  const [contactInfo, setContactInfo] = useState({
+    phone: '',
+    email: '',
+    address: '',
+    hours: '',
+    facebook: '',
+    instagram: '',
+    tiktok: ''
+  });
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
@@ -23,7 +32,19 @@ const ContactPage = () => {
 
   useEffect(() => {
     fetchContactPage();
+    fetchContactInfo();
   }, []);
+
+  const fetchContactInfo = async () => {
+    try {
+      const response = await axios.get(`${API}/settings`);
+      if (response.data.contactInfo) {
+        setContactInfo(response.data.contactInfo);
+      }
+    } catch (error) {
+      console.error('Error fetching contact info from settings:', error);
+    }
+  };
 
   const fetchContactPage = async () => {
     try {
@@ -85,18 +106,17 @@ const ContactPage = () => {
     );
   }
 
-  let contactInfo = {};
-  try {
-    contactInfo = JSON.parse(pageData?.content || '{}');
-  } catch {
-    contactInfo = {
-      address: 'Str. Principală nr. 123, Chișinău, Moldova',
-      phone: '+373 69 711 967',
-      email: 'comenzi@domix.md',
-      hours: 'Luni - Vineri: 09:00 - 18:00',
-      mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2719.2578782835143!2d28.832149476622846!3d47.02287197115092!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40c97c3628b769a1%3A0x37d1e6d6b2a97c47!2sPiata%20Marii%20Adunari%20Nationale!5e0!3m2!1sen!2s!4v1234567890123!5m2!1sen!2s'
-    };
-  }
+  // Use contactInfo from state (fetched from settings), with fallbacks
+  const finalContactInfo = {
+    address: contactInfo.address || 'Str. Principală nr. 123, Chișinău, Moldova',
+    phone: contactInfo.phone || '+373 69 711 967',
+    email: contactInfo.email || 'comenzi@domix.md',
+    hours: contactInfo.hours || 'Luni - Vineri: 09:00 - 18:00',
+    facebook: contactInfo.facebook || '',
+    instagram: contactInfo.instagram || '',
+    tiktok: contactInfo.tiktok || '',
+    mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2719.2578782835143!2d28.832149476622846!3d47.02287197115092!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40c97c3628b769a1%3A0x37d1e6d6b2a97c47!2sPiata%20Marii%20Adunari%20Nationale!5e0!3m2!1sen!2s!4v1234567890123!5m2!1sen!2s'
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -134,7 +154,7 @@ const ContactPage = () => {
               <MapPin className="w-7 h-7 text-teal-600" />
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">Adresă</h3>
-            <p className="text-gray-600">{contactInfo.address}</p>
+            <p className="text-gray-600">{finalContactInfo.address}</p>
           </div>
 
           <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition">
@@ -142,8 +162,8 @@ const ContactPage = () => {
               <Phone className="w-7 h-7 text-teal-600" />
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">Telefon</h3>
-            <a href={`tel:${contactInfo.phone}`} className="text-teal-600 hover:text-teal-700 font-semibold">
-              {contactInfo.phone}
+            <a href={`tel:${finalContactInfo.phone}`} className="text-teal-600 hover:text-teal-700 font-semibold">
+              {finalContactInfo.phone}
             </a>
           </div>
 
@@ -152,11 +172,56 @@ const ContactPage = () => {
               <Mail className="w-7 h-7 text-teal-600" />
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">Email</h3>
-            <a href={`mailto:${contactInfo.email}`} className="text-teal-600 hover:text-teal-700 font-semibold">
-              {contactInfo.email}
+            <a href={`mailto:${finalContactInfo.email}`} className="text-teal-600 hover:text-teal-700 font-semibold">
+              {finalContactInfo.email}
             </a>
           </div>
         </div>
+
+        {/* Social Media - if available from Admin */}
+        {(finalContactInfo.facebook || finalContactInfo.instagram || finalContactInfo.tiktok) && (
+          <div className="bg-white rounded-2xl p-6 shadow-lg mb-12">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Share2 className="w-6 h-6 text-teal-600" />
+              Urmărește-ne
+            </h3>
+            <div className="flex gap-4">
+              {finalContactInfo.facebook && (
+                <a
+                  href={finalContactInfo.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition font-semibold"
+                >
+                  <Facebook className="w-5 h-5" />
+                  Facebook
+                </a>
+              )}
+              {finalContactInfo.instagram && (
+                <a
+                  href={finalContactInfo.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 bg-gradient-to-br from-purple-600 to-pink-500 text-white px-6 py-3 rounded-xl hover:from-purple-700 hover:to-pink-600 transition font-semibold"
+                >
+                  <Instagram className="w-5 h-5" />
+                  Instagram
+                </a>
+              )}
+              {finalContactInfo.tiktok && (
+                <a
+                  href={finalContactInfo.tiktok}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-xl hover:bg-gray-800 transition font-semibold"
+                >
+                  <Music className="w-5 h-5" />
+                  TikTok
+                </a>
+              )}
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Contact Form */}
@@ -239,7 +304,7 @@ const ContactPage = () => {
             {/* Google Map */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg">
               <iframe
-                src={contactInfo.mapUrl}
+                src={finalContactInfo.mapUrl}
                 width="100%"
                 height="400"
                 style={{ border: 0 }}
