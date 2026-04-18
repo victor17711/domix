@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { Truck, Headphones, RotateCcw, BadgeCheck, CheckCircle2, Play, ChevronLeft, ChevronRight, UserCircle2, Info } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import aboutImageLast from "../assets/images/about.jpeg";
+import aboutDepozit from "../assets/images/depozit.webp";
+import aboutShipping from "../assets/images/poza3.jpeg";
+import aboutShipping2 from "../assets/images/poza4.jpeg";
+import aboutFirst from "../assets/images/poza1.jpeg";
 
 const stats = [
   { value: '15+', label: 'Ani de experiență' },
@@ -152,7 +157,7 @@ const AboutUsPage = () => {
               <div className="hidden xl:block">
                 <div className="w-full h-[270px] rounded-[18px] overflow-hidden bg-[#e9e9e9]">
                   <img
-                    src="/images/about-top-small.jpg"
+                    src={aboutFirst}
                     alt="About small visual"
                     className="w-full h-full object-cover"
                   />
@@ -182,7 +187,7 @@ const AboutUsPage = () => {
 
           <div className="w-full h-[420px] md:h-[560px] rounded-[18px] overflow-hidden bg-[#efb2bf]">
             <img
-              src="/images/about-top-large.jpg"
+              src={aboutDepozit}
               alt="About main visual"
               className="w-full h-full object-cover"
             />
@@ -249,7 +254,7 @@ const AboutUsPage = () => {
           <div className="grid grid-cols-[1.1fr_0.8fr] gap-4 md:gap-6 items-center">
             <div className="bg-[#bfe8e7] rounded-[20px] overflow-hidden h-[360px] md:h-[470px]">
               <img
-                src="/images/about-delivery-main.jpg"
+                src={aboutShipping}
                 alt="Delivery feature main"
                 className="w-full h-full object-cover"
               />
@@ -257,7 +262,7 @@ const AboutUsPage = () => {
 
             <div className="bg-[#d9f1f5] rounded-[16px] overflow-hidden h-[270px] md:h-[350px]">
               <img
-                src="/images/about-delivery-side.jpg"
+                src={aboutShipping2}
                 alt="Delivery feature side"
                 className="w-full h-full object-cover"
               />
@@ -338,14 +343,10 @@ const AboutUsPage = () => {
         <section className="grid grid-cols-1 lg:grid-cols-[0.95fr_1fr] gap-10 items-center mt-16 md:mt-24 mb-10">
           <div className="relative h-[320px] md:h-[470px] rounded-[20px] overflow-hidden bg-[#14c9c9]">
             <img
-              src="../assets/images/about.jpeg"
+              src={aboutImageLast}
               alt="Customer satisfaction"
               className="w-full h-full object-cover"
             />
-
-            <button className="absolute left-8 top-1/2 -translate-y-1/2 w-16 h-16 rounded-full border-2 border-white flex items-center justify-center bg-white/15 backdrop-blur-sm">
-              <Play className="w-7 h-7 text-white fill-white ml-1" />
-            </button>
           </div>
 
           <div className="max-w-[700px]">

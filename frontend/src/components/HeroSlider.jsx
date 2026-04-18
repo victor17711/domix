@@ -1,18 +1,54 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
-import { sliderData } from '../data/mockData';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const HeroSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [sliderData, setSliderData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
   useEffect(() => {
+    fetchBanners();
+  }, []);
+
+  const fetchBanners = async () => {
+    try {
+      const response = await axios.get(`${API}/settings`);
+      const banners = response.data.heroBanners || [];
+      setSliderData(banners.length > 0 ? banners : getDefaultBanners());
+    } catch (error) {
+      console.error('Error fetching banners:', error);
+      setSliderData(getDefaultBanners());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getDefaultBanners = () => [
+    {
+      image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8',
+      badge: 'Nou!',
+      title: 'Colecția de Primăvară 2024',
+      subtitle: 'Tendințe de sezon',
+      description: 'Descoperă cele mai noi tendințe în modă',
+      buttonText: 'Vezi Produse',
+      buttonLink: '/category/All'
+    }
+  ];
+
+  useEffect(() => {
+    if (sliderData.length === 0) return;
+    
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % sliderData.length);
     }, 8000);
     return () => clearInterval(interval);
-  }, []);
+  }, [sliderData.length]);
 
   const goToSlide = (index) => setCurrentSlide(index);
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % sliderData.length);
@@ -42,24 +78,35 @@ const HeroSlider = () => {
   const hasContent =
     currentItem?.badge ||
     currentItem?.title ||
+    currentItem?.subtitle ||
     currentItem?.description ||
     currentItem?.buttonText;
+
+  if (loading || sliderData.length === 0) {
+    return (
+      <div className="w-full px-4 md:px-6 py-6 md:py-10">
+        <div className="relative rounded-3xl overflow-hidden h-[250px] md:h-[600px] bg-gray-200 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full px-4 md:px-6 py-6 md:py-10">
       <div
-        className="relative rounded-3xl overflow-hidden h-[520px] md:h-[600px] touch-pan-y"
+        className="relative rounded-3xl overflow-hidden h-[250px] md:h-[600px] touch-pan-y"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         {/* BACKGROUND */}
         <img
-          src={currentItem.image}
-          alt={currentItem.title || 'Slide image'}
-          className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
-          draggable="false"
-        />
+  src={currentItem.image}
+  alt={currentItem.title || 'Slide image'}
+  className="absolute inset-0 w-full h-full object-cover object-center md:object-center select-none pointer-events-none"
+  draggable="false"
+/>
 
         {/* OVERLAY - doar dacă există conținut */}
         {hasContent && (
@@ -116,7 +163,7 @@ const HeroSlider = () => {
         </button>
 
         {/* DOTS */}
-        <div className="absolute bottom-5 md:bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20 bg-white/90 px-4 md:px-6 py-2 md:py-3 rounded-full shadow-lg">
+        <div className="absolute bottom-5 md:bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20 bg-white/90 px-4 md:px-6 py-2 md:py-3 rounded-full shadow-lg hidden md:flex">
           {sliderData.map((_, index) => (
             <button
               key={index}

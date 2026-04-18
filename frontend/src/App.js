@@ -24,6 +24,7 @@ import OrderSuccessPage from './pages/OrderSuccessPage';
 import ContactPage from './pages/ContactPage';
 import BrandsPage from './pages/BrandsPage';
 import AdminLogin from './pages/admin/AdminLogin';
+import ContentManagement from './pages/admin/ContentManagement';
 import Dashboard from './pages/admin/Dashboard';
 import ProductsManagement from './pages/admin/ProductsManagement';
 import CategoriesManagement from './pages/admin/CategoriesManagement';
@@ -266,6 +267,12 @@ function App() {
                 <Route path="/admin/settings" element={
                   <AdminProtectedRoute>
                     <Settings />
+                  </AdminProtectedRoute>
+                } />
+
+                <Route path="/admin/content" element={
+                  <AdminProtectedRoute>
+                    <ContentManagement />
                   </AdminProtectedRoute>
                 } />
 

@@ -6,13 +6,13 @@ const Preloader = () => {
     <div className="fixed inset-0 bg-white z-[9999] flex items-center justify-center">
       <div className="text-center">
         {/* Logo with pulse animation */}
-        <div className="mb-6 animate-pulse">
+        {/* <div className="mb-6 animate-pulse">
           <img 
             src={logo} 
             alt="Loading..." 
             className="h-24 w-auto mx-auto"
           />
-        </div>
+        </div> */}
         
         {/* Spinner */}
         <div className="flex justify-center">

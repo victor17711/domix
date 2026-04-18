@@ -13,7 +13,8 @@ import {
   Settings,
   Bell,
   FileText,
-  Tag
+  Tag,
+  Image
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -35,6 +36,7 @@ const AdminLayout = ({ children }) => {
     { path: '/admin/brands', label: 'Branduri', icon: Tag, roles: ['admin'] },
     { path: '/admin/orders', label: 'Comenzi', icon: ShoppingCart, roles: ['admin', 'manager'] },
     { path: '/admin/users', label: 'Utilizatori', icon: Users, roles: ['admin'] },
+    { path: '/admin/content', label: 'Conținut', icon: Image, roles: ['admin'] },
     { path: '/admin/pages', label: 'Pagini', icon: FileText, roles: ['admin'] },
     { path: '/admin/settings', label: 'Setări', icon: Settings, roles: ['admin'] },
   ];
