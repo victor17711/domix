@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useAdmin } from '../../context/AdminContext';
+import { useAdmin } from '../../context/AuthContext';
 import axios from 'axios';
-import { Save, Plus, X, Menu as MenuIcon, ArrowUp, ArrowDown, Folder } from 'lucide-react';
+import { Save, Plus, X, Menu as MenuIcon, ArrowUp, ArrowDown, Folder, Globe, Image as ImageIcon } from 'lucide-react';
 import { toast } from '../../hooks/use-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -15,6 +15,8 @@ const Settings = () => {
   const [categories, setCategories] = useState([]);
   const [pages, setPages] = useState([]);
   const [featuredCategoryId, setFeaturedCategoryId] = useState('');
+  const [websiteName, setWebsiteName] = useState('DOMIX');
+  const [favicon, setFavicon] = useState('');
   
   const [newMainItem, setNewMainItem] = useState({ 
     name: '', 
@@ -39,6 +41,8 @@ const Settings = () => {
       setMenuItems(settingsRes.data.menuItems || []);
       setCategoryItems(settingsRes.data.categoryMenuItems || []);
       setFeaturedCategoryId(settingsRes.data.featuredCategoryId || '');
+      setWebsiteName(settingsRes.data.websiteName || 'DOMIX');
+      setFavicon(settingsRes.data.favicon || '');
       setCategories(categoriesRes.data);
       setPages(pagesRes.data);
     } catch (error) {
@@ -176,7 +180,9 @@ const Settings = () => {
       await axios.post(`${API}/settings`, {
         menuItems,
         categoryMenuItems: categoryItems,
-        featuredCategoryId
+        featuredCategoryId,
+        websiteName,
+        favicon
       }, getAuthHeaders());
       
       toast({ title: 'Succes', description: 'Setările au fost salvate!' });
@@ -194,8 +200,65 @@ const Settings = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-gradient-to-r from-teal-600 to-teal-700 rounded-2xl p-6 text-white">
-        <h2 className="text-3xl font-bold mb-2">Setări Meniuri</h2>
-        <p className="text-teal-100">Gestionează itemurile din meniurile site-ului. Ordinea de afișare este de sus în jos.</p>
+        <h2 className="text-3xl font-bold mb-2">Setări</h2>
+        <p className="text-teal-100">Gestionează meniurile, numele website-ului și favicon-ul</p>
+      </div>
+
+      {/* Website Name & Favicon */}
+      <div className="bg-white rounded-2xl p-6 border-2 border-gray-100">
+        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <Globe className="w-6 h-6 text-teal-600" />
+          Configurare Website
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Website Name */}
+          <div>
+            <label className="block text-sm font-bold text-gray-900 mb-2">
+              Nume Website
+            </label>
+            <input
+              type="text"
+              value={websiteName}
+              onChange={(e) => setWebsiteName(e.target.value)}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+              placeholder="ex: DOMIX Shop"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Acest nume va apărea în titlul paginii
+            </p>
+          </div>
+
+          {/* Favicon */}
+          <div>
+            <label className="block text-sm font-bold text-gray-900 mb-2">
+              Favicon (URL)
+            </label>
+            {favicon && (
+              <div className="mb-2 flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
+                <img 
+                  src={favicon} 
+                  alt="Favicon preview" 
+                  className="w-6 h-6 object-contain"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+                <span className="text-xs text-gray-600">Preview favicon</span>
+              </div>
+            )}
+            <input
+              type="url"
+              value={favicon}
+              onChange={(e) => setFavicon(e.target.value)}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+              placeholder="https://example.com/favicon.ico"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Link către imaginea favicon (32x32px sau 64x64px)
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

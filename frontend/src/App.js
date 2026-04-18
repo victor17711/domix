@@ -33,7 +33,6 @@ import BrandsManagement from './pages/admin/BrandsManagement';
 import UsersManagement from './pages/admin/UsersManagement';
 import OrdersManagement from './pages/admin/OrdersManagement';
 import RequestsManagement from './pages/admin/RequestsManagement';
-import SettingsManagement from './pages/admin/SettingsManagement';
 import Settings from './pages/admin/Settings';
 import Pages from './pages/admin/Pages';
 import { Toaster } from './components/ui/toaster';
@@ -278,7 +277,7 @@ function App() {
 
                 <Route path="/admin/settings" element={
                   <AdminProtectedRoute>
-                    <SettingsManagement />
+                    <Settings />
                   </AdminProtectedRoute>
                 } />
 

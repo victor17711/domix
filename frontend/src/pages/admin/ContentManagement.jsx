@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAdmin } from '../../context/AdminContext';
 import { toast } from '../../hooks/use-toast';
-import { Image, Plus, Edit, Trash2, Save, X, ChevronDown, ChevronUp, Images, HelpCircle, Phone, Star } from 'lucide-react';
+import { Image, Plus, Edit, Trash2, Save, X, ChevronDown, ChevronUp, Images, HelpCircle, Phone } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -10,7 +10,6 @@ const API = `${BACKEND_URL}/api`;
 const ContentManagement = () => {
   const { getAuthHeaders } = useAdmin();
   const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState([]);
   const [banners, setBanners] = useState([]);
   const [albums, setAlbums] = useState([]);
   const [faqs, setFaqs] = useState([]);
@@ -23,7 +22,6 @@ const ContentManagement = () => {
     instagram: '',
     tiktok: ''
   });
-  const [featuredCategoryId, setFeaturedCategoryId] = useState('');
   const [showBannerModal, setShowBannerModal] = useState(false);
   const [showAlbumModal, setShowAlbumModal] = useState(false);
   const [showFaqModal, setShowFaqModal] = useState(false);
@@ -31,7 +29,6 @@ const ContentManagement = () => {
   const [editingAlbum, setEditingAlbum] = useState(null);
   const [editingFaq, setEditingFaq] = useState(null);
   const [expandedSections, setExpandedSections] = useState({
-    featuredCategory: true,
     heroBanners: true,
     serviceAlbums: true,
     faqs: true,
@@ -60,17 +57,7 @@ const ContentManagement = () => {
 
   useEffect(() => {
     fetchContent();
-    fetchCategories();
   }, []);
-
-  const fetchCategories = async () => {
-    try {
-      const response = await axios.get(`${API}/categories`);
-      setCategories(response.data);
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
-  };
 
   const fetchContent = async () => {
     try {
@@ -87,7 +74,6 @@ const ContentManagement = () => {
         instagram: '',
         tiktok: ''
       });
-      setFeaturedCategoryId(response.data.featuredCategoryId || '');
     } catch (error) {
       console.error('Error fetching content:', error);
       setBanners([]);
@@ -98,7 +84,7 @@ const ContentManagement = () => {
     }
   };
 
-  const saveSettings = async (updatedBanners, updatedAlbums = null, updatedFaqs = null, updatedContactInfo = null, updatedFeaturedCategory = null) => {
+  const saveSettings = async (updatedBanners, updatedAlbums = null, updatedFaqs = null, updatedContactInfo = null) => {
     try {
       // Fetch current settings first
       const currentSettings = await axios.get(`${API}/settings`);
@@ -122,11 +108,6 @@ const ContentManagement = () => {
       // Update Contact Info if provided
       if (updatedContactInfo !== null) {
         mergedSettings.contactInfo = updatedContactInfo;
-      }
-
-      // Update Featured Category if provided
-      if (updatedFeaturedCategory !== null) {
-        mergedSettings.featuredCategoryId = updatedFeaturedCategory;
       }
 
       await axios.post(`${API}/settings`, mergedSettings, getAuthHeaders());
@@ -407,24 +388,6 @@ const ContentManagement = () => {
     }
   };
 
-  // Featured Category Handler
-  const handleFeaturedCategorySave = async () => {
-    try {
-      await saveSettings(banners, null, null, null, featuredCategoryId);
-
-      toast({ 
-        title: 'Succes', 
-        description: 'Categorie featured salvată!' 
-      });
-    } catch (error) {
-      console.error('Featured category save error:', error);
-      toast({ 
-        title: 'Eroare', 
-        description: error.response?.data?.detail || 'Nu s-a putut salva categoria',
-        variant: 'destructive' 
-      });
-    }
-  };
 
 
   if (loading) {
@@ -648,56 +611,6 @@ const ContentManagement = () => {
           )}
         </div>
 
-
-        {/* Featured Category Section */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <button
-            onClick={() => toggleSection('featuredCategory')}
-            className="w-full px-6 py-5 flex items-center justify-between bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 transition"
-          >
-            <div className="flex items-center gap-3">
-              <Star className="w-6 h-6" />
-              <div className="text-left">
-                <h2 className="text-xl font-bold">Categorie Featured Homepage</h2>
-                <p className="text-sm text-purple-100">Alege categoria afișată pe homepage</p>
-              </div>
-            </div>
-            {expandedSections.featuredCategory ? (
-              <ChevronUp className="w-6 h-6" />
-            ) : (
-              <ChevronDown className="w-6 h-6" />
-            )}
-          </button>
-
-          {expandedSections.featuredCategory && (
-            <div className="p-6">
-              <p className="text-gray-600 mb-4">
-                Selectează categoria care va fi afișată în secțiunea featured de pe pagina principală
-              </p>
-              <div className="flex gap-4">
-                <select
-                  value={featuredCategoryId}
-                  onChange={(e) => setFeaturedCategoryId(e.target.value)}
-                  className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
-                >
-                  <option value="">Selectează o categorie</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  onClick={handleFeaturedCategorySave}
-                  className="px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition font-semibold flex items-center gap-2"
-                >
-                  <Save className="w-5 h-5" />
-                  Salvează
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
 
         {/* FAQs Section */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
