@@ -280,10 +280,6 @@ const ContentManagement = () => {
       setUploadingGallery(false);
     }
   };
-  
-  const removeGalleryImage = (index) => {
-    setAlbumForm({ ...albumForm, galleryImages: albumForm.galleryImages.filter((_, i) => i !== index) });
-  };
 
   // Album Handlers
   const handleAlbumSubmit = async (e) => {
