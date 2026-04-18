@@ -34,6 +34,7 @@ const ProductsManagement = () => {
     image: '',
     images: [],
     available: 100,
+    sku: '',
     badge: '',
     badgeRu: ''
   });
@@ -172,6 +173,7 @@ const ProductsManagement = () => {
       image: product.image,
       images: product.images || [],
       available: product.available,
+      sku: product.sku || '',
       badge: product.badge || '',
       badgeRu: product.badgeRu || ''
     });
@@ -195,6 +197,7 @@ const ProductsManagement = () => {
       image: '',
       images: [],
       available: 100,
+      sku: '',
       badge: '',
       badgeRu: ''
     });
@@ -588,6 +591,19 @@ const ProductsManagement = () => {
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
+              </div>
+
+              {/* SKU Field */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">SKU (Cod Produs)</label>
+                <input
+                  type="text"
+                  value={formData.sku}
+                  onChange={(e) => setFormData({...formData, sku: e.target.value})}
+                  placeholder="ex: PROD-12345"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">Opțional - Codul unic al produsului</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
