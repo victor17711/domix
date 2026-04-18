@@ -1,36 +1,21 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Link, Navigate } from 'react-router-dom';
-import {
-  User,
-  ShoppingBag,
-  MapPin,
-  Shield,
-  LogOut,
-  ChevronRight,
-  Package,
-  BadgeCheck,
-  Clock3,
-  Truck
-} from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { User, Package, MapPin, Settings, LogOut, Edit, Save, X, Eye, Clock } from 'lucide-react';
 import { toast } from '../hooks/use-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const MyAccountPage = () => {
-  const { user, isAuthenticated, logout } = useAuth();
-
   const [activeTab, setActiveTab] = useState('profile');
+  const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState([]);
-  const [ordersLoading, setOrdersLoading] = useState(true);
-  const [savingProfile, setSavingProfile] = useState(false);
-
-  const [formData, setFormData] = useState({
+  const [user, setUser] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [profileForm, setProfileForm] = useState({
     firstName: '',
     lastName: '',
-    email: '',
     phone: '',
     address: '',
     city: '',
@@ -38,472 +23,426 @@ const MyAccountPage = () => {
   });
 
   useEffect(() => {
-    if (user) {
-      setFormData({
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
-        email: user.email || '',
-        phone: user.phone || '',
-        address: user.address || '',
-        city: user.city || '',
-        postalCode: user.postalCode || ''
-      });
-    }
-  }, [user]);
+    fetchUserData();
+    fetchOrders();
+  }, []);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchOrders();
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('userToken');
+    if (!token) {
+      window.location.href = '/';
+      return null;
     }
-  }, [isAuthenticated]);
+    return {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    };
+  };
+
+  const fetchUserData = async () => {
+    try {
+      const headers = getAuthHeaders();
+      if (!headers) return;
+      
+      const response = await axios.get(`${API}/auth/me`, headers);
+      setUser(response.data);
+      setProfileForm({
+        firstName: response.data.firstName || '',
+        lastName: response.data.lastName || '',
+        phone: response.data.phone || '',
+        address: response.data.address || '',
+        city: response.data.city || '',
+        postalCode: response.data.postalCode || ''
+      });
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      if (error.response?.status === 401) {
+        localStorage.removeItem('userToken');
+        window.location.href = '/';
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchOrders = async () => {
     try {
-      setOrdersLoading(true);
-
-      const token =
-        localStorage.getItem('token') ||
-        localStorage.getItem('authToken');
-
-      const response = await axios.get(`${API}/orders`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-      });
-
-      setOrders(Array.isArray(response.data) ? response.data : []);
+      const headers = getAuthHeaders();
+      if (!headers) return;
+      
+      const response = await axios.get(`${API}/orders`, headers);
+      setOrders(response.data);
     } catch (error) {
       console.error('Error fetching orders:', error);
-      setOrders([]);
-    } finally {
-      setOrdersLoading(false);
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSaveProfile = async (e) => {
+  const handleUpdateProfile = async (e) => {
     e.preventDefault();
-
+    
     try {
-      setSavingProfile(true);
-
-      const token =
-        localStorage.getItem('token') ||
-        localStorage.getItem('authToken');
-
-      await axios.put(`${API}/auth/me`, formData, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-      });
-
-      toast({
-        title: 'Succes',
-        description: 'Datele contului au fost actualizate.'
-      });
+      const headers = getAuthHeaders();
+      if (!headers) return;
+      
+      const response = await axios.put(
+        `${API}/auth/me`,
+        profileForm,
+        headers
+      );
+      
+      setUser(response.data);
+      setEditMode(false);
+      toast({ title: 'Succes', description: 'Profilul a fost actualizat!' });
     } catch (error) {
-      console.error('Error updating profile:', error);
-      toast({
-        title: 'Eroare',
-        description:
-          error.response?.data?.detail ||
-          'Nu s-au putut actualiza datele contului.',
-        variant: 'destructive'
+      toast({ 
+        title: 'Eroare', 
+        description: error.response?.data?.detail || 'Nu s-a putut actualiza profilul',
+        variant: 'destructive' 
       });
-    } finally {
-      setSavingProfile(false);
     }
   };
 
   const handleLogout = () => {
-    logout();
+    localStorage.removeItem('userToken');
+    toast({ title: 'Deconectat', description: 'Te-ai deconectat cu succes' });
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 1000);
   };
 
-  const stats = useMemo(() => {
-    const totalOrders = orders.length;
-    const completedOrders = orders.filter(
-      (order) => order.status === 'delivered'
-    ).length;
-    const pendingOrders = orders.filter(
-      (order) =>
-        order.status === 'pending' || order.status === 'processing'
-    ).length;
-    const totalSpent = orders.reduce(
-      (sum, order) => sum + Number(order.total || 0),
-      0
-    );
-
-    return {
-      totalOrders,
-      completedOrders,
-      pendingOrders,
-      totalSpent
+  const getStatusBadge = (status) => {
+    const badges = {
+      pending: { text: 'În Așteptare', color: 'bg-yellow-100 text-yellow-800' },
+      processing: { text: 'În Procesare', color: 'bg-blue-100 text-blue-800' },
+      shipped: { text: 'Expediată', color: 'bg-purple-100 text-purple-800' },
+      delivered: { text: 'Livrată', color: 'bg-green-100 text-green-800' },
+      cancelled: { text: 'Anulată', color: 'bg-red-100 text-red-800' }
     };
-  }, [orders]);
-
-  const menuItems = [
-    { id: 'profile', label: 'Date personale', icon: User },
-    { id: 'orders', label: 'Istoric comenzi', icon: ShoppingBag },
-    { id: 'addresses', label: 'Adrese', icon: MapPin },
-    { id: 'security', label: 'Securitate', icon: Shield }
-  ];
-
-  const getStatusStyles = (status) => {
-    switch (status) {
-      case 'delivered':
-        return 'bg-green-100 text-green-700';
-      case 'shipped':
-        return 'bg-blue-100 text-blue-700';
-      case 'processing':
-        return 'bg-yellow-100 text-yellow-700';
-      case 'pending':
-        return 'bg-orange-100 text-orange-700';
-      case 'cancelled':
-        return 'bg-red-100 text-red-700';
-      default:
-        return 'bg-gray-100 text-gray-700';
-    }
+    const badge = badges[status] || badges.pending;
+    return <span className={`px-3 py-1 rounded-full text-xs font-bold ${badge.color}`}>{badge.text}</span>;
   };
 
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case 'delivered':
-        return 'Livrată';
-      case 'shipped':
-        return 'Expediată';
-      case 'processing':
-        return 'În procesare';
-      case 'pending':
-        return 'În așteptare';
-      case 'cancelled':
-        return 'Anulată';
-      default:
-        return status || 'Necunoscut';
-    }
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+      </div>
+    );
+  }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center bg-white p-12 rounded-2xl shadow-lg">
+          <User className="w-20 h-20 text-gray-300 mx-auto mb-6" />
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Trebuie să te autentifici</h2>
+          <p className="text-gray-600 mb-6">Pentru a accesa contul tău, autentifică-te mai întâi.</p>
+          <Link 
+            to="/" 
+            className="inline-block bg-teal-600 text-white px-8 py-3 rounded-xl hover:bg-teal-700 transition font-semibold"
+          >
+            Înapoi Acasă
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-
-      {/* HERO */}
-      <div className="relative bg-gradient-to-r from-teal-600 to-teal-700 text-white py-14">
-        <div className="w-full px-4 md:px-6">
-          <div className="flex items-center gap-3 mb-3">
-            <User className="w-10 h-10" />
-            <h1 className="text-3xl md:text-4xl font-bold">Contul meu</h1>
-          </div>
-          <p className="text-teal-100">
-            Gestionează datele personale și comenzile tale
-          </p>
+      {/* Header */}
+      <div className="bg-gradient-to-r from-teal-600 to-teal-700 text-white py-12">
+        <div className="w-full px-6">
+          <h1 className="text-4xl font-bold mb-2">Contul Meu</h1>
+          <p className="text-teal-100">Bun venit, {user.firstName}!</p>
         </div>
       </div>
 
-      {/* BREADCRUMB */}
-      <div className="bg-white border-b">
-        <div className="w-full px-4 md:px-6 py-4">
-          <div className="flex items-center gap-2 text-sm text-gray-600 flex-wrap">
-            <Link to="/" className="hover:text-teal-600 transition">
-              Acasă
-            </Link>
-            <ChevronRight className="w-4 h-4" />
-            <span className="text-gray-900 font-semibold">Contul meu</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="w-full px-4 md:px-6 py-6 md:py-8">
-        {/* STATS */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-2xl border border-gray-200 p-4 md:p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-gray-500">Total comenzi</div>
-                <div className="text-2xl font-bold text-gray-900 mt-1">
-                  {stats.totalOrders}
+      <div className="w-full px-6 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+              <div className="p-6 border-b">
+                <div className="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <User className="w-10 h-10 text-teal-600" />
                 </div>
+                <h3 className="text-center font-bold text-gray-900">{user.firstName} {user.lastName}</h3>
+                <p className="text-center text-sm text-gray-600">{user.email}</p>
               </div>
-              <div className="w-12 h-12 rounded-2xl bg-teal-100 flex items-center justify-center">
-                <Package className="w-6 h-6 text-teal-700" />
-              </div>
+
+              <nav className="p-4">
+                <button
+                  onClick={() => setActiveTab('profile')}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-2 transition ${
+                    activeTab === 'profile' 
+                      ? 'bg-teal-50 text-teal-600 font-semibold' 
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <User className="w-5 h-5" />
+                  Profilul Meu
+                </button>
+
+                <button
+                  onClick={() => setActiveTab('orders')}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-2 transition ${
+                    activeTab === 'orders' 
+                      ? 'bg-teal-50 text-teal-600 font-semibold' 
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <Package className="w-5 h-5" />
+                  Comenzile Mele
+                  {orders.length > 0 && (
+                    <span className="ml-auto bg-teal-600 text-white text-xs px-2 py-1 rounded-full">
+                      {orders.length}
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => setActiveTab('addresses')}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-2 transition ${
+                    activeTab === 'addresses' 
+                      ? 'bg-teal-50 text-teal-600 font-semibold' 
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <MapPin className="w-5 h-5" />
+                  Adrese
+                </button>
+
+                <button
+                  onClick={() => setActiveTab('settings')}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-2 transition ${
+                    activeTab === 'settings' 
+                      ? 'bg-teal-50 text-teal-600 font-semibold' 
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <Settings className="w-5 h-5" />
+                  Setări
+                </button>
+
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition mt-4"
+                >
+                  <LogOut className="w-5 h-5" />
+                  Deconectare
+                </button>
+              </nav>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-200 p-4 md:p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-gray-500">Comenzi livrate</div>
-                <div className="text-2xl font-bold text-gray-900 mt-1">
-                  {stats.completedOrders}
-                </div>
-              </div>
-              <div className="w-12 h-12 rounded-2xl bg-green-100 flex items-center justify-center">
-                <BadgeCheck className="w-6 h-6 text-green-700" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-gray-200 p-4 md:p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-gray-500">În procesare</div>
-                <div className="text-2xl font-bold text-gray-900 mt-1">
-                  {stats.pendingOrders}
-                </div>
-              </div>
-              <div className="w-12 h-12 rounded-2xl bg-yellow-100 flex items-center justify-center">
-                <Clock3 className="w-6 h-6 text-yellow-700" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-gray-200 p-4 md:p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-gray-500">Total cheltuit</div>
-                <div className="text-2xl font-bold text-gray-900 mt-1">
-                  {stats.totalSpent.toFixed(0)} MDL
-                </div>
-              </div>
-              <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center">
-                <Truck className="w-6 h-6 text-blue-700" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
-          {/* SIDEBAR */}
-          <aside className="bg-white rounded-2xl border border-gray-200 p-5 h-fit">
-            <div className="pb-5 border-b border-gray-200">
-              <div className="w-16 h-16 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-xl font-bold">
-                {user?.firstName?.[0] || user?.email?.[0] || 'U'}
-              </div>
-
-              <div className="mt-4">
-                <div className="text-lg font-bold text-gray-900">
-                  {user?.firstName || ''} {user?.lastName || ''}
-                </div>
-                <div className="text-sm text-gray-500 mt-1">
-                  {user?.email}
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-5 space-y-2">
-              {menuItems.map((item) => {
-                const Icon = item.icon;
-
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition ${
-                      activeTab === item.id
-                        ? 'bg-teal-600 text-white'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" strokeWidth={2.3} />
-                    <span className="font-semibold">{item.label}</span>
-                  </button>
-                );
-              })}
-
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition text-red-600 hover:bg-red-50"
-              >
-                <LogOut className="w-5 h-5" strokeWidth={2.3} />
-                <span className="font-semibold">Ieșire din cont</span>
-              </button>
-            </div>
-          </aside>
-
-          {/* CONTENT */}
-          <section className="bg-white rounded-2xl border border-gray-200 p-5 md:p-8">
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            {/* Profile Tab */}
             {activeTab === 'profile' && (
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  Date personale
-                </h2>
-                <p className="text-gray-500 mb-6">
-                  Actualizează informațiile contului tău
-                </p>
+              <div className="bg-white rounded-2xl shadow-lg p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">Informații Personale</h2>
+                  {!editMode ? (
+                    <button
+                      onClick={() => setEditMode(true)}
+                      className="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-semibold"
+                    >
+                      <Edit className="w-5 h-5" />
+                      Editează
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setEditMode(false);
+                        setProfileForm({
+                          firstName: user.firstName || '',
+                          lastName: user.lastName || '',
+                          phone: user.phone || '',
+                          address: user.address || '',
+                          city: user.city || '',
+                          postalCode: user.postalCode || ''
+                        });
+                      }}
+                      className="flex items-center gap-2 text-gray-600 hover:text-gray-700 font-semibold"
+                    >
+                      <X className="w-5 h-5" />
+                      Anulează
+                    </button>
+                  )}
+                </div>
 
-                <form onSubmit={handleSaveProfile}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form onSubmit={handleUpdateProfile} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-900 mb-2">
-                        Prenume
-                      </label>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">Prenume</label>
                       <input
                         type="text"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        disabled={!editMode}
+                        value={profileForm.firstName}
+                        onChange={(e) => setProfileForm({...profileForm, firstName: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-900 mb-2">
-                        Nume
-                      </label>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">Nume</label>
                       <input
                         type="text"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        disabled={!editMode}
+                        value={profileForm.lastName}
+                        onChange={(e) => setProfileForm({...profileForm, lastName: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                       />
                     </div>
 
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-semibold text-gray-900 mb-2">
-                        Email
-                      </label>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">Email</label>
                       <input
                         type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        disabled
+                        value={user.email}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-gray-100 cursor-not-allowed"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Email-ul nu poate fi modificat</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">Telefon</label>
+                      <input
+                        type="tel"
+                        disabled={!editMode}
+                        value={profileForm.phone}
+                        onChange={(e) => setProfileForm({...profileForm, phone: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        placeholder="+373 69 123 456"
                       />
                     </div>
 
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-semibold text-gray-900 mb-2">
-                        Telefon
-                      </label>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">Adresă</label>
                       <input
                         type="text"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                        placeholder="+373..."
-                      />
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-semibold text-gray-900 mb-2">
-                        Adresă
-                      </label>
-                      <input
-                        type="text"
-                        name="address"
-                        value={formData.address}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        disabled={!editMode}
+                        value={profileForm.address}
+                        onChange={(e) => setProfileForm({...profileForm, address: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        placeholder="Str. Principală nr. 123"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-900 mb-2">
-                        Oraș
-                      </label>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">Oraș</label>
                       <input
                         type="text"
-                        name="city"
-                        value={formData.city}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        disabled={!editMode}
+                        value={profileForm.city}
+                        onChange={(e) => setProfileForm({...profileForm, city: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        placeholder="Chișinău"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-900 mb-2">
-                        Cod poștal
-                      </label>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">Cod Poștal</label>
                       <input
                         type="text"
-                        name="postalCode"
-                        value={formData.postalCode}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        disabled={!editMode}
+                        value={profileForm.postalCode}
+                        onChange={(e) => setProfileForm({...profileForm, postalCode: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        placeholder="MD-2001"
                       />
                     </div>
                   </div>
 
-                  <div className="mt-6">
-                    <button
-                      type="submit"
-                      className="bg-teal-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-teal-700 transition"
-                    >
-                      {savingProfile ? 'Se salvează...' : 'Salvează modificările'}
-                    </button>
-                  </div>
+                  {editMode && (
+                    <div className="flex justify-end">
+                      <button
+                        type="submit"
+                        className="flex items-center gap-2 bg-teal-600 text-white px-8 py-3 rounded-xl hover:bg-teal-700 transition font-semibold"
+                      >
+                        <Save className="w-5 h-5" />
+                        Salvează Modificările
+                      </button>
+                    </div>
+                  )}
                 </form>
               </div>
             )}
 
+            {/* Orders Tab */}
             {activeTab === 'orders' && (
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  Istoric comenzi
-                </h2>
-                <p className="text-gray-500 mb-6">
-                  Vezi toate comenzile plasate
-                </p>
+              <div className="bg-white rounded-2xl shadow-lg p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Comenzile Mele</h2>
 
-                {ordersLoading ? (
-                  <div className="py-10 text-center text-gray-500">
-                    Se încarcă comenzile...
-                  </div>
-                ) : orders.length === 0 ? (
-                  <div className="rounded-2xl border border-gray-200 bg-gray-50 p-8 text-center">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">
-                      Nu ai comenzi încă
-                    </h3>
-                    <p className="text-gray-600">
-                      Când vei plasa comenzi, ele vor apărea aici.
-                    </p>
+                {orders.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Package className="w-20 h-20 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">Nicio comandă încă</h3>
+                    <p className="text-gray-600 mb-6">Nu ai plasat nicio comandă până acum.</p>
+                    <Link
+                      to="/"
+                      className="inline-block bg-teal-600 text-white px-8 py-3 rounded-xl hover:bg-teal-700 transition font-semibold"
+                    >
+                      Începe Cumpărăturile
+                    </Link>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {orders.map((order) => (
-                      <div
-                        key={order.id || order._id}
-                        className="rounded-2xl border border-gray-200 p-5 hover:shadow-sm transition"
-                      >
-                        <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+                      <div key={order.id} className="border-2 border-gray-200 rounded-xl p-6 hover:border-teal-500 transition">
+                        <div className="flex items-start justify-between mb-4">
                           <div>
-                            <div className="text-lg font-bold text-gray-900">
-                              Comanda #{order.id || order._id}
+                            <div className="flex items-center gap-3 mb-2">
+                              <h3 className="text-lg font-bold text-gray-900">
+                                Comanda #{order.id.slice(0, 8).toUpperCase()}
+                              </h3>
+                              {getStatusBadge(order.status)}
                             </div>
-                            <div className="text-sm text-gray-500 mt-1">
-                              {order.createdAt
-                                ? new Date(order.createdAt).toLocaleDateString('ro-RO')
-                                : 'Data indisponibilă'}
+                            <div className="flex items-center gap-4 text-sm text-gray-600">
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-4 h-4" />
+                                {new Date(order.createdAt).toLocaleDateString('ro-RO', {
+                                  day: 'numeric',
+                                  month: 'long',
+                                  year: 'numeric'
+                                })}
+                              </span>
+                              <span>•</span>
+                              <span>{order.items.length} {order.items.length === 1 ? 'produs' : 'produse'}</span>
                             </div>
                           </div>
-
-                          <div className="text-sm text-gray-600">
-                            {order.items?.length || 0} produse
-                          </div>
-
-                          <div className="font-bold text-gray-900">
-                            {Number(order.total || 0).toFixed(0)} MDL
-                          </div>
-
-                          <div>
-                            <span
-                              className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusStyles(
-                                order.status
-                              )}`}
-                            >
-                              {getStatusLabel(order.status)}
-                            </span>
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-teal-600">{order.totalAmount.toFixed(2)} MDL</div>
+                            <div className="text-sm text-gray-600">{order.paymentMethod === 'cash_on_delivery' ? 'Cash la curier' : order.paymentMethod}</div>
                           </div>
                         </div>
+
+                        <div className="border-t pt-4">
+                          <h4 className="font-semibold text-gray-900 mb-3">Produse:</h4>
+                          <div className="space-y-2">
+                            {order.items.map((item, index) => (
+                              <div key={index} className="flex items-center justify-between text-sm">
+                                <span className="text-gray-700">
+                                  {item.name} <span className="text-gray-500">x{item.quantity}</span>
+                                </span>
+                                <span className="font-semibold text-gray-900">{item.price.toFixed(2)} MDL</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {order.shippingAddress && (
+                          <div className="border-t mt-4 pt-4">
+                            <h4 className="font-semibold text-gray-900 mb-2">Adresă livrare:</h4>
+                            <p className="text-sm text-gray-600">
+                              {order.shippingAddress.address}, {order.shippingAddress.city}
+                              {order.shippingAddress.postalCode && `, ${order.shippingAddress.postalCode}`}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -511,54 +450,55 @@ const MyAccountPage = () => {
               </div>
             )}
 
+            {/* Addresses Tab */}
             {activeTab === 'addresses' && (
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  Adrese
-                </h2>
-                <p className="text-gray-500 mb-6">
-                  Gestionează adresele folosite la comandă
-                </p>
-
-                <div className="rounded-2xl border border-gray-200 p-5">
-                  <div className="font-semibold text-gray-900 mb-3">
-                    Adresa principală
-                  </div>
-
-                  {formData.address || formData.city || formData.postalCode ? (
-                    <div className="text-gray-600 space-y-1">
-                      {formData.address && <div>{formData.address}</div>}
-                      <div>
-                        {formData.city} {formData.postalCode}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-gray-500">
-                      Nu există încă o adresă salvată.
-                    </div>
-                  )}
+              <div className="bg-white rounded-2xl shadow-lg p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Adresele Mele</h2>
+                <div className="bg-gray-50 rounded-xl p-6 text-center">
+                  <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-600">Adresa ta principală este setată în profil.</p>
+                  <button
+                    onClick={() => setActiveTab('profile')}
+                    className="mt-4 text-teal-600 hover:text-teal-700 font-semibold"
+                  >
+                    Vezi Profilul
+                  </button>
                 </div>
               </div>
             )}
 
-            {activeTab === 'security' && (
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  Securitate
-                </h2>
-                <p className="text-gray-500 mb-6">
-                  Pentru schimbarea parolei poți folosi fluxul de resetare din autentificare.
-                </p>
-
-                <div className="rounded-2xl border border-gray-200 p-5 bg-gray-50">
-                  <div className="font-semibold text-gray-900 mb-2">
-                    Email cont
+            {/* Settings Tab */}
+            {activeTab === 'settings' && (
+              <div className="bg-white rounded-2xl shadow-lg p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Setări Cont</h2>
+                <div className="space-y-4">
+                  <div className="p-4 border-2 border-gray-200 rounded-xl">
+                    <h3 className="font-bold text-gray-900 mb-1">Schimbă Parola</h3>
+                    <p className="text-sm text-gray-600 mb-3">Actualizează parola contului tău</p>
+                    <button className="text-teal-600 hover:text-teal-700 font-semibold text-sm">
+                      Schimbă Parola
+                    </button>
                   </div>
-                  <div className="text-gray-600">{user?.email}</div>
+
+                  <div className="p-4 border-2 border-gray-200 rounded-xl">
+                    <h3 className="font-bold text-gray-900 mb-1">Notificări</h3>
+                    <p className="text-sm text-gray-600 mb-3">Gestionează preferințele de notificare</p>
+                    <button className="text-teal-600 hover:text-teal-700 font-semibold text-sm">
+                      Configurează
+                    </button>
+                  </div>
+
+                  <div className="p-4 border-2 border-red-200 rounded-xl bg-red-50">
+                    <h3 className="font-bold text-red-900 mb-1">Șterge Contul</h3>
+                    <p className="text-sm text-red-600 mb-3">Această acțiune este permanentă</p>
+                    <button className="text-red-600 hover:text-red-700 font-semibold text-sm">
+                      Șterge Contul
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
-          </section>
+          </div>
         </div>
       </div>
     </div>

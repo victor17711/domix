@@ -16,6 +16,10 @@ class User(BaseModel):
     email: EmailStr
     firstName: str
     lastName: str
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    postalCode: Optional[str] = None
     role: str = "user"  # user, manager, or admin
     createdAt: datetime = Field(default_factory=datetime.utcnow)
     updatedAt: datetime = Field(default_factory=datetime.utcnow)
@@ -29,6 +33,10 @@ class UserResponse(BaseModel):
     email: str
     firstName: str
     lastName: str
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    postalCode: Optional[str] = None
     role: str
 
 # Brand Models

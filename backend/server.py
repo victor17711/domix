@@ -117,6 +117,29 @@ async def get_me(authorization: Optional[str] = Header(None)):
     return UserResponse(**current_user)
 
 
+@api_router.put("/auth/me", response_model=UserResponse)
+async def update_me(
+    user_data: dict,
+    authorization: Optional[str] = Header(None)
+):
+    """Update current user profile"""
+    current_user = await get_current_user(authorization, db)
+    
+    # Fields that can be updated
+    allowed_fields = ['firstName', 'lastName', 'phone', 'address', 'city', 'postalCode']
+    update_data = {k: v for k, v in user_data.items() if k in allowed_fields}
+    
+    if update_data:
+        await db.users.update_one(
+            {"id": current_user["id"]},
+            {"$set": update_data}
+        )
+    
+    # Get updated user
+    updated_user = await db.users.find_one({"id": current_user["id"]}, {"_id": 0, "password": 0})
+    return UserResponse(**updated_user)
+
+
 # ==================== PRODUCT ENDPOINTS ====================
 
 @api_router.get("/products", response_model=List[Product])
