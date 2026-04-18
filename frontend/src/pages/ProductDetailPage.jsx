@@ -35,20 +35,27 @@ const ProductDetailPage = () => {
     name: '',
     phone: ''
   });
+  const [relatedScrollPosition, setRelatedScrollPosition] = useState(0);
 
   useEffect(() => {
     fetchProduct();
-    fetchReviews();
   }, [id]);
+
+  // Fetch reviews when product is loaded (using product.id)
+  useEffect(() => {
+    if (product && product.id) {
+      fetchReviews();
+    }
+  }, [product]);
 
   const fetchProduct = async () => {
     try {
       const response = await axios.get(`${API}/products/${id}`);
       setProduct(response.data);
       
-      // Fetch related products from same category
+      // Fetch related products from same category (exclude current product by ID)
       const relatedRes = await axios.get(`${API}/products?category=${encodeURIComponent(response.data.category)}`);
-      setRelatedProducts(relatedRes.data.filter(p => p.id !== id).slice(0, 8));
+      setRelatedProducts(relatedRes.data.filter(p => p.id !== response.data.id).slice(0, 15));
     } catch (error) {
       console.error('Error fetching product:', error);
     } finally {
@@ -58,7 +65,8 @@ const ProductDetailPage = () => {
 
   const fetchReviews = async () => {
     try {
-      const response = await axios.get(`${API}/products/${id}/reviews`);
+      // Use product.id (real ID) instead of slug
+      const response = await axios.get(`${API}/products/${product.id}/reviews`);
       setReviews(response.data);
     } catch (error) {
       console.error('Error fetching reviews:', error);
@@ -70,9 +78,10 @@ const ProductDetailPage = () => {
     setSubmittingReview(true);
 
     try {
-      await axios.post(`${API}/products/${id}/reviews`, {
+      // Use product.id (real ID) instead of slug
+      await axios.post(`${API}/products/${product.id}/reviews`, {
         ...reviewForm,
-        productId: id
+        productId: product.id
       });
       
       toast({ title: 'Succes', description: 'Recenzia ta a fost adăugată!' });
@@ -98,6 +107,19 @@ const ProductDetailPage = () => {
       quantity
     });
     toast({ title: 'Succes', description: `${productName} adăugat în coș!` });
+  };
+
+  const scrollRelatedProducts = (direction) => {
+    const container = document.getElementById('related-products-container');
+    const scrollAmount = 300;
+    
+    if (container) {
+      if (direction === 'left') {
+        container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      } else {
+        container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      }
+    }
   };
 
   const handleBuyNow = () => {
@@ -519,13 +541,42 @@ const ProductDetailPage = () => {
           </div>
         </div>
 
-        {/* Related Products */}
+        {/* Related Products Carousel */}
         {relatedProducts.length > 0 && (
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">Produse Similare</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+          <div className="relative">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-3xl font-bold text-gray-900">Produse Similare</h2>
+              {relatedProducts.length > 5 && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => scrollRelatedProducts('left')}
+                    className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => scrollRelatedProducts('right')}
+                    className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+            </div>
+            
+            <div 
+              id="related-products-container"
+              className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
               {relatedProducts.map((prod) => (
-                <ProductCard key={prod.id} product={prod} />
+                <div key={prod.id} className="flex-shrink-0 w-64">
+                  <ProductCard product={prod} />
+                </div>
               ))}
             </div>
           </div>
