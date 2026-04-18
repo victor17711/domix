@@ -23,7 +23,9 @@ const ProductsManagement = () => {
   const [specifications, setSpecifications] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
+    nameRu: '',
     description: '',
+    descriptionRu: '',
     price: '',
     originalPrice: '',
     category: '',
@@ -32,7 +34,8 @@ const ProductsManagement = () => {
     image: '',
     images: [],
     available: 100,
-    badge: ''
+    badge: '',
+    badgeRu: ''
   });
 
   useEffect(() => {
@@ -158,7 +161,9 @@ const ProductsManagement = () => {
     setEditingProduct(product);
     setFormData({
       name: product.name,
+      nameRu: product.nameRu || '',
       description: product.description || '',
+      descriptionRu: product.descriptionRu || '',
       price: product.price,
       originalPrice: product.originalPrice,
       category: product.category,
@@ -167,7 +172,8 @@ const ProductsManagement = () => {
       image: product.image,
       images: product.images || [],
       available: product.available,
-      badge: product.badge || ''
+      badge: product.badge || '',
+      badgeRu: product.badgeRu || ''
     });
     setSpecifications(product.specifications || []);
     setImagePreview(product.image);
@@ -178,7 +184,9 @@ const ProductsManagement = () => {
   const resetForm = () => {
     setFormData({
       name: '',
+      nameRu: '',
       description: '',
+      descriptionRu: '',
       price: '',
       originalPrice: '',
       category: '',
@@ -187,7 +195,8 @@ const ProductsManagement = () => {
       image: '',
       images: [],
       available: 100,
-      badge: ''
+      badge: '',
+      badgeRu: ''
     });
     setImagePreview(null);
     setImagePreviews([]);
@@ -456,15 +465,31 @@ const ProductsManagement = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Nume Produs *</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Nume Produs (RO) *</label>
                   <input
                     type="text"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    placeholder="Nume în română"
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">
+                    Nume Produs (RU) 🇷🇺
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.nameRu}
+                    onChange={(e) => setFormData({...formData, nameRu: e.target.value})}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    placeholder="Название на русском"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4">
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2">Categorie *</label>
                   <select
@@ -494,14 +519,29 @@ const ProductsManagement = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Descriere</label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  rows="3"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Descriere (RO)</label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    rows="3"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    placeholder="Descriere în română"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">
+                    Descriere (RU) 🇷🇺
+                  </label>
+                  <textarea
+                    value={formData.descriptionRu}
+                    onChange={(e) => setFormData({...formData, descriptionRu: e.target.value})}
+                    rows="3"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    placeholder="Описание на русском"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-3 gap-4">
@@ -548,13 +588,26 @@ const ProductsManagement = () => {
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Badge</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Badge (RO)</label>
                   <input
                     type="text"
                     value={formData.badge}
                     onChange={(e) => setFormData({...formData, badge: e.target.value})}
-                    placeholder="ex: SALES, 15% OFF"
+                    placeholder="ex: REDUCERE, 15% OFF"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Badge (RU) 🇷🇺</label>
+                  <input
+                    type="text"
+                    value={formData.badgeRu}
+                    onChange={(e) => setFormData({...formData, badgeRu: e.target.value})}
+                    placeholder="напр: СКИДКА, 15% OFF"
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>

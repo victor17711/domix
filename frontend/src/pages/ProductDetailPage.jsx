@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { ChevronRight, Minus, Plus, ShoppingCart, Heart, Star, Truck, RefreshCw, Shield } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useLanguage } from '../context/LanguageContext';
 import { toast } from '../hooks/use-toast';
 import ProductCard from '../components/ProductCard';
 
@@ -12,6 +13,7 @@ const API = `${BACKEND_URL}/api`;
 const ProductDetailPage = () => {
   const { id } = useParams();
   const { addToCart, addToWishlist } = useCart();
+  const { language } = useLanguage();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [reviews, setReviews] = useState([]);
@@ -89,11 +91,13 @@ const ProductDetailPage = () => {
   };
 
   const handleAddToCart = () => {
+    // Use translated name for toast
+    const productName = language === 'ru' && product.nameRu ? product.nameRu : product.name;
     addToCart({
       ...product,
       quantity
     });
-    toast({ title: 'Succes', description: `${product.name} adăugat în coș!` });
+    toast({ title: 'Succes', description: `${productName} adăugat în coș!` });
   };
 
   const handleBuyNow = () => {
@@ -140,7 +144,9 @@ const ProductDetailPage = () => {
             <ChevronRight className="w-4 h-4" />
             <Link to={`/category/${product.category}`} className="hover:text-teal-600">{product.category}</Link>
             <ChevronRight className="w-4 h-4" />
-            <span className="text-gray-900 font-semibold">{product.name}</span>
+            <span className="text-gray-900 font-semibold">
+              {language === 'ru' && product.nameRu ? product.nameRu : product.name}
+            </span>
           </div>
         </div>
       </div>
@@ -176,12 +182,20 @@ const ProductDetailPage = () => {
 
           {/* Info */}
           <div>
-            {product.badge && (
-              <span className="inline-block bg-red-500 text-white text-sm px-3 py-1 rounded-full mb-3">
-                {product.badge}
-              </span>
-            )}
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{product.name}</h1>
+            {/* Get translated content */}
+            {(() => {
+              const productName = language === 'ru' && product.nameRu ? product.nameRu : product.name;
+              const productBadge = language === 'ru' && product.badgeRu ? product.badgeRu : product.badge;
+              const productDescription = language === 'ru' && product.descriptionRu ? product.descriptionRu : product.description;
+              
+              return (
+                <>
+                  {productBadge && (
+                    <span className="inline-block bg-red-500 text-white text-sm px-3 py-1 rounded-full mb-3">
+                      {productBadge}
+                    </span>
+                  )}
+                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{productName}</h1>
             
             {/* Rating - Only show if reviews exist */}
             {product.reviews > 0 && (
@@ -334,6 +348,9 @@ const ProductDetailPage = () => {
                 </div>
               </div>
             </div>
+          </>
+              );
+            })()}
           </div>
         </div>
 
@@ -360,7 +377,9 @@ const ProductDetailPage = () => {
           <div className="prose max-w-none">
             {activeTab === 'description' && (
               <div>
-                <p className="text-gray-700 leading-relaxed">{product.description || 'Descriere disponibilă în curând.'}</p>
+                <p className="text-gray-700 leading-relaxed">
+                  {(language === 'ru' && product.descriptionRu) ? product.descriptionRu : (product.description || 'Descriere disponibilă în curând.')}
+                </p>
               </div>
             )}
             {activeTab === 'specifications' && (

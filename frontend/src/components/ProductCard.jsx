@@ -2,13 +2,19 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Eye, ShoppingCart, Star } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useLanguage } from '../context/LanguageContext';
 import { toast } from '../hooks/use-toast';
 import QuickViewModal from './QuickViewModal';
 
 const ProductCard = ({ product, showProgress = false }) => {
   const { addToCart, addToWishlist, isInWishlist } = useCart();
+  const { language } = useLanguage();
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const inWishlist = isInWishlist(product.id);
+
+  // Get translated content
+  const productName = language === 'ru' && product.nameRu ? product.nameRu : product.name;
+  const productBadge = language === 'ru' && product.badgeRu ? product.badgeRu : product.badge;
 
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -44,10 +50,10 @@ const ProductCard = ({ product, showProgress = false }) => {
       <Link to={`/product/${product.id}`} className="block">
         <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition group relative">
           {/* Badge */}
-          {product.badge && (
+          {productBadge && (
             <div className="absolute top-3 left-3 z-10">
               <span className="bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">
-                {product.badge}
+                {productBadge}
               </span>
             </div>
           )}
@@ -83,7 +89,7 @@ const ProductCard = ({ product, showProgress = false }) => {
               <p className="text-xs text-gray-500 mb-1">{product.storeName}</p>
             )}
             <h3 className="font-semibold text-gray-800 mb-2 line-clamp-2 hover:text-teal-600 transition">
-              {product.name}
+              {productName}
             </h3>
 
             {/* Rating - Only show if reviews exist */}
