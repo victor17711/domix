@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAdmin } from '../../context/AuthContext';
+import { useAdmin } from '../../context/AdminContext';
 import axios from 'axios';
 import { Save, Plus, X, Menu as MenuIcon, ArrowUp, ArrowDown, Folder, Globe, Image as ImageIcon } from 'lucide-react';
 import { toast } from '../../hooks/use-toast';
