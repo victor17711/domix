@@ -293,6 +293,31 @@ async def update_product(
 
 
 @api_router.delete("/products/{product_id}")
+async def delete_product(
+    product_id: str,
+    authorization: Optional[str] = Header(None)
+):
+    """Delete a product (admin only)"""
+    current_user = await get_current_user(authorization)
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # Check if product exists
+    product = await db.products.find_one({"id": product_id}, {"_id": 0})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Delete product
+    await db.products.delete_one({"id": product_id})
+    
+    # Update category item count
+    if product.get("category"):
+        await db.categories.update_one(
+            {"name": product["category"]},
+            {"$inc": {"itemCount": -1}}
+        )
+    
+    return {"message": "Product deleted successfully"}
 
 
 # ==================== PRODUCTS IMPORT/EXPORT ENDPOINTS ====================

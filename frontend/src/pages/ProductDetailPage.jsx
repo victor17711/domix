@@ -291,56 +291,77 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Actions */}
-            <div className="space-y-3 mb-8">
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={handleAddToCart}
-                  className="bg-white border-2 border-teal-600 text-teal-600 py-4 rounded-xl hover:bg-teal-50 transition font-bold text-l md:text-lg flex items-center justify-center gap-2"
-                >
-                  <ShoppingCart className="w-4 h-4 md:w-6 md:h-6" />
-                  Adaugă în Coș
-                </button>
-                <button
-                  onClick={handleBuyNow}
-                  className="bg-teal-600 text-white py-4 rounded-xl hover:bg-teal-700 transition font-bold text-l md:text-lg"
-                >
-                  Cumpără Acum
-                </button>
-              </div>
-              <button
-                onClick={handleAddToWishlist}
-                className="bg-white w-full py-2 md:py-4 border-2 border-teal-600 text-teal-600 rounded-xl hover:bg-teal-50 transition font-bold md:text-lg text-sm flex items-center justify-center gap-2"
-              >
-                <Heart className="w-4 h-4 md:w-6 md:h-6" />
-                Adaugă la Favorite
-              </button>
-            </div>
+<div className="space-y-3 mb-4">
+  <div className="grid grid-cols-2 gap-3">
+    <button
+      onClick={handleAddToCart}
+      className="bg-white border-2 border-teal-600 text-teal-600 py-4 rounded-xl hover:bg-teal-50 transition font-bold text-l md:text-lg flex items-center justify-center gap-2"
+    >
+      <ShoppingCart className="w-4 h-4 md:w-6 md:h-6" />
+      Adaugă în Coș
+    </button>
 
-            {/* Installment Plan Box */}
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-300 rounded-2xl p-6 mb-8">
-              <div className="flex items-start gap-4">
-                <div className="bg-orange-500 text-white p-3 rounded-xl">
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">Achită în 3 rate</h3>
-                  <p className="text-gray-700 mb-1">
-                    <span className="text-2xl font-bold text-orange-600">{(product.price / 3).toFixed(2)} MDL</span>
-                    <span className="text-sm text-gray-600"> / lună</span>
-                  </p>
-                  <p className="text-sm text-gray-600 mb-3">Fără dobândă • Fără comisioane</p>
-                  <button
-                    onClick={() => setShowInstallmentModal(true)}
-                    className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition font-semibold flex items-center gap-2"
-                  >
-                    Află mai multe
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
+    <button
+      onClick={handleBuyNow}
+      className="bg-teal-600 text-white py-4 rounded-xl hover:bg-teal-700 transition font-bold text-l md:text-lg"
+    >
+      Cumpără Acum
+    </button>
+  </div>
+
+  {/* 
+  <button
+    onClick={handleAddToWishlist}
+    className="bg-white w-full py-2 md:py-4 border-2 border-teal-600 text-teal-600 rounded-xl hover:bg-teal-50 transition font-bold md:text-lg text-sm flex items-center justify-center gap-2"
+  >
+    <Heart className="w-4 h-4 md:w-6 md:h-6" />
+    Adaugă la Favorite
+  </button>
+  */}
+</div>
+
+{/* Installment Plan Box - pe o linie */}
+<div className="bg-gradient-to-r from-orange-50 to-orange-100 border-2 border-orange-300 rounded-2xl px-4 md:px-6 py-3 mb-8">
+  
+  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    
+    {/* Left */}
+    <div className="flex items-center gap-4">
+      <div className="bg-orange-500 text-white p-2 md:p-3 rounded-xl">
+        <svg className="w-6 h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      </div>
+
+      <div>
+        <h3 className="font-bold text-gray-900 text-sm md:text-base">
+          Achită în 3 rate
+        </h3>
+
+        <div className="flex items-baseline gap-2">
+          <span className="text-xl md:text-2xl font-bold text-orange-600">
+            {(product.price / 3).toFixed(2)} MDL
+          </span>
+          <span className="text-sm text-gray-600">/ lună</span>
+        </div>
+
+        <p className="text-xs md:text-sm text-gray-600">
+          Fără dobândă • Fără comisioane
+        </p>
+      </div>
+    </div>
+
+    {/* Right Button */}
+    <button
+      onClick={() => setShowInstallmentModal(true)}
+      className="w-full md:w-auto bg-orange-500 text-white px-5 py-2 rounded-lg hover:bg-orange-600 transition font-semibold flex items-center justify-center gap-2"
+    >
+      Află mai multe
+      <ChevronRight className="w-4 h-4" />
+    </button>
+
+  </div>
+</div>
 
             {/* Features */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t">
