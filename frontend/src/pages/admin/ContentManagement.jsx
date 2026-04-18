@@ -79,7 +79,7 @@ const ContentManagement = () => {
         updatedBanners = [...banners, bannerForm];
       }
 
-      await axios.put(
+      await axios.post(
         `${API}/settings`,
         { heroBanners: updatedBanners },
         getAuthHeaders()
@@ -104,9 +104,10 @@ const ContentManagement = () => {
         order: 0
       });
     } catch (error) {
+      console.error('Banner save error:', error);
       toast({ 
         title: 'Eroare', 
-        description: 'Nu s-a putut salva banner-ul',
+        description: error.response?.data?.detail || 'Nu s-a putut salva banner-ul',
         variant: 'destructive' 
       });
     }
@@ -123,7 +124,7 @@ const ContentManagement = () => {
 
     try {
       const updatedBanners = banners.filter((_, idx) => idx !== index);
-      await axios.put(
+      await axios.post(
         `${API}/settings`,
         { heroBanners: updatedBanners },
         getAuthHeaders()
@@ -132,9 +133,10 @@ const ContentManagement = () => {
       toast({ title: 'Succes', description: 'Banner șters!' });
       setBanners(updatedBanners);
     } catch (error) {
+      console.error('Banner delete error:', error);
       toast({ 
         title: 'Eroare', 
-        description: 'Nu s-a putut șterge banner-ul',
+        description: error.response?.data?.detail || 'Nu s-a putut șterge banner-ul',
         variant: 'destructive' 
       });
     }
