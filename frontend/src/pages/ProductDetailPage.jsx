@@ -566,7 +566,7 @@ const ProductDetailPage = () => {
         {relatedProducts.length > 0 && (
           <div className="relative">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-3xl font-bold text-gray-900">Produse Similare</h2>
+              <h2 className="text-3xl font-bold text-gray-900">Produse similare</h2>
               {relatedProducts.length > 5 && (
                 <div className="flex gap-2">
                   <button
@@ -595,7 +595,8 @@ const ProductDetailPage = () => {
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {relatedProducts.map((prod) => (
-                <div key={prod.id} className="flex-shrink-0 w-64">
+                <div key={prod.id} className="flex-shrink-0 w-[70%] sm:w-[45%] md:w-[30%] lg:w-[20%]"
+  >
                   <ProductCard product={prod} />
                 </div>
               ))}
@@ -608,8 +609,10 @@ const ProductDetailPage = () => {
       {showInstallmentModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
-              <h3 className="text-2xl font-bold text-gray-900">Plată în Rate - {product.name}</h3>
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-30">
+              <h3 className="relative z-10 text-xl font-bold text-gray-900">
+  Plata în rate - {product.name}
+</h3>
               <button
                 onClick={() => setShowInstallmentModal(false)}
                 className="p-2 hover:bg-gray-100 rounded-lg transition"
@@ -637,38 +640,48 @@ const ProductDetailPage = () => {
               </div>
 
               {/* Payment Schedule with Pie Charts */}
-              <div className="mb-6">
-                <h4 className="text-lg font-bold text-gray-900 mb-4">Calendar Plăți</h4>
-                <div className="grid grid-cols-3 gap-4">
-                  {[1, 2, 3].map((month) => (
-                    <div key={month} className="bg-gray-50 rounded-xl p-4 text-center">
-                      {/* Simple Pie Chart Representation */}
-                      <div className="relative w-24 h-24 mx-auto mb-3">
-                        <svg viewBox="0 0 100 100" className="transform -rotate-90">
-                          <circle cx="50" cy="50" r="40" fill="none" stroke="#E5E7EB" strokeWidth="10" />
-                          <circle
-                            cx="50"
-                            cy="50"
-                            r="40"
-                            fill="none"
-                            stroke={month === 1 ? '#F97316' : month === 2 ? '#14B8A6' : '#06B6D4'}
-                            strokeWidth="10"
-                            strokeDasharray={`${(month / 3) * 251.2} 251.2`}
-                          />
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-2xl font-bold text-gray-900">{month}/3</span>
-                        </div>
-                      </div>
-                      <p className="font-bold text-gray-900 mb-1">Luna {month}</p>
-                      <p className="text-lg font-bold text-teal-600">{(product.price / 3).toFixed(2)} MDL</p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {new Date(Date.now() + month * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' })}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+<div className="mb-6">
+  <h4 className="text-base md:text-lg font-bold text-gray-900 mb-4">Calendar Plăți</h4>
+
+  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+    {[1, 2, 3].map((month) => (
+      <div key={month} className="bg-gray-50 rounded-xl p-3 md:p-4 text-center">
+        {/* Simple Pie Chart Representation */}
+        <div className="relative z-0 w-16 h-16 md:w-24 md:h-24 mx-auto mb-2 md:mb-3">
+          <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90 relative z-0">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#E5E7EB" strokeWidth="10" />
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              fill="none"
+              stroke={month === 1 ? '#F97316' : month === 2 ? '#14B8A6' : '#06B6D4'}
+              strokeWidth="10"
+              strokeDasharray={`${(month / 3) * 251.2} 251.2`}
+            />
+          </svg>
+
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-sm md:text-2xl font-bold text-gray-900">
+              {month}/3
+            </span>
+          </div>
+        </div>
+
+        <p className="font-bold text-gray-900 mb-1 text-sm md:text-base">Luna {month}</p>
+        <p className="text-sm md:text-lg font-bold text-teal-600">
+          {(product.price / 3).toFixed(2)} MDL
+        </p>
+        <p className="text-[11px] md:text-xs text-gray-500 mt-1">
+          {new Date(Date.now() + month * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('ro-RO', {
+            day: 'numeric',
+            month: 'short'
+          })}
+        </p>
+      </div>
+    ))}
+  </div>
+</div>
 
               {/* Application Form */}
               <div className="bg-teal-50 border-2 border-teal-200 rounded-xl p-6 mb-4">

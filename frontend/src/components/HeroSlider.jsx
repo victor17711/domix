@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const HeroSlider = () => {
+  const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [sliderData, setSliderData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -135,9 +137,12 @@ const HeroSlider = () => {
                 </p>
               )}
 
-              {currentItem.buttonText && (
+              {currentItem.buttonText && currentItem.buttonLink && (
                 <div className="flex justify-start">
-                  <button className="bg-teal-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-full flex items-center gap-2 hover:bg-teal-700 transition group shadow-lg font-semibold text-sm md:text-base">
+                  <button 
+                    onClick={() => navigate(currentItem.buttonLink)}
+                    className="bg-teal-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-full flex items-center gap-2 hover:bg-teal-700 transition group shadow-lg font-semibold text-sm md:text-base cursor-pointer"
+                  >
                     {currentItem.buttonText}
                     <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition" />
                   </button>
