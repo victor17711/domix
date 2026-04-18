@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Search,
   ShoppingCart,
@@ -23,6 +23,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const { cartCount } = useCart();
   const { user, isAuthenticated, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -33,6 +34,7 @@ const Navbar = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [categoryMenuItems, setCategoryMenuItems] = useState([]);
   const [mobileMenuTab, setMobileMenuTab] = useState('menu');
+  const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef(null);
 
   const openAuthModal = (mode) => {
@@ -80,6 +82,15 @@ const Navbar = () => {
       setMenuItems([
         { id: '1', name: 'Acasă', url: '/', type: 'link' }
       ]);
+    }
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
+      setIsMenuOpen(false);
     }
   };
 
@@ -173,16 +184,18 @@ const Navbar = () => {
             </div>
 
             <div className="mt-7 hidden lg:block">
-              <div className="relative">
+              <form onSubmit={handleSearch} className="relative">
                 <input
                   type="text"
-                  placeholder="Caută produse"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Caută produse, categorii, cod..."
                   className="w-full h-[55px] md:h-[74px] px-7 pr-16 border-2 border-gray-200 rounded-full focus:outline-none focus:border-teal-500 text-[16px] text-gray-500 placeholder:text-gray-400"
                 />
-                <button className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal-600">
+                <button type="submit" className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal-600">
                   <Search className="w-6 h-6" />
                 </button>
-              </div>
+              </form>
             </div>
           </div>
 
@@ -196,16 +209,18 @@ const Navbar = () => {
             </Link>
 
             <div className="flex-1 max-w-2xl">
-              <div className="relative">
+              <form onSubmit={handleSearch} className="relative">
                 <input
                   type="text"
-                  placeholder="Cauta produse"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Caută produse, categorii, cod..."
                   className="w-full px-6 py-4 pr-14 border-2 border-gray-200 rounded-full focus:outline-none focus:border-teal-500 text-base"
                 />
-                <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal-600">
+                <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal-600">
                   <Search className="w-6 h-6" />
                 </button>
-              </div>
+              </form>
             </div>
 
             <div className="flex items-center gap-6 flex-shrink-0">
@@ -410,16 +425,18 @@ const Navbar = () => {
 
             {/* Mobile Search */}
             <div className="pt-4">
-              <div className="relative">
+              <form onSubmit={handleSearch} className="relative">
                 <input
                   type="text"
-                  placeholder="Caută produse"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Caută produse, categorii, cod..."
                   className="w-full h-[45px] px-7 pr-16 border-2 border-white/20 bg-white text-gray-500 rounded-[10px] focus:outline-none focus:border-white"
                 />
-                <button className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal-600">
+                <button type="submit" className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal-600">
                   <Search className="w-6 h-6" />
                 </button>
-              </div>
+              </form>
             </div>
 
             {/* TABS */}

@@ -21,6 +21,7 @@ import MyAccountPage from './pages/MyAccountPage';
 import CatalogCategoryPage from './pages/CatalogCategoryPage';
 import FAQPage from './pages/FAQPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
+import SearchResultsPage from './pages/SearchResultsPage';
 import ContactPage from './pages/ContactPage';
 import BrandsPage from './pages/BrandsPage';
 import AdminLogin from './pages/admin/AdminLogin';
@@ -113,6 +114,15 @@ function App() {
                   <>
                     <Navbar />
                     <BrandsPage />
+                    <Footer />
+                  </>
+                } />
+
+                {/* Search Results Route */}
+                <Route path="/search" element={
+                  <>
+                    <Navbar />
+                    <SearchResultsPage />
                     <Footer />
                   </>
                 } />
