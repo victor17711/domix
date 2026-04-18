@@ -207,12 +207,31 @@ class ServiceAlbum(BaseModel):
     coverImage: str
     galleryImages: List[str] = []
 
+# FAQ Models
+class FAQ(BaseModel):
+    question: str
+    answer: str
+
+# Contact Info Models
+class ContactInfo(BaseModel):
+    phone: Optional[str] = ""
+    email: Optional[str] = ""
+    address: Optional[str] = ""
+    hours: Optional[str] = ""
+    facebook: Optional[str] = ""
+    instagram: Optional[str] = ""
+    tiktok: Optional[str] = ""
+
 class SettingsCreate(BaseModel):
     menuItems: List[MenuItem] = []
     categoryMenuItems: List[MenuItem] = []
     featuredCategoryId: Optional[str] = None
     heroBanners: Optional[List[HeroBanner]] = []
     albums: Optional[List[ServiceAlbum]] = []
+    faqs: Optional[List[FAQ]] = []
+    contactInfo: Optional[ContactInfo] = ContactInfo()
+    websiteName: Optional[str] = "DOMIX"
+    favicon: Optional[str] = ""
 
 class Settings(SettingsCreate):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -229,6 +248,28 @@ class Page(PageCreate):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     createdAt: datetime = Field(default_factory=datetime.utcnow)
     updatedAt: datetime = Field(default_factory=datetime.utcnow)
+
+# Contact Request Models
+class ContactRequestCreate(BaseModel):
+    name: str
+    email: str
+    phone: Optional[str] = ""
+    subject: str
+    message: str
+
+class ContactRequest(ContactRequestCreate):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    status: str = "new"  # new, read, replied
+
+# Newsletter Subscription Models
+class NewsletterSubscriptionCreate(BaseModel):
+    email: str
+
+class NewsletterSubscription(NewsletterSubscriptionCreate):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    status: str = "active"  # active, unsubscribed
 
 # Rebuild MenuItem model to resolve forward references for recursive children
 MenuItem.model_rebuild()

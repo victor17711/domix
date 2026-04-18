@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import {
   ChevronRight,
   HelpCircle,
@@ -9,51 +10,47 @@ import {
   MessagesSquare
 } from 'lucide-react';
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+
 const FAQPage = () => {
   const [activeIndex, setActiveIndex] = useState(null);
+  const [faqData, setFaqData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const faqData = [
-    {
-      question: 'Cum pot plasa o comandă?',
-      answer:
-        'Poți plasa o comandă direct pe site, adăugând produsele dorite în coș și completând formularul de comandă. De asemenea, ne poți contacta telefonic sau prin formularul de contact.'
-    },
-    {
-      question: 'În cât timp se livrează produsele?',
-      answer:
-        'Livrarea se efectuează în 24-72 ore, în funcție de localitate și disponibilitatea produselor. Pentru anumite zone, livrarea poate fi realizată mai rapid.'
-    },
-    {
-      question: 'Oferiți montaj pentru produse?',
-      answer:
-        'Da, oferim servicii de montaj pentru anumite produse. Detaliile se stabilesc în funcție de produsul ales și locația clientului.'
-    },
-    {
-      question: 'Produsele beneficiază de garanție?',
-      answer:
-        'Da, toate produsele beneficiază de garanție conform condițiilor specificate pentru fiecare categorie. Informațiile exacte pot fi consultate în descrierea produsului.'
-    },
-    {
-      question: 'Pot returna un produs?',
-      answer:
-        'Da, returul este posibil conform politicii de retur afișate pe site, dacă produsul nu a fost utilizat și respectă condițiile de returnare.'
-    },
-    {
-      question: 'Ce metode de plată acceptați?',
-      answer:
-        'Acceptăm plata cash la livrare, transfer bancar și alte metode disponibile în procesul de checkout, în funcție de opțiunile active pe site.'
-    },
-    {
-      question: 'Cum pot lua legătura cu voi?',
-      answer:
-        'Ne poți contacta prin telefon, email sau prin formularul de pe pagina de contact. Încercăm să răspundem cât mai rapid tuturor solicitărilor.'
-    },
-    {
-      question: 'Lucrați și cu persoane juridice?',
-      answer:
-        'Da, colaborăm și cu persoane juridice și putem emite factură fiscală pentru comenzile efectuate.'
+  useEffect(() => {
+    fetchFaqs();
+  }, []);
+
+  const fetchFaqs = async () => {
+    try {
+      const response = await axios.get(`${API}/settings`);
+      setFaqData(response.data.faqs || []);
+    } catch (error) {
+      console.error('Error fetching FAQs:', error);
+      // Fallback to default FAQs
+      setFaqData([
+        {
+          question: 'Cum pot plasa o comandă?',
+          answer: 'Poți plasa o comandă direct pe site, adăugând produsele dorite în coș și completând formularul de comandă. De asemenea, ne poți contacta telefonic sau prin formularul de contact.'
+        },
+        {
+          question: 'În cât timp se livrează produsele?',
+          answer: 'Livrarea se efectuează în 24-72 ore, în funcție de localitate și disponibilitatea produselor. Pentru anumite zone, livrarea poate fi realizată mai rapid.'
+        }
+      ]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+      </div>
+    );
+  }
 
   const leftColumn = faqData.slice(0, Math.ceil(faqData.length / 2));
   const rightColumn = faqData.slice(Math.ceil(faqData.length / 2));

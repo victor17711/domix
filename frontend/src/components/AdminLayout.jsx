@@ -14,7 +14,8 @@ import {
   Bell,
   FileText,
   Tag,
-  Image
+  Image,
+  MessageSquare
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -38,6 +39,7 @@ const AdminLayout = ({ children }) => {
     { path: '/admin/users', label: 'Utilizatori', icon: Users, roles: ['admin'] },
     { path: '/admin/content', label: 'Conținut', icon: Image, roles: ['admin'] },
     { path: '/admin/pages', label: 'Pagini', icon: FileText, roles: ['admin'] },
+    { path: '/admin/requests', label: 'Solicitări', icon: MessageSquare, roles: ['admin'] },
     { path: '/admin/settings', label: 'Setări', icon: Settings, roles: ['admin'] },
   ];
 

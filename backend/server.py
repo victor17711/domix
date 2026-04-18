@@ -20,8 +20,10 @@ from models import (
     ReviewCreate, Review,
     OrderCreate, Order,
     DashboardStats,
-    MenuItem, HeroBanner, ServiceAlbum, SettingsCreate, Settings,
-    PageCreate, Page
+    MenuItem, HeroBanner, ServiceAlbum, FAQ, ContactInfo, SettingsCreate, Settings,
+    PageCreate, Page,
+    ContactRequestCreate, ContactRequest,
+    NewsletterSubscriptionCreate, NewsletterSubscription
 )
 from auth_utils import verify_password, get_password_hash, create_access_token
 from dependencies import get_current_user, get_current_admin_user
@@ -1051,4 +1053,132 @@ app.add_middleware(
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
+    pass
+
+
+# ==================== CONTACT REQUESTS ENDPOINTS ====================
+
+@api_router.post("/contact/submit")
+async def submit_contact_request(request: ContactRequestCreate):
+    """Submit a contact request"""
+    try:
+        contact_request = ContactRequest(**request.dict())
+        await db.contact_requests.insert_one(contact_request.dict())
+        return {"message": "Mesajul a fost trimis cu succes"}
+    except Exception as e:
+        logger.error(f"Error submitting contact request: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Nu s-a putut trimite mesajul"
+        )
+
+
+@api_router.get("/admin/contact-requests")
+async def get_contact_requests(
+    current_admin: dict = Depends(get_current_admin_user)
+):
+    """Get all contact requests (admin only)"""
+    try:
+        requests = await db.contact_requests.find({}, {"_id": 0}).sort("createdAt", -1).to_list(1000)
+        return requests
+    except Exception as e:
+        logger.error(f"Error fetching contact requests: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Nu s-au putut încărca solicitările"
+        )
+
+
+@api_router.put("/admin/contact-requests/{request_id}/status")
+async def update_contact_request_status(
+    request_id: str,
+    status: str,
+    current_admin: dict = Depends(get_current_admin_user)
+):
+    """Update contact request status (admin only)"""
+    try:
+        await db.contact_requests.update_one(
+            {"id": request_id},
+            {"$set": {"status": status}}
+        )
+        return {"message": "Status actualizat"}
+    except Exception as e:
+        logger.error(f"Error updating request status: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Nu s-a putut actualiza statusul"
+        )
+
+
+@api_router.delete("/admin/contact-requests/{request_id}")
+async def delete_contact_request(
+    request_id: str,
+    current_admin: dict = Depends(get_current_admin_user)
+):
+    """Delete contact request (admin only)"""
+    try:
+        await db.contact_requests.delete_one({"id": request_id})
+        return {"message": "Solicitare ștearsă"}
+    except Exception as e:
+        logger.error(f"Error deleting contact request: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Nu s-a putut șterge solicitarea"
+        )
+
+
+# ==================== NEWSLETTER ENDPOINTS ====================
+
+@api_router.post("/newsletter/subscribe")
+async def subscribe_to_newsletter(subscription: NewsletterSubscriptionCreate):
+    """Subscribe to newsletter"""
+    try:
+        # Check if email already exists
+        existing = await db.newsletter_subscriptions.find_one({"email": subscription.email})
+        if existing:
+            return {"message": "Adresa de email este deja abonată"}
+        
+        newsletter_sub = NewsletterSubscription(**subscription.dict())
+        await db.newsletter_subscriptions.insert_one(newsletter_sub.dict())
+        return {"message": "Abonare cu succes! Vei primi cele mai recente noutăți."}
+    except Exception as e:
+        logger.error(f"Error subscribing to newsletter: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Nu s-a putut finaliza abonarea"
+        )
+
+
+@api_router.get("/admin/newsletter-subscriptions")
+async def get_newsletter_subscriptions(
+    current_admin: dict = Depends(get_current_admin_user)
+):
+    """Get all newsletter subscriptions (admin only)"""
+    try:
+        subscriptions = await db.newsletter_subscriptions.find({}, {"_id": 0}).sort("createdAt", -1).to_list(1000)
+        return subscriptions
+    except Exception as e:
+        logger.error(f"Error fetching newsletter subscriptions: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Nu s-au putut încărca abonamentele"
+        )
+
+
+@api_router.delete("/admin/newsletter-subscriptions/{subscription_id}")
+async def delete_newsletter_subscription(
+    subscription_id: str,
+    current_admin: dict = Depends(get_current_admin_user)
+):
+    """Delete newsletter subscription (admin only)"""
+    try:
+        await db.newsletter_subscriptions.delete_one({"id": subscription_id})
+        return {"message": "Abonament șters"}
+    except Exception as e:
+        logger.error(f"Error deleting newsletter subscription: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Nu s-a putut șterge abonamentul"
+        )
+
     client.close()

@@ -230,66 +230,6 @@ const Dashboard = () => {
           )}
         </div>
       </div>
-
-      {/* Additional Info */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Quick Stats */}
-        <div className="bg-white rounded-2xl p-6 border-2 border-gray-100">
-          <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <TrendingUp className="w-6 h-6 text-teal-600" />
-            Statistici Rapide
-          </h3>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
-              <span className="text-gray-700 font-medium">Total Utilizatori</span>
-              <span className="text-2xl font-bold text-teal-600">{stats?.totalUsers || 0}</span>
-            </div>
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
-              <span className="text-gray-700 font-medium">Total Produse</span>
-              <span className="text-2xl font-bold text-teal-600">{stats?.totalProducts || 0}</span>
-            </div>
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
-              <span className="text-gray-700 font-medium">Total Comenzi</span>
-              <span className="text-2xl font-bold text-teal-600">{stats?.totalOrders || 0}</span>
-            </div>
-            <div className="flex justify-between items-center p-4 bg-gradient-to-r from-teal-50 to-green-50 rounded-xl border-2 border-teal-200">
-              <span className="text-gray-700 font-bold">Venit Total</span>
-              <span className="text-2xl font-bold text-green-600">{(stats?.totalRevenue || 0).toFixed(2)} MDL</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Alerts */}
-        <div className="bg-white rounded-2xl p-6 border-2 border-gray-100">
-          <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <AlertCircle className="w-6 h-6 text-orange-600" />
-            Alerte & Notificări
-          </h3>
-          <div className="space-y-4">
-            <div className="flex items-start gap-4 p-4 bg-orange-50 rounded-xl border-l-4 border-orange-500">
-              <Clock className="w-6 h-6 text-orange-500 flex-shrink-0 mt-1" />
-              <div>
-                <p className="font-semibold text-gray-900">Comenzi în Așteptare</p>
-                <p className="text-sm text-gray-600">{stats?.pendingOrders || 0} comenzi așteaptă procesarea</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4 p-4 bg-red-50 rounded-xl border-l-4 border-red-500">
-              <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0 mt-1" />
-              <div>
-                <p className="font-semibold text-gray-900">Alertă Stoc Redus</p>
-                <p className="text-sm text-gray-600">{stats?.lowStockProducts || 0} produse cu stoc redus</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4 p-4 bg-green-50 rounded-xl border-l-4 border-green-500">
-              <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0 mt-1" />
-              <div>
-                <p className="font-semibold text-gray-900">Comenzi Finalizate</p>
-                <p className="text-sm text-gray-600">{ordersData.filter(o => o.status === 'completed').length} comenzi finalizate cu succes</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

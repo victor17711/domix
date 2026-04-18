@@ -52,9 +52,7 @@ const ContactPage = () => {
     setSubmitting(true);
 
     try {
-      // For now, just show success message
-      // In production, this should send email via backend
-      console.log('Contact form submitted:', formData);
+      await axios.post(`${API}/contact/submit`, formData);
       
       toast({
         title: 'Succes!',

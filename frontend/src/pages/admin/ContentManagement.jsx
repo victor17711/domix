@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAdmin } from '../../context/AdminContext';
 import { toast } from '../../hooks/use-toast';
-import { Image, Plus, Edit, Trash2, Save, X, ChevronDown, ChevronUp, Images } from 'lucide-react';
+import { Image, Plus, Edit, Trash2, Save, X, ChevronDown, ChevronUp, Images, HelpCircle, Phone, Star } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -10,17 +10,32 @@ const API = `${BACKEND_URL}/api`;
 const ContentManagement = () => {
   const { getAuthHeaders } = useAdmin();
   const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
   const [banners, setBanners] = useState([]);
   const [albums, setAlbums] = useState([]);
+  const [faqs, setFaqs] = useState([]);
+  const [contactInfo, setContactInfo] = useState({
+    phone: '',
+    email: '',
+    address: '',
+    hours: '',
+    facebook: '',
+    instagram: '',
+    tiktok: ''
+  });
+  const [featuredCategoryId, setFeaturedCategoryId] = useState('');
   const [showBannerModal, setShowBannerModal] = useState(false);
   const [showAlbumModal, setShowAlbumModal] = useState(false);
+  const [showFaqModal, setShowFaqModal] = useState(false);
   const [editingBanner, setEditingBanner] = useState(null);
   const [editingAlbum, setEditingAlbum] = useState(null);
+  const [editingFaq, setEditingFaq] = useState(null);
   const [expandedSections, setExpandedSections] = useState({
+    featuredCategory: true,
     heroBanners: true,
     serviceAlbums: true,
-    promoBanners: false,
-    footer: false
+    faqs: true,
+    contactInfo: true
   });
   const [bannerForm, setBannerForm] = useState({
     title: '',
@@ -37,27 +52,53 @@ const ContentManagement = () => {
     coverImage: '',
     galleryImages: []
   });
+  const [faqForm, setFaqForm] = useState({
+    question: '',
+    answer: ''
+  });
   const [tempGalleryUrl, setTempGalleryUrl] = useState('');
 
   useEffect(() => {
     fetchContent();
+    fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${API}/categories`);
+      setCategories(response.data);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
 
   const fetchContent = async () => {
     try {
       const response = await axios.get(`${API}/settings`);
       setBanners(response.data.heroBanners || []);
       setAlbums(response.data.albums || []);
+      setFaqs(response.data.faqs || []);
+      setContactInfo(response.data.contactInfo || {
+        phone: '',
+        email: '',
+        address: '',
+        hours: '',
+        facebook: '',
+        instagram: '',
+        tiktok: ''
+      });
+      setFeaturedCategoryId(response.data.featuredCategoryId || '');
     } catch (error) {
       console.error('Error fetching content:', error);
       setBanners([]);
       setAlbums([]);
+      setFaqs([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const saveSettings = async (updatedBanners, updatedAlbums = null) => {
+  const saveSettings = async (updatedBanners, updatedAlbums = null, updatedFaqs = null, updatedContactInfo = null, updatedFeaturedCategory = null) => {
     try {
       // Fetch current settings first
       const currentSettings = await axios.get(`${API}/settings`);
@@ -71,6 +112,21 @@ const ContentManagement = () => {
       // Update albums if provided
       if (updatedAlbums !== null) {
         mergedSettings.albums = updatedAlbums;
+      }
+
+      // Update FAQs if provided
+      if (updatedFaqs !== null) {
+        mergedSettings.faqs = updatedFaqs;
+      }
+
+      // Update Contact Info if provided
+      if (updatedContactInfo !== null) {
+        mergedSettings.contactInfo = updatedContactInfo;
+      }
+
+      // Update Featured Category if provided
+      if (updatedFeaturedCategory !== null) {
+        mergedSettings.featuredCategoryId = updatedFeaturedCategory;
       }
 
       await axios.post(`${API}/settings`, mergedSettings, getAuthHeaders());
@@ -261,6 +317,115 @@ const ContentManagement = () => {
       galleryImages: albumForm.galleryImages.filter((_, i) => i !== index)
     });
   };
+
+  // FAQ Handlers
+  const handleFaqSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!faqForm.question || !faqForm.answer) {
+      toast({
+        title: 'Eroare',
+        description: 'Întrebarea și răspunsul sunt obligatorii',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    try {
+      let updatedFaqs;
+      
+      if (editingFaq !== null) {
+        updatedFaqs = faqs.map((f, idx) => 
+          idx === editingFaq ? faqForm : f
+        );
+      } else {
+        updatedFaqs = [...faqs, faqForm];
+      }
+
+      await saveSettings(banners, null, updatedFaqs);
+
+      toast({ 
+        title: 'Succes', 
+        description: editingFaq !== null ? 'FAQ actualizat!' : 'FAQ adăugat!' 
+      });
+
+      setFaqs(updatedFaqs);
+      setShowFaqModal(false);
+      setEditingFaq(null);
+      setFaqForm({ question: '', answer: '' });
+    } catch (error) {
+      console.error('FAQ save error:', error);
+      toast({ 
+        title: 'Eroare', 
+        description: error.response?.data?.detail || 'Nu s-a putut salva FAQ-ul',
+        variant: 'destructive' 
+      });
+    }
+  };
+
+  const handleEditFaq = (index) => {
+    setEditingFaq(index);
+    setFaqForm(faqs[index]);
+    setShowFaqModal(true);
+  };
+
+  const handleDeleteFaq = async (index) => {
+    if (!window.confirm('Sigur doriți să ștergeți această întrebare?')) return;
+
+    try {
+      const updatedFaqs = faqs.filter((_, idx) => idx !== index);
+      await saveSettings(banners, null, updatedFaqs);
+
+      toast({ title: 'Succes', description: 'FAQ șters!' });
+      setFaqs(updatedFaqs);
+    } catch (error) {
+      console.error('FAQ delete error:', error);
+      toast({ 
+        title: 'Eroare', 
+        description: error.response?.data?.detail || 'Nu s-a putut șterge FAQ-ul',
+        variant: 'destructive' 
+      });
+    }
+  };
+
+  // Contact Info Handler
+  const handleContactInfoSave = async () => {
+    try {
+      await saveSettings(banners, null, null, contactInfo);
+
+      toast({ 
+        title: 'Succes', 
+        description: 'Date contact salvate!' 
+      });
+    } catch (error) {
+      console.error('Contact info save error:', error);
+      toast({ 
+        title: 'Eroare', 
+        description: error.response?.data?.detail || 'Nu s-au putut salva datele',
+        variant: 'destructive' 
+      });
+    }
+  };
+
+  // Featured Category Handler
+  const handleFeaturedCategorySave = async () => {
+    try {
+      await saveSettings(banners, null, null, null, featuredCategoryId);
+
+      toast({ 
+        title: 'Succes', 
+        description: 'Categorie featured salvată!' 
+      });
+    } catch (error) {
+      console.error('Featured category save error:', error);
+      toast({ 
+        title: 'Eroare', 
+        description: error.response?.data?.detail || 'Nu s-a putut salva categoria',
+        variant: 'destructive' 
+      });
+    }
+  };
+
 
   if (loading) {
     return (
@@ -479,6 +644,252 @@ const ContentManagement = () => {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+        </div>
+
+
+        {/* Featured Category Section */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <button
+            onClick={() => toggleSection('featuredCategory')}
+            className="w-full px-6 py-5 flex items-center justify-between bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 transition"
+          >
+            <div className="flex items-center gap-3">
+              <Star className="w-6 h-6" />
+              <div className="text-left">
+                <h2 className="text-xl font-bold">Categorie Featured Homepage</h2>
+                <p className="text-sm text-purple-100">Alege categoria afișată pe homepage</p>
+              </div>
+            </div>
+            {expandedSections.featuredCategory ? (
+              <ChevronUp className="w-6 h-6" />
+            ) : (
+              <ChevronDown className="w-6 h-6" />
+            )}
+          </button>
+
+          {expandedSections.featuredCategory && (
+            <div className="p-6">
+              <p className="text-gray-600 mb-4">
+                Selectează categoria care va fi afișată în secțiunea featured de pe pagina principală
+              </p>
+              <div className="flex gap-4">
+                <select
+                  value={featuredCategoryId}
+                  onChange={(e) => setFeaturedCategoryId(e.target.value)}
+                  className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                >
+                  <option value="">Selectează o categorie</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  onClick={handleFeaturedCategorySave}
+                  className="px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition font-semibold flex items-center gap-2"
+                >
+                  <Save className="w-5 h-5" />
+                  Salvează
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* FAQs Section */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <button
+            onClick={() => toggleSection('faqs')}
+            className="w-full px-6 py-5 flex items-center justify-between bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-700 hover:to-indigo-800 transition"
+          >
+            <div className="flex items-center gap-3">
+              <HelpCircle className="w-6 h-6" />
+              <div className="text-left">
+                <h2 className="text-xl font-bold">Întrebări Frecvente (FAQs)</h2>
+                <p className="text-sm text-indigo-100">
+                  {faqs.length} {faqs.length === 1 ? 'întrebare' : 'întrebări'}
+                </p>
+              </div>
+            </div>
+            {expandedSections.faqs ? (
+              <ChevronUp className="w-6 h-6" />
+            ) : (
+              <ChevronDown className="w-6 h-6" />
+            )}
+          </button>
+
+          {expandedSections.faqs && (
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <p className="text-gray-600">
+                  Gestionează întrebările frecvente pentru pagina FAQ
+                </p>
+                <button
+                  onClick={() => {
+                    setEditingFaq(null);
+                    setFaqForm({ question: '', answer: '' });
+                    setShowFaqModal(true);
+                  }}
+                  className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition font-semibold"
+                >
+                  <Plus className="w-5 h-5" />
+                  Adaugă FAQ
+                </button>
+              </div>
+
+              {faqs.length === 0 ? (
+                <div className="text-center py-12 bg-gray-50 rounded-xl">
+                  <HelpCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-600 font-semibold mb-2">Nicio întrebare adăugată</p>
+                  <p className="text-gray-500 text-sm">Click pe "Adaugă FAQ" pentru a crea prima întrebare</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {faqs.map((faq, index) => (
+                    <div key={index} className="bg-gray-50 rounded-xl p-4 border-2 border-gray-200 hover:border-indigo-500 transition">
+                      <div className="flex justify-between items-start gap-4">
+                        <div className="flex-1">
+                          <h4 className="font-bold text-gray-900 mb-2">{faq.question}</h4>
+                          <p className="text-gray-600 text-sm line-clamp-2">{faq.answer}</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEditFaq(index)}
+                            className="p-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteFaq(index)}
+                            className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Contact Info Section */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <button
+            onClick={() => toggleSection('contactInfo')}
+            className="w-full px-6 py-5 flex items-center justify-between bg-gradient-to-r from-orange-600 to-orange-700 text-white hover:from-orange-700 hover:to-orange-800 transition"
+          >
+            <div className="flex items-center gap-3">
+              <Phone className="w-6 h-6" />
+              <div className="text-left">
+                <h2 className="text-xl font-bold">Date de Contact</h2>
+                <p className="text-sm text-orange-100">Telefon, email, adresă, social media</p>
+              </div>
+            </div>
+            {expandedSections.contactInfo ? (
+              <ChevronUp className="w-6 h-6" />
+            ) : (
+              <ChevronDown className="w-6 h-6" />
+            )}
+          </button>
+
+          {expandedSections.contactInfo && (
+            <div className="p-6">
+              <p className="text-gray-600 mb-6">
+                Actualizează datele de contact care apar pe pagina Contact
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                  <label className="block text-sm font-bold text-gray-900 mb-2">Telefon</label>
+                  <input
+                    type="text"
+                    value={contactInfo.phone}
+                    onChange={(e) => setContactInfo({...contactInfo, phone: e.target.value})}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    placeholder="+373 69 123 456"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-gray-900 mb-2">Email</label>
+                  <input
+                    type="email"
+                    value={contactInfo.email}
+                    onChange={(e) => setContactInfo({...contactInfo, email: e.target.value})}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    placeholder="contact@domix.md"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-gray-900 mb-2">Adresă</label>
+                  <input
+                    type="text"
+                    value={contactInfo.address}
+                    onChange={(e) => setContactInfo({...contactInfo, address: e.target.value})}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    placeholder="Str. Principală nr. 123, Chișinău"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-gray-900 mb-2">Program</label>
+                  <input
+                    type="text"
+                    value={contactInfo.hours}
+                    onChange={(e) => setContactInfo({...contactInfo, hours: e.target.value})}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    placeholder="Luni - Vineri: 09:00 - 18:00"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-gray-900 mb-2">Facebook URL</label>
+                  <input
+                    type="url"
+                    value={contactInfo.facebook}
+                    onChange={(e) => setContactInfo({...contactInfo, facebook: e.target.value})}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    placeholder="https://facebook.com/..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-gray-900 mb-2">Instagram URL</label>
+                  <input
+                    type="url"
+                    value={contactInfo.instagram}
+                    onChange={(e) => setContactInfo({...contactInfo, instagram: e.target.value})}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    placeholder="https://instagram.com/..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-gray-900 mb-2">TikTok URL</label>
+                  <input
+                    type="url"
+                    value={contactInfo.tiktok}
+                    onChange={(e) => setContactInfo({...contactInfo, tiktok: e.target.value})}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    placeholder="https://tiktok.com/@..."
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={handleContactInfoSave}
+                className="w-full bg-orange-600 text-white py-3 rounded-xl hover:bg-orange-700 transition font-semibold flex items-center justify-center gap-2"
+              >
+                <Save className="w-5 h-5" />
+                Salvează Date Contact
+              </button>
             </div>
           )}
         </div>
@@ -794,6 +1205,80 @@ const ContentManagement = () => {
       )}
     </div>
   );
+
+
+      {/* FAQ Modal */}
+      {showFaqModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+              <h3 className="text-2xl font-bold text-gray-900">
+                {editingFaq !== null ? 'Editează FAQ' : 'FAQ Nou'}
+              </h3>
+              <button
+                onClick={() => {
+                  setShowFaqModal(false);
+                  setEditingFaq(null);
+                }}
+                className="p-2 hover:bg-gray-100 rounded-lg transition"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <form onSubmit={handleFaqSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-900 mb-2">
+                  Întrebare *
+                </label>
+                <input
+                  type="text"
+                  value={faqForm.question}
+                  onChange={(e) => setFaqForm({...faqForm, question: e.target.value})}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="ex: Cum pot plasa o comandă?"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-900 mb-2">
+                  Răspuns *
+                </label>
+                <textarea
+                  value={faqForm.answer}
+                  onChange={(e) => setFaqForm({...faqForm, answer: e.target.value})}
+                  rows="5"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Răspunsul complet la întrebare..."
+                  required
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowFaqModal(false);
+                    setEditingFaq(null);
+                  }}
+                  className="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition font-semibold"
+                >
+                  Anulează
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-semibold flex items-center gap-2"
+                >
+                  <Save className="w-5 h-5" />
+                  {editingFaq !== null ? 'Actualizează' : 'Salvează'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
 };
 
 export default ContentManagement;
