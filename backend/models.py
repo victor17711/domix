@@ -60,10 +60,11 @@ class ProductCreate(BaseModel):
     price: float
     originalPrice: Optional[float] = None
     discount: Optional[int] = 0
-    category: str
+    category: Optional[str] = ""  # Made optional for flexibility
+    categoryId: Optional[str] = None  # Support both category and categoryId
     brandId: Optional[str] = None
     storeName: Optional[str] = ""
-    image: str  # Primary image (for backward compatibility)
+    image: Optional[str] = ""  # Primary image (optional for backward compatibility)
     images: Optional[List[str]] = []  # Up to 5 images
     colors: Optional[List[str]] = []
     sizes: Optional[List[str]] = []
@@ -72,7 +73,10 @@ class ProductCreate(BaseModel):
     reviews: Optional[int] = 0
     sold: Optional[int] = 0
     available: Optional[int] = 100
+    stock: Optional[int] = 100  # Support both available and stock
     inStock: Optional[bool] = True
+    isActive: Optional[bool] = True  # Support isActive field from Excel
+    sku: Optional[str] = ""  # Support SKU field from Excel
     badge: Optional[str] = ""
 
 class Product(ProductCreate):

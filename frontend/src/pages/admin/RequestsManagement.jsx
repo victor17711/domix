@@ -344,7 +344,7 @@ const RequestsManagement = () => {
                       {/* Product Info */}
                       <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-4 mb-3">
                         <h3 className="text-lg font-bold text-gray-900 mb-2">
-                          📦 Produs: {request.productName}
+                          Produs: {request.productName}
                         </h3>
                         <div className="flex items-center gap-6">
                           <div>

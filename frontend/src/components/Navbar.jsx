@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import AuthModal from './AuthModal';
 import axios from 'axios';
 import logo from "../assets/images/logo.png";
@@ -26,16 +27,19 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { cartCount } = useCart();
   const { user, isAuthenticated, logout } = useAuth();
+  const { language, changeLanguage, t } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState('login');
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
+  const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const [hoveredCategoryId, setHoveredCategoryId] = useState(null);
   const [menuItems, setMenuItems] = useState([]);
   const [categoryMenuItems, setCategoryMenuItems] = useState([]);
   const [mobileMenuTab, setMobileMenuTab] = useState('menu');
   const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef(null);
+  const languageDropdownRef = useRef(null);
 
   const openAuthModal = (mode) => {
     setAuthMode(mode);
@@ -53,6 +57,9 @@ const Navbar = () => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsCategoriesOpen(false);
+      }
+      if (languageDropdownRef.current && !languageDropdownRef.current.contains(event.target)) {
+        setIsLanguageDropdownOpen(false);
       }
     };
 
@@ -122,21 +129,50 @@ const Navbar = () => {
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
-                    <Globe className="w-4 h-4" />
+                <div className="flex items-center gap-2 relative" ref={languageDropdownRef}>
+                  <div 
+                    className="flex items-center gap-2 cursor-pointer hover:text-yellow-400 transition"
+                    onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
+                  >
+                    <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
+                      <Globe className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-bold">{t('navbar.language')}</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${isLanguageDropdownOpen ? 'rotate-180' : ''}`} />
                   </div>
-                  <span className="text-sm font-bold hover:text-yellow-400">Română</span>
-                  <ChevronDown className="w-4 h-4 hover:text-yellow-400" />
+                  
+                  {/* Language Dropdown */}
+                  {isLanguageDropdownOpen && (
+                    <div className="absolute top-full right-0 mt-2 bg-white text-gray-900 rounded-lg shadow-xl py-2 min-w-[150px] z-50">
+                      <button
+                        onClick={() => {
+                          changeLanguage('ro');
+                          setIsLanguageDropdownOpen(false);
+                        }}
+                        className={`w-full px-4 py-2 text-left hover:bg-teal-50 transition flex items-center gap-2 ${language === 'ro' ? 'bg-teal-100 font-bold' : ''}`}
+                      >
+                        🇲🇩 Română
+                      </button>
+                      <button
+                        onClick={() => {
+                          changeLanguage('ru');
+                          setIsLanguageDropdownOpen(false);
+                        }}
+                        className={`w-full px-4 py-2 text-left hover:bg-teal-50 transition flex items-center gap-2 ${language === 'ru' ? 'bg-teal-100 font-bold' : ''}`}
+                      >
+                        🇷🇺 Русский
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
               <div className="flex items-center gap-6">
                 <Link to="/page/termeni-si-conditii" className="hover:text-yellow-400 transition text-sm font-bold">
-                  Termeni și condiții
+                  {t('navbar.termsAndConditions')}
                 </Link>
                 <Link to="/page/politica-de-confidentialitate" className="hover:text-yellow-400 transition text-sm font-bold">
-                  Politica de confidențialitate
+                  {t('navbar.privacyPolicy')}
                 </Link>
               </div>
             </div>
@@ -189,7 +225,7 @@ const Navbar = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Caută produse, categorii, cod..."
+                  placeholder={t('navbar.search')}
                   className="w-full h-[55px] md:h-[74px] px-7 pr-16 border-2 border-gray-200 rounded-full focus:outline-none focus:border-teal-500 text-[16px] text-gray-500 placeholder:text-gray-400"
                 />
                 <button type="submit" className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal-600">
@@ -214,7 +250,7 @@ const Navbar = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Caută produse, categorii, cod..."
+                  placeholder={t('navbar.search')}
                   className="w-full px-6 py-4 pr-14 border-2 border-gray-200 rounded-full focus:outline-none focus:border-teal-500 text-base"
                 />
                 <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal-600">
@@ -239,7 +275,7 @@ const Navbar = () => {
                     </div>
 
                     <div className="text-sm text-gray-600 group-hover:text-gray-900 transition">
-                      Contul meu
+                      {t('navbar.account')}
                     </div>
                   </div>
                 </Link>
@@ -252,7 +288,7 @@ const Navbar = () => {
                     <User className="w-6 h-6 text-gray-900" />
                   </div>
                   <div className="text-left">
-                    <div className="text-sm font-semibold text-gray-900">Contul meu</div>
+                    <div className="text-sm font-semibold text-gray-900">{t('navbar.account')}</div>
                     <div className="text-sm text-gray-600">Loghează-te</div>
                   </div>
                 </button>
@@ -292,7 +328,7 @@ const Navbar = () => {
                   <div className="bg-white rounded-sm"></div>
                   <div className="bg-white rounded-sm"></div>
                 </div>
-                Toate categoriile
+                {t('navbar.allCategories')}
                 <ChevronDown className={`w-5 h-5 transition-transform ${isCategoriesOpen ? 'rotate-180' : ''}`} />
               </button>
 
@@ -430,7 +466,7 @@ const Navbar = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Caută produse, categorii, cod..."
+                  placeholder={t('navbar.search')}
                   className="w-full h-[45px] px-7 pr-16 border-2 border-white/20 bg-white text-gray-500 rounded-[10px] focus:outline-none focus:border-white"
                 />
                 <button type="submit" className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal-600">
@@ -458,7 +494,7 @@ const Navbar = () => {
                   : 'text-white/85'
                   }`}
               >
-                Toate categoriile
+                {t('navbar.allCategories')}
               </button>
             </div>
           </div>
@@ -496,13 +532,13 @@ const Navbar = () => {
                   ) : (
                     <div className="space-y-3">
                       <div className="rounded-2xl bg-gray-100 px-4 py-3">
-                        <div className="text-sm text-gray-500">Contul meu</div>
+                        <div className="text-sm text-gray-500">{t('navbar.account')}</div>
                         <Link
                           to="/contul-meu"
                           onClick={closeMobileMenu}
                           className="block rounded-2xl bg-gray-100 px-4 py-3"
                         >
-                          {/* <div className="text-sm text-gray-500">Contul meu</div> */}
+                          {/* <div className="text-sm text-gray-500">{t('navbar.account')}</div> */}
 
                           <div className="font-semibold text-gray-900 w-full text-left">
                             {user?.firstName} {user?.lastName}

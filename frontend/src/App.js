@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { AdminProvider, useAdmin } from './context/AdminContext';
+import { LanguageProvider } from './context/LanguageContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import AdminLayout from './components/AdminLayout';
@@ -38,12 +39,18 @@ import Pages from './pages/admin/Pages';
 import { Toaster } from './components/ui/toaster';
 import './App.css';
 
-// Wrapper component to handle route changes and preloader
+// Wrapper component to handle route changes and preloader (ONLY for public pages)
 const RouteChangeHandler = ({ children }) => {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // Skip preloader for admin routes
+    if (location.pathname.startsWith('/admin')) {
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     const timer = setTimeout(() => {
       setLoading(false);
@@ -87,10 +94,11 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <AdminProvider>
-          <CartProvider>
-            <div className="App">
-              <ScrollToTop />
-              <RouteChangeHandler>
+          <LanguageProvider>
+            <CartProvider>
+              <div className="App">
+                <ScrollToTop />
+                <RouteChangeHandler>
                 <Routes>
                   {/* Public Routes */}
                   <Route path="/" element={
@@ -307,6 +315,7 @@ function App() {
               <Toaster />
             </div>
           </CartProvider>
+          </LanguageProvider>
         </AdminProvider>
       </AuthProvider>
     </BrowserRouter>
