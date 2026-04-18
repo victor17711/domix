@@ -1074,10 +1074,10 @@ async def get_settings():
 
 @api_router.post("/settings")
 async def save_settings(
-    settings_data: SettingsCreate,
+    settings_data: dict,  # Accept raw dict instead of Pydantic model
     authorization: Optional[str] = Header(None)
 ):
-    """Save site settings (admin only)"""
+    """Save site settings (admin only) - Updates only provided fields"""
     current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
@@ -1085,20 +1085,43 @@ async def save_settings(
     # Check if settings exist
     existing_settings = await db.settings.find_one({})
     
-    settings_dict = settings_data.dict()
-    settings_dict["updatedAt"] = datetime.utcnow()
+    # Prepare update with only provided fields
+    update_fields = {**settings_data}  # Copy all provided fields
+    update_fields["updatedAt"] = datetime.utcnow()
     
     if existing_settings:
-        # Update existing
-        settings_dict["id"] = existing_settings.get("id", str(uuid.uuid4()))
+        # Update existing - only set fields that were actually provided
+        settings_id = existing_settings.get("id", str(uuid.uuid4()))
+        update_fields["id"] = settings_id
+        
+        # Remove None values but keep empty lists/strings if explicitly provided
+        clean_fields = {k: v for k, v in update_fields.items() if v is not None}
+        
         await db.settings.update_one(
-            {"id": settings_dict["id"]},
-            {"$set": settings_dict}
+            {"id": settings_id},
+            {"$set": clean_fields}
         )
     else:
-        # Create new
-        settings_dict["id"] = str(uuid.uuid4())
-        await db.settings.insert_one(settings_dict)
+        # Create new with provided fields + defaults
+        update_fields["id"] = str(uuid.uuid4())
+        
+        # Set defaults for fields not provided
+        defaults = {
+            "menuItems": [],
+            "categoryMenuItems": [],
+            "featuredCategoryId": None,
+            "heroBanners": [],
+            "albums": [],
+            "faqs": [],
+            "contactInfo": {},
+            "websiteName": "DOMIX",
+            "favicon": ""
+        }
+        
+        # Merge defaults with provided fields (provided fields take precedence)
+        final_settings = {**defaults, **update_fields}
+        
+        await db.settings.insert_one(final_settings)
     
     return {"message": "Settings saved successfully"}
 
