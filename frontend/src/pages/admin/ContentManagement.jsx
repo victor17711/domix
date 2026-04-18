@@ -49,6 +49,8 @@ const ContentManagement = () => {
     coverImage: '',
     galleryImages: []
   });
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
   const [faqForm, setFaqForm] = useState({
     question: '',
     answer: ''
@@ -205,6 +207,82 @@ const ContentManagement = () => {
         variant: 'destructive' 
       });
     }
+  };
+
+  // ==================== ALBUM UPLOAD HANDLERS ====================
+  
+  const handleUploadCoverImage = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+      toast({ title: 'Eroare', description: 'Fișierul trebuie să fie o imagine', variant: 'destructive' });
+      return;
+    }
+    
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: 'Eroare', description: 'Imaginea este prea mare. Max: 5MB', variant: 'destructive' });
+      return;
+    }
+    
+    try {
+      setUploadingCover(true);
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await axios.post(`${API}/upload`, formData, {
+        ...getAuthHeaders(),
+        headers: { ...getAuthHeaders().headers, 'Content-Type': 'multipart/form-data' }
+      });
+      
+      setAlbumForm({ ...albumForm, coverImage: response.data.url });
+      toast({ title: 'Succes', description: 'Imagine încărcată!' });
+    } catch (error) {
+      toast({ title: 'Eroare', description: 'Nu s-a putut încărca imaginea', variant: 'destructive' });
+    } finally {
+      setUploadingCover(false);
+    }
+  };
+  
+  const handleUploadGalleryImages = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+    
+    if (albumForm.galleryImages.length + files.length > 10) {
+      toast({ title: 'Eroare', description: 'Maxim 10 imagini în galerie', variant: 'destructive' });
+      return;
+    }
+    
+    try {
+      setUploadingGallery(true);
+      const uploadedUrls = [];
+      
+      for (const file of files) {
+        if (!file.type.startsWith('image/')) continue;
+        if (file.size > 5 * 1024 * 1024) continue;
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const response = await axios.post(`${API}/upload`, formData, {
+          ...getAuthHeaders(),
+          headers: { ...getAuthHeaders().headers, 'Content-Type': 'multipart/form-data' }
+        });
+        
+        uploadedUrls.push(response.data.url);
+      }
+      
+      setAlbumForm({ ...albumForm, galleryImages: [...albumForm.galleryImages, ...uploadedUrls] });
+      toast({ title: 'Succes', description: `${uploadedUrls.length} imagini încărcate!` });
+    } catch (error) {
+      toast({ title: 'Eroare', description: 'Nu s-au putut încărca imaginile', variant: 'destructive' });
+    } finally {
+      setUploadingGallery(false);
+    }
+  };
+  
+  const removeGalleryImage = (index) => {
+    setAlbumForm({ ...albumForm, galleryImages: albumForm.galleryImages.filter((_, i) => i !== index) });
   };
 
   // Album Handlers
@@ -1021,21 +1099,36 @@ const ContentManagement = () => {
               {/* Cover Image */}
               <div>
                 <label className="block text-sm font-bold text-gray-900 mb-2">
-                  Imagine Copertă (URL) *
+                  Imagine Copertă *
                 </label>
-                {albumForm.coverImage && (
-                  <div className="mb-3 rounded-xl overflow-hidden">
-                    <img src={albumForm.coverImage} alt="Preview" className="w-full h-48 object-cover" />
+                
+                {albumForm.coverImage ? (
+                  <div className="relative mb-3">
+                    <img 
+                      src={albumForm.coverImage} 
+                      alt="Cover preview" 
+                      className="w-full h-48 object-cover rounded-xl"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setAlbumForm({ ...albumForm, coverImage: '' })}
+                      className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-full hover:bg-red-600"
+                    >
+                      Șterge
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleUploadCoverImage}
+                      disabled={uploadingCover}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"
+                    />
+                    {uploadingCover && <p className="text-sm text-teal-600 mt-2">⏳ Se încarcă...</p>}
                   </div>
                 )}
-                <input
-                  type="url"
-                  value={albumForm.coverImage}
-                  onChange={(e) => setAlbumForm({...albumForm, coverImage: e.target.value})}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://example.com/image.jpg"
-                  required
-                />
               </div>
 
               {/* Gallery Images */}

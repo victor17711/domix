@@ -1,6 +1,7 @@
 from fastapi import FastAPI, APIRouter, HTTPException, status, Depends, Header, File, UploadFile
 from fastapi.responses import StreamingResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -14,6 +15,7 @@ from openpyxl import Workbook, load_workbook
 from io import BytesIO
 import re
 import unicodedata
+import shutil
 
 from models import (
     UserCreate, User, UserLogin, UserResponse,
@@ -1511,6 +1513,59 @@ async def delete_installment_request(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Nu s-a putut șterge cererea"
         )
+
+# ==================== FILE UPLOAD ENDPOINT ====================
+
+@api_router.post("/upload")
+async def upload_file(
+    file: UploadFile = File(...),
+    authorization: Optional[str] = Header(None)
+):
+    """Upload image file (admin only)"""
+    current_user = await get_current_user(authorization)
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # Validate file type
+    allowed_types = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"]
+    if file.content_type not in allowed_types:
+        raise HTTPException(
+            status_code=400, 
+            detail="Tipul fișierului nu este permis. Folosește: JPEG, PNG, WEBP, GIF"
+        )
+    
+    # Validate file size (max 5MB)
+    max_size = 5 * 1024 * 1024  # 5MB
+    contents = await file.read()
+    if len(contents) > max_size:
+        raise HTTPException(
+            status_code=400,
+            detail="Fișierul este prea mare. Mărimea maximă: 5MB"
+        )
+    
+    # Generate unique filename
+    file_extension = file.filename.split('.')[-1]
+    unique_filename = f"{uuid.uuid4()}.{file_extension}"
+    
+    # Save file to frontend/public/uploads
+    upload_dir = Path("/app/frontend/public/uploads")
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    
+    file_path = upload_dir / unique_filename
+    
+    with open(file_path, "wb") as f:
+        f.write(contents)
+    
+    # Return URL path (relative to public folder)
+    file_url = f"/uploads/{unique_filename}"
+    
+    return {
+        "url": file_url,
+        "filename": unique_filename,
+        "size": len(contents),
+        "contentType": file.content_type
+    }
+
 
 # Include the router in the main app
 app.include_router(api_router)
