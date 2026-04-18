@@ -8,7 +8,7 @@ import os
 import logging
 from pathlib import Path
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 from openpyxl import Workbook, load_workbook
 from io import BytesIO
@@ -119,7 +119,7 @@ async def login(credentials: UserLogin):
 @api_router.get("/auth/me", response_model=UserResponse)
 async def get_me(authorization: Optional[str] = Header(None)):
     """Get current user"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     return UserResponse(**current_user)
 
 
@@ -129,7 +129,7 @@ async def update_me(
     authorization: Optional[str] = Header(None)
 ):
     """Update current user profile"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     
     # Fields that can be updated
     allowed_fields = ['firstName', 'lastName', 'phone', 'address', 'city', 'postalCode']
@@ -197,7 +197,7 @@ async def create_product(
     authorization: Optional[str] = Header(None)
 ):
     """Create a new product (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -220,7 +220,7 @@ async def update_product(
     authorization: Optional[str] = Header(None)
 ):
     """Update a product (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -412,7 +412,7 @@ async def delete_product(
     authorization: Optional[str] = Header(None)
 ):
     """Delete a product (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -508,7 +508,7 @@ async def create_category(
     authorization: Optional[str] = Header(None)
 ):
     """Create a new category (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -530,7 +530,7 @@ async def update_category(
     authorization: Optional[str] = Header(None)
 ):
     """Update a category (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -556,7 +556,7 @@ async def delete_category(
     authorization: Optional[str] = Header(None)
 ):
     """Delete a category (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -593,7 +593,7 @@ async def create_brand(
     authorization: Optional[str] = Header(None)
 ):
     """Create a new brand (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -615,7 +615,7 @@ async def update_brand(
     authorization: Optional[str] = Header(None)
 ):
     """Update a brand (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -638,7 +638,7 @@ async def delete_brand(
     authorization: Optional[str] = Header(None)
 ):
     """Delete a brand (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -656,7 +656,7 @@ async def delete_brand(
 @api_router.get("/cart")
 async def get_cart(authorization: Optional[str] = Header(None)):
     """Get user cart with populated product data"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     
     cart = await db.carts.find_one({"userId": current_user["id"]}, {"_id": 0})
     if not cart:
@@ -690,7 +690,7 @@ async def add_to_cart(
     authorization: Optional[str] = Header(None)
 ):
     """Add item to cart"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     
     # Get product
     product = await db.products.find_one({"id": item.productId})
@@ -746,7 +746,7 @@ async def update_cart_item(
     authorization: Optional[str] = Header(None)
 ):
     """Update cart item quantity"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     
     cart = await db.carts.find_one({"userId": current_user["id"]})
     if not cart:
@@ -779,7 +779,7 @@ async def remove_from_cart(
     authorization: Optional[str] = Header(None)
 ):
     """Remove item from cart"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     
     cart = await db.carts.find_one({"userId": current_user["id"]})
     if not cart:
@@ -807,7 +807,7 @@ async def remove_from_cart(
 @api_router.delete("/cart/clear")
 async def clear_cart(authorization: Optional[str] = Header(None)):
     """Clear cart"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     
     await db.carts.update_one(
         {"userId": current_user["id"]},
@@ -822,7 +822,7 @@ async def clear_cart(authorization: Optional[str] = Header(None)):
 @api_router.get("/wishlist", response_model=Wishlist)
 async def get_wishlist(authorization: Optional[str] = Header(None)):
     """Get user wishlist"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     
     wishlist = await db.wishlists.find_one({"userId": current_user["id"]})
     if not wishlist:
@@ -839,7 +839,7 @@ async def add_to_wishlist(
     authorization: Optional[str] = Header(None)
 ):
     """Add product to wishlist"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     
     # Check if product exists
     product = await db.products.find_one({"id": product_id})
@@ -871,7 +871,7 @@ async def remove_from_wishlist(
     authorization: Optional[str] = Header(None)
 ):
     """Remove product from wishlist"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     
     wishlist = await db.wishlists.find_one({"userId": current_user["id"]})
     if not wishlist:
@@ -894,7 +894,7 @@ async def remove_from_wishlist(
 @api_router.get("/orders", response_model=List[Order])
 async def get_user_orders(authorization: Optional[str] = Header(None)):
     """Get user orders"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     
     orders = await db.orders.find({"userId": current_user["id"]}).to_list(100)
     return [Order(**order) for order in orders]
@@ -906,7 +906,7 @@ async def get_order(
     authorization: Optional[str] = Header(None)
 ):
     """Get order by ID"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     
     order = await db.orders.find_one({"id": order_id})
     if not order:
@@ -947,7 +947,7 @@ async def create_order(order_data: OrderCreate):
 @api_router.get("/admin/orders", response_model=List[Order])
 async def get_all_orders(authorization: Optional[str] = Header(None)):
     """Get all orders (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -962,7 +962,7 @@ async def update_order_status(
     authorization: Optional[str] = Header(None)
 ):
     """Update order status (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -983,7 +983,7 @@ async def update_order_status(
 @api_router.get("/admin/users", response_model=List[UserResponse])
 async def get_all_users(authorization: Optional[str] = Header(None)):
     """Get all users (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -997,7 +997,7 @@ async def get_user(
     authorization: Optional[str] = Header(None)
 ):
     """Get user by ID (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -1014,7 +1014,7 @@ async def delete_user(
     authorization: Optional[str] = Header(None)
 ):
     """Delete user (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -1032,7 +1032,7 @@ async def delete_user(
 @api_router.get("/admin/dashboard/stats", response_model=DashboardStats)
 async def get_dashboard_stats(authorization: Optional[str] = Header(None)):
     """Get dashboard statistics (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -1078,7 +1078,7 @@ async def save_settings(
     authorization: Optional[str] = Header(None)
 ):
     """Save site settings (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -1140,7 +1140,7 @@ async def create_page(
     authorization: Optional[str] = Header(None)
 ):
     """Create a new page (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -1162,7 +1162,7 @@ async def update_page(
     authorization: Optional[str] = Header(None)
 ):
     """Update a page (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
@@ -1190,7 +1190,7 @@ async def delete_page(
     authorization: Optional[str] = Header(None)
 ):
     """Delete a page (admin only)"""
-    current_user = await get_current_user(authorization, db)
+    current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     

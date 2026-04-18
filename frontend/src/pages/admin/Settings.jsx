@@ -195,6 +195,70 @@ const Settings = () => {
     }
   };
 
+  const handleExportProducts = async () => {
+    try {
+      setExporting(true);
+      const response = await axios.get(`${API}/admin/products/export`, {
+        ...getAuthHeaders(),
+        responseType: 'blob'
+      });
+      
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `products_${new Date().toISOString().split('T')[0]}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast({ title: 'Succes', description: 'Produsele au fost exportate!' });
+    } catch (error) {
+      console.error('Error exporting products:', error);
+      toast({ title: 'Eroare', description: 'Nu s-au putut exporta produsele', variant: 'destructive' });
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleImportProducts = async () => {
+    if (!importFile) {
+      toast({ title: 'Eroare', description: 'Selectează un fișier Excel', variant: 'destructive' });
+      return;
+    }
+
+    try {
+      setImporting(true);
+      const formData = new FormData();
+      formData.append('file', importFile);
+      
+      const response = await axios.post(`${API}/admin/products/import`, formData, {
+        ...getAuthHeaders(),
+        headers: {
+          ...getAuthHeaders().headers,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      toast({ 
+        title: 'Succes', 
+        description: response.data.message || 'Produsele au fost importate!'
+      });
+      
+      // Reset file input
+      setImportFile(null);
+      document.getElementById('import-file-input').value = '';
+      
+    } catch (error) {
+      console.error('Error importing products:', error);
+      const errorMsg = error.response?.data?.detail || 'Nu s-au putut importa produsele';
+      toast({ title: 'Eroare', description: errorMsg, variant: 'destructive' });
+    } finally {
+      setImporting(false);
+    }
+  };
+
   if (loading) {
     return <div className="text-center py-12">Se încarcă...</div>;
   }
@@ -556,6 +620,72 @@ const Settings = () => {
           </select>
           <p className="text-xs text-gray-500 mt-2">
             Produsele din această categorie vor apărea în carousel pe homepage
+          </p>
+        </div>
+      </div>
+
+      {/* Import/Export Products */}
+      <div className="bg-white rounded-2xl p-6 border-2 border-gray-100">
+        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <ImageIcon className="w-6 h-6 text-teal-600" />
+          Import / Export Produse
+        </h3>
+        <p className="text-sm text-gray-600 mb-6">
+          Exportă toate produsele într-un fișier Excel sau importă produse dintr-un fișier Excel
+        </p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Export Products */}
+          <div className="p-4 bg-blue-50 rounded-xl border-2 border-blue-100">
+            <h4 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+              <Download className="w-5 h-5 text-blue-600" />
+              Exportă Produse
+            </h4>
+            <p className="text-sm text-gray-600 mb-4">
+              Descarcă toate produsele din baza de date în format Excel (.xlsx)
+            </p>
+            <button
+              onClick={handleExportProducts}
+              disabled={exporting}
+              className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Download className="w-5 h-5" />
+              {exporting ? 'Se exportă...' : 'Exportă în Excel'}
+            </button>
+          </div>
+
+          {/* Import Products */}
+          <div className="p-4 bg-green-50 rounded-xl border-2 border-green-100">
+            <h4 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+              <Upload className="w-5 h-5 text-green-600" />
+              Importă Produse
+            </h4>
+            <p className="text-sm text-gray-600 mb-4">
+              Încarcă un fișier Excel cu produse. Produsele existente vor fi actualizate, cele noi vor fi adăugate.
+            </p>
+            <div className="space-y-3">
+              <input
+                id="import-file-input"
+                type="file"
+                accept=".xlsx,.xls"
+                onChange={(e) => setImportFile(e.target.files[0])}
+                className="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-100 file:text-green-700 hover:file:bg-green-200"
+              />
+              <button
+                onClick={handleImportProducts}
+                disabled={importing || !importFile}
+                className="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Upload className="w-5 h-5" />
+                {importing ? 'Se importă...' : 'Importă din Excel'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 p-4 bg-yellow-50 border-2 border-yellow-100 rounded-xl">
+          <p className="text-sm text-gray-700">
+            <strong>ℹ️ Format Excel:</strong> Fișierul trebuie să conțină coloanele: ID, Name, Description, Price, Stock, Category ID, Brand ID, SKU, Is Active, Images (comma-separated), Specifications (JSON)
           </p>
         </div>
       </div>

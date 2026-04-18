@@ -4,7 +4,13 @@ from auth_utils import decode_access_token
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import os
 
-async def get_current_user(authorization: Optional[str] = Header(None), db = None):
+# Import db from server module
+def get_db():
+    """Get database instance from server module"""
+    from server import db
+    return db
+
+async def get_current_user(authorization: Optional[str] = Header(None)):
     """Dependency to get current user from JWT token"""
     if not authorization:
         raise HTTPException(
@@ -38,6 +44,9 @@ async def get_current_user(authorization: Optional[str] = Header(None), db = Non
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token payload"
         )
+    
+    # Get database instance
+    db = get_db()
     
     # Get user from database
     user = await db.users.find_one({"id": user_id})
