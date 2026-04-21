@@ -3,11 +3,13 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { ChevronRight, SlidersHorizontal, X } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
+import { useLanguage } from '../context/LanguageContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const CategoryPage = () => {
+  const { language } = useLanguage();
   const { slug } = useParams();
   const [category, setCategory] = useState(null);
   const [products, setProducts] = useState([]);
@@ -108,7 +110,7 @@ const CategoryPage = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Se încarcă...</p>
+          <p className="text-gray-600">{t('categoryPage.loading')}</p>
         </div>
       </div>
     );
@@ -119,12 +121,12 @@ const CategoryPage = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
-          <p className="text-xl text-gray-600 mb-6">{error || 'Categoria nu a fost găsită'}</p>
+          <p className="text-xl text-gray-600 mb-6">{error || t('categoryPage.notFound')}</p>
           <Link
             to="/"
             className="bg-teal-600 text-white px-6 py-3 rounded-xl hover:bg-teal-700 transition font-semibold inline-block"
           >
-            Înapoi la Acasă
+            {t('categoryPage.backHome')}
           </Link>
         </div>
       </div>
@@ -137,7 +139,7 @@ const CategoryPage = () => {
       <div className="bg-white border-b">
         <div className="w-full px-6 py-4">
           <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Link to="/" className="hover:text-teal-600">Acasă</Link>
+            <Link to="/" className="hover:text-teal-600">{t('categoryPage.breadcrumb.home')}</Link>
             <ChevronRight className="w-4 h-4" />
             <div className="flex items-center gap-2">
               {category.image && (
@@ -164,7 +166,7 @@ const CategoryPage = () => {
 )}
             <div>
               <h1 className="text-3xl md:text-5xl font-bold">{category.name}</h1>
-              <p className="text-teal-100 mt-2">{products.length} produse disponibile</p>
+              <p className="text-teal-100 mt-2">{products.length} {t('categoryPage.productsAvailable')}</p>
             </div>
           </div>
         </div>
@@ -179,31 +181,31 @@ const CategoryPage = () => {
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                   <SlidersHorizontal className="w-5 h-5 text-teal-600" />
-                  Filtre
+                  {t('categoryPage.filters')}
                 </h3>
                 <button 
                   onClick={resetFilters}
                   className="text-sm text-teal-600 hover:text-teal-700 font-semibold"
                 >
-                  Resetează
+                  {t('categoryPage.reset')}
                 </button>
               </div>
 
               {/* Price Filter */}
               <div className="mb-6 pb-6 border-b">
-                <h4 className="font-bold text-gray-900 mb-4">Preț (MDL)</h4>
+                <h4 className="font-bold text-gray-900 mb-4">{t('categoryPage.price')}</h4>
                 <div className="space-y-3">
                   <div className="flex gap-2">
                     <input
                       type="number"
-                      placeholder="Min"
+                      placeholder={t('categoryPage.min')}
                       value={tempPriceRange.min}
                       onChange={(e) => setTempPriceRange({ ...tempPriceRange, min: Number(e.target.value) })}
                       className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
                     <input
                       type="number"
-                      placeholder="Max"
+                      placeholder={t('categoryPage.max')}
                       value={tempPriceRange.max}
                       onChange={(e) => setTempPriceRange({ ...tempPriceRange, max: Number(e.target.value) })}
                       className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
@@ -213,7 +215,7 @@ const CategoryPage = () => {
                     onClick={handlePriceRangeApply}
                     className="w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 transition font-semibold"
                   >
-                    Aplică
+                    {t('categoryPage.apply')}
                   </button>
                 </div>
               </div>
@@ -221,7 +223,7 @@ const CategoryPage = () => {
               {/* Brand Filter */}
               {brands.length > 0 && (
                 <div>
-                  <h4 className="font-bold text-gray-900 mb-4">Brand</h4>
+                  <h4 className="font-bold text-gray-900 mb-4">{t('categoryPage.brand')}</h4>
                   <div className="space-y-2 max-h-64 overflow-y-auto">
                     {brands.map((brand) => (
                       <label key={brand.id} className="flex items-center gap-3 cursor-pointer group">
@@ -259,7 +261,7 @@ const CategoryPage = () => {
               <div className="absolute right-0 top-0 h-full w-80 bg-white shadow-xl overflow-y-auto">
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold text-gray-900">Filtre</h3>
+                    <h3 className="text-xl font-bold text-gray-900">{t('categoryPage.filters')}</h3>
                     <button onClick={() => setFilterOpen(false)}>
                       <X className="w-6 h-6" />
                     </button>
@@ -325,7 +327,7 @@ const CategoryPage = () => {
                     onClick={resetFilters}
                     className="w-full mt-6 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition font-semibold"
                   >
-                    Resetează Filtre
+                    {t('categoryPage.resetFilters')}
                   </button>
                 </div>
               </div>
@@ -336,12 +338,12 @@ const CategoryPage = () => {
           <div className="flex-1">
             {products.length === 0 ? (
               <div className="bg-white rounded-2xl p-12 text-center">
-                <p className="text-xl text-gray-600">Nu există produse în această categorie</p>
+                <p className="text-xl text-gray-600">{t('categoryPage.empty')}</p>
                 <button
                   onClick={resetFilters}
                   className="mt-4 text-teal-600 hover:text-teal-700 font-semibold"
                 >
-                  Resetează filtrele
+                  {t('categoryPage.resetFilters')}
                 </button>
               </div>
             ) : (

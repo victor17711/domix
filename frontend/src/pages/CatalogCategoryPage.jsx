@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useParams } from 'react-router-dom';
 import { ChevronRight, FolderTree } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const CatalogCategoryPage = () => {
+  const { t } = useLanguage();
   const { categoryId } = useParams();
   const [category, setCategory] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -37,7 +39,7 @@ const CatalogCategoryPage = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Se încarcă categoria...</p>
+          <p className="text-gray-600">{t('catalogCategory.loading')}</p>
         </div>
       </div>
     );
@@ -48,13 +50,13 @@ const CatalogCategoryPage = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center px-4">
           <h1 className="text-3xl font-bold text-gray-900 mb-3">
-            Categoria nu a fost găsită
+            {t('catalogCategory.notFound')}
           </h1>
           <Link
             to="/catalog"
             className="inline-flex items-center justify-center bg-teal-600 text-white px-6 py-3 rounded-xl hover:bg-teal-700 transition font-semibold"
           >
-            Înapoi la catalog
+            {t('catalogCategory.back')}
           </Link>
         </div>
       </div>
@@ -73,7 +75,7 @@ const CatalogCategoryPage = () => {
             <h1 className="text-3xl md:text-4xl font-bold">{category.name}</h1>
           </div>
           <p className="text-teal-100">
-            Explorează subcategoriile disponibile
+            {t('catalogCategory.desc')}
           </p>
         </div>
       </div>
@@ -83,11 +85,11 @@ const CatalogCategoryPage = () => {
         <div className="w-full px-4 md:px-6 py-4">
           <div className="flex items-center gap-2 text-sm text-gray-600 flex-wrap">
             <Link to="/" className="hover:text-teal-600 transition">
-              Acasă
+              {t('catalogCategory.breadcrumb.home')}
             </Link>
             <ChevronRight className="w-4 h-4" />
             <Link to="/catalog" className="hover:text-teal-600 transition">
-              Catalog
+              {t('catalogCategory.breadcrumb.catalog')}
             </Link>
             <ChevronRight className="w-4 h-4" />
             <span className="text-gray-900 font-semibold">{category.name}</span>
@@ -99,10 +101,10 @@ const CatalogCategoryPage = () => {
         {subcategories.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Nu există subcategorii
+              {t('catalogCategory.emptyTitle')}
             </h2>
             <p className="text-gray-600">
-              Această categorie nu are subcategorii disponibile.
+              {t('catalogCategory.emptyDesc')}
             </p>
           </div>
         ) : (
@@ -136,7 +138,7 @@ const CatalogCategoryPage = () => {
                 </h3>
 
                 <p className="mt-2 text-sm text-gray-500">
-    {child.productCount ?? 0} produse
+    {child.productCount ?? 0} {t('catalogCategory.products')}
   </p>
               </Link>
             ))}

@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { ChevronRight, Store, Tag } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const BrandsPage = () => {
+  const { t } = useLanguage();
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -41,10 +43,10 @@ const BrandsPage = () => {
         <div className="w-full px-6">
           <div className="flex items-center gap-3 mb-3">
             <Store className="w-10 h-10" />
-            <h1 className="text-3xl md:text-4xl font-bold">Branduri</h1>
+            <h1 className="text-3xl md:text-4xl font-bold">{t('brands.title')}</h1>
           </div>
           <p className="text-teal-100">
-            Descoperă toate brandurile disponibile
+            {t('brands.desc')}
           </p>
         </div>
       </div>
@@ -53,9 +55,9 @@ const BrandsPage = () => {
       <div className="bg-white border-b">
         <div className="w-full px-6 py-4">
           <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Link to="/" className="hover:text-teal-600">Acasă</Link>
+            <Link to="/" className="hover:text-teal-600">{t('brands.breadcrumb.home')}</Link>
             <ChevronRight className="w-4 h-4" />
-            <span className="text-gray-900 font-semibold">Branduri</span>
+            <span className="text-gray-900 font-semibold">{t('brands.breadcrumb.page')}</span>
           </div>
         </div>
       </div>
@@ -67,10 +69,10 @@ const BrandsPage = () => {
           <div className="text-center py-20">
             <Store className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h2 className="text-xl font-bold text-gray-900 mb-2">
-              Niciun brand disponibil
+              {t('brands.noneTitle')}
             </h2>
             <p className="text-gray-500">
-              Brandurile vor apărea aici când vor fi adăugate.
+              {t('brands.noneDesc')}
             </p>
           </div>
         ) : (
@@ -78,10 +80,10 @@ const BrandsPage = () => {
             {/* TITLU */}
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900">
-                Toate brandurile
+                {t('brands.mainTitle')}
               </h2>
               <p className="text-gray-500 text-sm mt-1">
-                {brands.length} branduri disponibile
+                {brands.length} {t('brands.mainDesc')}
               </p>
             </div>
 

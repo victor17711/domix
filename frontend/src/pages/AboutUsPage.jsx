@@ -6,80 +6,20 @@ import aboutDepozit from "../assets/images/depozit.webp";
 import aboutShipping from "../assets/images/poza3.jpeg";
 import aboutShipping2 from "../assets/images/poza4.jpeg";
 import aboutFirst from "../assets/images/poza1.jpeg";
-
-const stats = [
-  { value: '15+', label: 'Ani de experiență' },
-  { value: '10K+', label: 'Clienți mulțumiți' },
-  { value: '1000+', label: 'Produse disponibile' },
-  { value: '24/7', label: 'Suport și consultanță' },
-];
-
-const priorities = [
-  {
-    icon: <Truck className="w-5 h-5 text-[#2c2c2c]" />,
-    title: 'Livrare rapidă',
-    description: 'Expediem comenzile în cel mai scurt timp, direct la ușa ta.',
-  },
-  {
-    icon: <Headphones className="w-5 h-5 text-[#2c2c2c]" />,
-    title: 'Consultanță profesională',
-    description: 'Te ajutăm să alegi produsele potrivite pentru nevoile tale.',
-  },
-  {
-    icon: <RotateCcw className="w-5 h-5 text-[#2c2c2c]" />,
-    title: 'Prețuri accesibile',
-    description: 'Oferim raport excelent calitate-preț pentru toate produsele.',
-  },
-];
-
-const featuresList = [
-  'Încălzire și ACM – centrale, radiatoare și accesorii',
-  'Obiecte sanitare moderne pentru baie și bucătărie',
-  'Aer condiționat și sisteme de ventilare',
-  'Țevi, fitinguri și componente pentru instalații',
-];
-
-const features2List = [
-  'Garanție produse',
-  'Suport real, nu roboți',
-  'Produse testate și verificate',
-  'Livrare rapidă în toată Moldova',
-];
-
-const reviews = [
-  {
-    name: 'Andrei Ceban',
-    time: '10:25, 12 Feb, 2026',
-    text: 'Am comandat un radiator și câteva fitinguri, totul a ajuns rapid și bine ambalat. Calitatea produselor este foarte bună, iar prețurile sunt chiar ok comparativ cu alte magazine.',
-  },
-  {
-    name: 'Natalia Rusu',
-    time: '14:10, 18 Dec, 2026',
-    text: 'Mi-a plăcut foarte mult că am primit ajutor la alegerea produselor. Nu eram sigură ce să aleg pentru baie, dar consultanța a fost foarte utilă. Recomand Domix fără dubii.',
-  },
-  {
-    name: 'Sergiu Balan',
-    time: '09:40, 3 Ian, 2026',
-    text: 'Produse de calitate și livrare rapidă. Am comandat pentru un proiect de renovare și totul a fost exact cum trebuia. O să mai comand și pe viitor.',
-  },
-  {
-    name: 'Irina Munteanu',
-    time: '17:55, 9 Iun, 2026',
-    text: 'Site-ul este simplu de folosit, iar produsele sunt bine descrise. Comanda a venit în timp scurt și fără probleme. Foarte mulțumită de experiență.',
-  },
-  {
-    name: 'Vlad Cojocaru',
-    time: '11:20, 15 Feb, 2026',
-    text: 'Am cumpărat un aparat de aer condiționat și sunt foarte mulțumit. Livrarea a fost rapidă, iar produsul funcționează perfect. Se vede că lucrează profesionist.',
-  },
-  {
-    name: 'Elena Rotaru',
-    time: '13:05, 22 Oct, 2026',
-    text: 'Raport calitate-preț foarte bun. Am găsit tot ce aveam nevoie pentru instalații într-un singur loc. Simplu, rapid și fără complicații.',
-  },
-];
+import { useLanguage } from '../context/LanguageContext';
 
 const AboutUsPage = () => {
+
+  const { language, changeLanguage, t } = useLanguage();
+
+  const reviews = [
+    t('about.reviews.item1'),
+    t('about.reviews.item2'),
+    t('about.reviews.item3'),
+    t('about.reviews.item4'),
+    t('about.reviews.item5'),
+    t('about.reviews.item6'),
+  ];
 
   const [currentReview, setCurrentReview] = useState(0);
 
@@ -96,6 +36,45 @@ const AboutUsPage = () => {
     reviews[(currentReview + 1) % reviews.length],
   ];
 
+  const stats = [
+    { value: '15+', label: t('about.stats.experience') },
+    { value: '10K+', label: t('about.stats.clients') },
+    { value: '1000+', label: t('about.stats.products') },
+    { value: '24/7', label: t('about.stats.support') },
+  ];
+
+  const priorities = [
+    {
+      icon: <Truck className="w-5 h-5 text-[#2c2c2c]" />,
+      title: t('about.priorities.fastDelivery'),
+      description: t('about.priorities.fastDeliveryDesc'),
+    },
+    {
+      icon: <Headphones className="w-5 h-5 text-[#2c2c2c]" />,
+      title: t('about.priorities.consulting'),
+      description: t('about.priorities.consultingDesc'),
+    },
+    {
+      icon: <RotateCcw className="w-5 h-5 text-[#2c2c2c]" />,
+      title: t('about.priorities.price'),
+      description: t('about.priorities.priceDesc'),
+    },
+  ];
+
+  const featuresList = [
+    t('about.features.item1'),
+    t('about.features.item2'),
+    t('about.features.item3'),
+    t('about.features.item4'),
+  ];
+
+  const features2List = [
+    t('about.features2.item1'),
+    t('about.features2.item2'),
+    t('about.features2.item3'),
+    t('about.features2.item4'),
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
 
@@ -104,10 +83,10 @@ const AboutUsPage = () => {
         <div className="w-full px-6">
           <div className="flex items-center gap-3 mb-3">
             <Info className="w-10 h-10" />
-            <h1 className="text-3xl md:text-4xl font-bold">Despre Noi</h1>
+            <h1 className="text-3xl md:text-4xl font-bold">{t('about.heroTitle')}</h1>
           </div>
           <p className="text-teal-100">
-            Află mai multe despre compania noastră
+            {t('about.heroDesc')}
           </p>
         </div>
       </div>
@@ -116,9 +95,9 @@ const AboutUsPage = () => {
       <div className="bg-white border-b">
         <div className="w-full px-6 py-4">
           <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Link to="/" className="hover:text-teal-600">Acasă</Link>
+            <Link to="/" className="hover:text-teal-600">{t('about.breadcrumb.home')}</Link>
             <ChevronRight className="w-4 h-4" />
-            <span className="text-gray-900 font-semibold">Despre Noi</span>
+            <span className="text-gray-900 font-semibold">{t('about.breadcrumb.page')}</span>
           </div>
         </div>
       </div>
@@ -130,25 +109,25 @@ const AboutUsPage = () => {
             <div className="grid grid-cols-1 xl:grid-cols-[1fr_270px] gap-8 items-start">
               <div className="pt-2">
                 <h1 className="text-[34px] md:text-[52px] leading-[1.05] font-bold text-[#2a2a2a] max-w-[650px]">
-                  Soluții complete pentru confortul casei tale
+                  {t('about.mainTitle')}
                 </h1>
 
                 <div className="mt-8 space-y-6 max-w-[680px]">
                   <div>
                     <h3 className="text-[17px] md:text-[19px] font-semibold text-[#2d2d2d] mb-3">
-                      Misiunea noastră
+                      {t('about.missionTitle')}
                     </h3>
                     <p className="text-[14px] md:text-[15px] leading-7 text-[#6c6c6c]">
-                      Misiunea noastră este să oferim produse de calitate pentru încălzire, apă și climatizare, la prețuri accesibile. Ne dorim să ajutăm fiecare client să găsească soluții eficiente și durabile pentru locuința sa, fără compromisuri.
+                      {t('about.missionDesc')}
                     </p>
                   </div>
 
                   <div>
                     <h3 className="text-[17px] md:text-[19px] font-semibold text-[#2d2d2d] mb-3">
-                      Viziunea noastră
+                      {t('about.visionTitle')}
                     </h3>
                     <p className="text-[14px] md:text-[15px] leading-7 text-[#6c6c6c]">
-                      Ne propunem să devenim unul dintre cele mai de încredere magazine online din Moldova în domeniul instalațiilor, oferind produse moderne, livrare rapidă și suport profesionist pentru fiecare client.
+                      {t('about.visionDesc')}
                     </p>
                   </div>
                 </div>
@@ -198,11 +177,11 @@ const AboutUsPage = () => {
         <section className="relative bg-[#f3cbe1] rounded-[34px] pt-24 pb-8 px-4 md:px-10 mt-32">
           <div className="absolute left-1/2 -translate-x-1/2 top-0 -translate-y-1/2 bg-gray-50 rounded-[999px] px-8 md:px-14 py-6 md:py-8 min-w-[280px] md:min-w-[420px] text-center">
             <h2 className="text-[24px] md:text-[38px] font-bold text-[#2d2d2d]">
-              Calitatea este prioritatea noastră
+              {t('about.qualityTitle')}
             </h2>
 
             <p className="text-[13px] md:text-[15px] text-[#6d6d6d] mt-2">
-              Produse sigure, eficiente și durabile pentru fiecare proiect.
+              {t('about.qualityDesc')}
             </p>
           </div>
 
@@ -230,11 +209,11 @@ const AboutUsPage = () => {
 
 
             <h2 className="mt-5 text-[30px] md:text-[44px] font-bold text-[#2d2d2d] leading-tight">
-              Tot ce ai nevoie pentru instalații, într-un singur loc
+              {t('about.productsTitle')}
             </h2>
 
             <p className="mt-6 text-[14px] md:text-[15px] leading-7 text-[#6d6d6d]">
-              La Domix găsești o gamă variată de produse pentru încălzire, apă, climatizare și instalații. Indiferent dacă lucrezi la o construcție nouă sau la renovare, avem soluții potrivite pentru fiecare proiect.
+              {t('about.productsDesc')}
             </p>
 
             <div className="mt-6 space-y-4">
@@ -247,7 +226,7 @@ const AboutUsPage = () => {
             </div>
 
             <p className="mt-6 text-[14px] md:text-[15px] leading-7 text-[#6d6d6d]">
-              Alege Domix pentru produse de încredere, livrare rapidă și prețuri corecte. Indiferent de proiect, îți oferim soluțiile potrivite, simplu și eficient.
+              {t('about.productsDesc2')}
             </p>
           </div>
 
@@ -274,11 +253,11 @@ const AboutUsPage = () => {
         <section className="relative bg-[#a7e1df] rounded-[34px] pt-24 pb-10 px-4 md:px-8 lg:px-12 mt-32">
           <div className="absolute left-1/2 -translate-x-1/2 top-0 -translate-y-1/2 bg-gray-50 rounded-[999px] px-8 md:px-14 py-6 md:py-8 min-w-[300px] md:min-w-[460px] text-center z-10">
             <h2 className="text-[24px] md:text-[38px] font-bold text-[#2d2d2d]">
-              Ce spun clienții despre noi
+              {t('about.testimonialsTitle')}
             </h2>
 
             <p className="text-[13px] md:text-[15px] text-[#6d6d6d] mt-2">
-              Feedback real de la clienți care au ales Domix
+              {t('about.testimonialsDesc')}
             </p>
           </div>
 
@@ -312,7 +291,7 @@ const AboutUsPage = () => {
                     <span className="text-[#5f5f5f]">5.0</span>
                     <span className="flex items-center gap-1 text-[#159c7b]">
                       <BadgeCheck className="w-4 h-4" />
-                      Client verificat
+                      {t('about.reviews.verified')}
                     </span>
                   </div>
 
@@ -339,7 +318,7 @@ const AboutUsPage = () => {
           </div>
         </section>
 
-        {/* VIDEO + TEXT */}
+        {/* IMAGE + TEXT */}
         <section className="grid grid-cols-1 lg:grid-cols-[0.95fr_1fr] gap-10 items-center mt-16 md:mt-24 mb-10">
           <div className="relative h-[320px] md:h-[470px] rounded-[20px] overflow-hidden bg-[#14c9c9]">
             <img
@@ -353,11 +332,11 @@ const AboutUsPage = () => {
 
 
             <h2 className="mt-5 text-[30px] md:text-[44px] font-bold text-[#2d2d2d] leading-tight">
-              De ce să alegi Domix?
+              {t('about.whyTitle')}
             </h2>
 
             <p className="mt-6 text-[14px] md:text-[15px] leading-7 text-[#6d6d6d]">
-              Cu peste 15 ani de experiență, oferim produse de încredere, livrare rapidă și suport dedicat. Punem accent pe calitate și pe satisfacția clientului, pentru ca fiecare comandă să fie o experiență sigură și eficientă.
+              {t('about.whyDesc')}
             </p>
 
             <div className="mt-6 space-y-4">

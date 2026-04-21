@@ -9,7 +9,7 @@ const API = `${BACKEND_URL}/api`;
 
 const DynamicPage = () => {
   const { slug } = useParams();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const [page, setPage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -72,7 +72,7 @@ const DynamicPage = () => {
             <h1 className="text-3xl md:text-4xl font-bold">{pageTitle}</h1>
           </div>
           <p className="text-teal-100">
-            Informații și detalii despre Domix
+            {t('dynamic.desc')}
           </p>
         </div>
       </div>
@@ -82,7 +82,7 @@ const DynamicPage = () => {
         <div className="w-full px-4 md:px-6 py-4">
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <Link to="/" className="hover:text-teal-600 transition">
-              Acasă
+              {t('dynamic.home')}
             </Link>
             <ChevronRight className="w-4 h-4" />
             <span className="text-gray-900 font-semibold">{pageTitle}</span>

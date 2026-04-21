@@ -10,11 +10,13 @@ import {
   ChevronLeft,
   ChevronRight as ChevronRightIcon
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const ServicesPage = () => {
+  const { language, changeLanguage, t } = useLanguage();
   const [selectedAlbum, setSelectedAlbum] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [albums, setAlbums] = useState([]);
@@ -28,7 +30,7 @@ const ServicesPage = () => {
     try {
       const response = await axios.get(`${API}/settings`);
       const fetchedAlbums = response.data.albums || [];
-      
+
       // Transform backend data to match frontend structure
       const transformedAlbums = fetchedAlbums.map((album, index) => ({
         id: index + 1,
@@ -36,7 +38,7 @@ const ServicesPage = () => {
         cover: album.coverImage,
         images: album.galleryImages
       }));
-      
+
       setAlbums(transformedAlbums);
     } catch (error) {
       console.error('Error fetching albums:', error);
@@ -75,10 +77,10 @@ const ServicesPage = () => {
         <div className="w-full px-6">
           <div className="flex items-center gap-3 mb-3">
             <Images className="w-10 h-10" />
-            <h1 className="text-3xl md:text-4xl font-bold">Servicii</h1>
+            <h1 className="text-3xl md:text-4xl font-bold">{t('services.title')}</h1>
           </div>
           <p className="text-teal-100">
-            Descoperă albumele cu lucrările și proiectele noastre
+            {t('services.desc')}
           </p>
         </div>
       </div>
@@ -88,13 +90,13 @@ const ServicesPage = () => {
         <div className="w-full px-6 py-4">
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <Link to="/" className="hover:text-teal-600">
-              Acasă
+              {t('services.breadcrumb.home')}
             </Link>
 
             <ChevronRight className="w-4 h-4" />
 
             {!selectedAlbum ? (
-              <span className="text-gray-900 font-semibold">Servicii</span>
+              <span className="text-gray-900 font-semibold">{t('services.breadcrumb.page')}</span>
             ) : (
               <>
                 <button
@@ -105,7 +107,7 @@ const ServicesPage = () => {
                   }}
                   className="hover:text-teal-600 font-semibold transition"
                 >
-                  Servicii
+                  {t('services.breadcrumb.page')}
                 </button>
                 <ChevronRight className="w-4 h-4" />
                 <span className="text-gray-900 font-semibold">
@@ -125,16 +127,16 @@ const ServicesPage = () => {
         ) : albums.length === 0 ? (
           <div className="text-center py-20">
             <Images className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-600 font-semibold">Niciun album disponibil momentan</p>
+            <p className="text-gray-600 font-semibold">{t('services.empty')}</p>
           </div>
         ) : !selectedAlbum ? (
           <>
             <div className="mb-10">
               <h2 className="text-2xl font-bold text-gray-900">
-                Albume servicii
+                {t('services.albumsTitle')}
               </h2>
               <p className="text-gray-500 text-sm mt-1">
-                Apasă pe un album pentru a vedea imaginile din galerie
+                {t('services.albumsDesc')}
               </p>
             </div>
 
@@ -157,7 +159,7 @@ const ServicesPage = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent"></div>
                     <div className="absolute bottom-4 left-4 right-4">
                       <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-xs font-semibold mb-2">
-                        {album.images.length} imagini
+                        {album.images.length} {t('services.imagesCount')}
                       </div>
                       <h3 className="text-white text-xl font-bold leading-tight">
                         {album.title}
@@ -176,7 +178,7 @@ const ServicesPage = () => {
                   {selectedAlbum.title}
                 </h2>
                 <p className="text-gray-500 text-sm mt-1">
-                  {selectedAlbum.images.length} imagini în acest album
+                  {selectedAlbum.images.length} {t('services.albumImages')}
                 </p>
               </div>
 
@@ -188,7 +190,7 @@ const ServicesPage = () => {
                 className="inline-flex items-center gap-2 bg-teal-600 text-white px-5 py-3 rounded-xl hover:bg-teal-700 transition font-semibold w-fit"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Înapoi la servicii
+                {t('services.back')}
               </button>
             </div>
 
@@ -201,10 +203,10 @@ const ServicesPage = () => {
                     className="group relative block w-full overflow-hidden rounded-[15px]"
                   >
                     <img
-  src={image}
-  alt={`${selectedAlbum.title} ${index + 1}`}
-  className="w-full h-auto rounded-[15px] shadow-lg hover:shadow-xl transition"
-/>
+                      src={image}
+                      alt={`${selectedAlbum.title} ${index + 1}`}
+                      className="w-full h-auto rounded-[15px] shadow-lg hover:shadow-xl transition"
+                    />
 
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition duration-300 rounded-[15px] flex items-center justify-center">
                       <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 transition duration-300 shadow-lg">
@@ -248,7 +250,7 @@ const ServicesPage = () => {
             <div className="mt-4 text-center text-white">
               <div className="font-semibold text-lg">{selectedAlbum.title}</div>
               <div className="text-sm text-white/75">
-                Imaginea {lightboxIndex + 1} din {selectedAlbum.images.length}
+                {t('services.lightboxImage')} {lightboxIndex + 1} {t('services.lightboxFrom')} {selectedAlbum.images.length}
               </div>
             </div>
           </div>

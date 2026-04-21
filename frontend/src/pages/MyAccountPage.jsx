@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { User, ChevronRight, Package, MapPin, Settings, LogOut, Edit, Save, X, Eye, Clock } from 'lucide-react';
+import { User, ChevronRight, Package, MapPin, Settings, LogOut, Edit, Save, X, Clock } from 'lucide-react';
 import { toast } from '../hooks/use-toast';
+import { useLanguage } from '../context/LanguageContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const MyAccountPage = () => {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState([]);
@@ -35,7 +37,7 @@ const MyAccountPage = () => {
     }
     return {
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       }
     };
   };
@@ -44,7 +46,7 @@ const MyAccountPage = () => {
     try {
       const headers = getAuthHeaders();
       if (!headers) return;
-      
+
       const response = await axios.get(`${API}/auth/me`, headers);
       setUser(response.data);
       setProfileForm({
@@ -70,7 +72,7 @@ const MyAccountPage = () => {
     try {
       const headers = getAuthHeaders();
       if (!headers) return;
-      
+
       const response = await axios.get(`${API}/orders`, headers);
       setOrders(response.data);
     } catch (error) {
@@ -80,32 +82,34 @@ const MyAccountPage = () => {
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
-    
+
     try {
       const headers = getAuthHeaders();
       if (!headers) return;
-      
-      const response = await axios.put(
-        `${API}/auth/me`,
-        profileForm,
-        headers
-      );
-      
+
+      const response = await axios.put(`${API}/auth/me`, profileForm, headers);
+
       setUser(response.data);
       setEditMode(false);
-      toast({ title: 'Succes', description: 'Profilul a fost actualizat!' });
+      toast({
+        title: t('myAccount.toast.successTitle'),
+        description: t('myAccount.toast.successDesc')
+      });
     } catch (error) {
-      toast({ 
-        title: 'Eroare', 
-        description: error.response?.data?.detail || 'Nu s-a putut actualiza profilul',
-        variant: 'destructive' 
+      toast({
+        title: t('myAccount.toast.errorTitle'),
+        description: error.response?.data?.detail || t('myAccount.toast.errorDesc'),
+        variant: 'destructive'
       });
     }
   };
 
   const handleLogout = () => {
     localStorage.removeItem('userToken');
-    toast({ title: 'Deconectat', description: 'Te-ai deconectat cu succes' });
+    toast({
+      title: t('myAccount.toast.logoutTitle'),
+      description: t('myAccount.toast.logoutDesc')
+    });
     setTimeout(() => {
       window.location.href = '/';
     }, 1000);
@@ -113,14 +117,20 @@ const MyAccountPage = () => {
 
   const getStatusBadge = (status) => {
     const badges = {
-      pending: { text: 'În Așteptare', color: 'bg-yellow-100 text-yellow-800' },
-      processing: { text: 'În Procesare', color: 'bg-blue-100 text-blue-800' },
-      shipped: { text: 'Expediată', color: 'bg-purple-100 text-purple-800' },
-      delivered: { text: 'Livrată', color: 'bg-green-100 text-green-800' },
-      cancelled: { text: 'Anulată', color: 'bg-red-100 text-red-800' }
+      pending: { text: t('myAccount.status.pending'), color: 'bg-yellow-100 text-yellow-800' },
+      processing: { text: t('myAccount.status.processing'), color: 'bg-blue-100 text-blue-800' },
+      shipped: { text: t('myAccount.status.shipped'), color: 'bg-purple-100 text-purple-800' },
+      delivered: { text: t('myAccount.status.delivered'), color: 'bg-green-100 text-green-800' },
+      cancelled: { text: t('myAccount.status.cancelled'), color: 'bg-red-100 text-red-800' }
     };
+
     const badge = badges[status] || badges.pending;
-    return <span className={`px-3 py-1 rounded-full text-xs font-bold ${badge.color}`}>{badge.text}</span>;
+
+    return (
+      <span className={`px-3 py-1 rounded-full text-xs font-bold ${badge.color}`}>
+        {badge.text}
+      </span>
+    );
   };
 
   if (loading) {
@@ -136,13 +146,17 @@ const MyAccountPage = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center bg-white p-12 rounded-2xl shadow-lg">
           <User className="w-20 h-20 text-gray-300 mx-auto mb-6" />
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Trebuie să te autentifici</h2>
-          <p className="text-gray-600 mb-6">Pentru a accesa contul tău, autentifică-te mai întâi.</p>
-          <Link 
-            to="/" 
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            {t('myAccount.authRequired.title')}
+          </h2>
+          <p className="text-gray-600 mb-6">
+            {t('myAccount.authRequired.desc')}
+          </p>
+          <Link
+            to="/"
             className="inline-block bg-teal-600 text-white px-8 py-3 rounded-xl hover:bg-teal-700 transition font-semibold"
           >
-            Înapoi Acasă
+            {t('myAccount.authRequired.backHome')}
           </Link>
         </div>
       </div>
@@ -156,22 +170,25 @@ const MyAccountPage = () => {
         <div className="w-full px-4 md:px-6">
           <div className="flex items-center gap-3 mb-3">
             <User className="w-10 h-10" />
-            <h1 className="text-3xl md:text-4xl font-bold">Contul meu</h1>
+            <h1 className="text-3xl md:text-4xl font-bold">{t('myAccount.title')}</h1>
           </div>
           <p className="text-teal-100">
-            Bun venit, {user.firstName}
+            {t('myAccount.welcome')} {user.firstName}
           </p>
         </div>
       </div>
-            {/* BREADCRUMB */}
+
+      {/* BREADCRUMB */}
       <div className="relative bg-white border-b">
         <div className="w-full px-6 py-4">
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <Link to="/" className="hover:text-teal-600">
-              Acasă
+              {t('myAccount.breadcrumb.home')}
             </Link>
             <ChevronRight className="w-4 h-4" />
-            <span className="text-gray-900 font-semibold">Contul meu</span>
+            <span className="text-gray-900 font-semibold">
+              {t('myAccount.breadcrumb.page')}
+            </span>
           </div>
         </div>
       </div>
@@ -185,7 +202,9 @@ const MyAccountPage = () => {
                 <div className="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <User className="w-10 h-10 text-teal-600" />
                 </div>
-                <h3 className="text-center font-bold text-gray-900">{user.firstName} {user.lastName}</h3>
+                <h3 className="text-center font-bold text-gray-900">
+                  {user.firstName} {user.lastName}
+                </h3>
                 <p className="text-center text-sm text-gray-600">{user.email}</p>
               </div>
 
@@ -193,25 +212,25 @@ const MyAccountPage = () => {
                 <button
                   onClick={() => setActiveTab('profile')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-2 transition ${
-                    activeTab === 'profile' 
-                      ? 'bg-teal-50 text-teal-600 font-semibold' 
+                    activeTab === 'profile'
+                      ? 'bg-teal-50 text-teal-600 font-semibold'
                       : 'text-gray-700 hover:bg-gray-50'
                   }`}
                 >
                   <User className="w-5 h-5" />
-                  Profilul Meu
+                  {t('myAccount.tabs.profile')}
                 </button>
 
                 <button
                   onClick={() => setActiveTab('orders')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-2 transition ${
-                    activeTab === 'orders' 
-                      ? 'bg-teal-50 text-teal-600 font-semibold' 
+                    activeTab === 'orders'
+                      ? 'bg-teal-50 text-teal-600 font-semibold'
                       : 'text-gray-700 hover:bg-gray-50'
                   }`}
                 >
                   <Package className="w-5 h-5" />
-                  Comenzile Mele
+                  {t('myAccount.tabs.orders')}
                   {orders.length > 0 && (
                     <span className="ml-auto bg-teal-600 text-white text-xs px-2 py-1 rounded-full">
                       {orders.length}
@@ -222,25 +241,25 @@ const MyAccountPage = () => {
                 <button
                   onClick={() => setActiveTab('addresses')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-2 transition ${
-                    activeTab === 'addresses' 
-                      ? 'bg-teal-50 text-teal-600 font-semibold' 
+                    activeTab === 'addresses'
+                      ? 'bg-teal-50 text-teal-600 font-semibold'
                       : 'text-gray-700 hover:bg-gray-50'
                   }`}
                 >
                   <MapPin className="w-5 h-5" />
-                  Adrese
+                  {t('myAccount.tabs.addresses')}
                 </button>
 
                 <button
                   onClick={() => setActiveTab('settings')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-2 transition ${
-                    activeTab === 'settings' 
-                      ? 'bg-teal-50 text-teal-600 font-semibold' 
+                    activeTab === 'settings'
+                      ? 'bg-teal-50 text-teal-600 font-semibold'
                       : 'text-gray-700 hover:bg-gray-50'
                   }`}
                 >
                   <Settings className="w-5 h-5" />
-                  Setări
+                  {t('myAccount.tabs.settings')}
                 </button>
 
                 <button
@@ -248,7 +267,7 @@ const MyAccountPage = () => {
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition mt-4"
                 >
                   <LogOut className="w-5 h-5" />
-                  Deconectare
+                  {t('myAccount.tabs.logout')}
                 </button>
               </nav>
             </div>
@@ -260,14 +279,17 @@ const MyAccountPage = () => {
             {activeTab === 'profile' && (
               <div className="bg-white rounded-2xl shadow-lg p-8">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">Informații Personale</h2>
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    {t('myAccount.profile.title')}
+                  </h2>
+
                   {!editMode ? (
                     <button
                       onClick={() => setEditMode(true)}
                       className="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-semibold"
                     >
                       <Edit className="w-5 h-5" />
-                      Editează
+                      {t('myAccount.profile.edit')}
                     </button>
                   ) : (
                     <button
@@ -285,7 +307,7 @@ const MyAccountPage = () => {
                       className="flex items-center gap-2 text-gray-600 hover:text-gray-700 font-semibold"
                     >
                       <X className="w-5 h-5" />
-                      Anulează
+                      {t('myAccount.profile.cancel')}
                     </button>
                   )}
                 </div>
@@ -293,83 +315,99 @@ const MyAccountPage = () => {
                 <form onSubmit={handleUpdateProfile} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-bold text-gray-700 mb-2">Prenume</label>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">
+                        {t('myAccount.profile.firstName')}
+                      </label>
                       <input
                         type="text"
                         disabled={!editMode}
                         value={profileForm.firstName}
-                        onChange={(e) => setProfileForm({...profileForm, firstName: e.target.value})}
+                        onChange={(e) => setProfileForm({ ...profileForm, firstName: e.target.value })}
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-bold text-gray-700 mb-2">Nume</label>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">
+                        {t('myAccount.profile.lastName')}
+                      </label>
                       <input
                         type="text"
                         disabled={!editMode}
                         value={profileForm.lastName}
-                        onChange={(e) => setProfileForm({...profileForm, lastName: e.target.value})}
+                        onChange={(e) => setProfileForm({ ...profileForm, lastName: e.target.value })}
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-bold text-gray-700 mb-2">Email</label>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">
+                        {t('myAccount.profile.email')}
+                      </label>
                       <input
                         type="email"
                         disabled
                         value={user.email}
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-gray-100 cursor-not-allowed"
                       />
-                      <p className="text-xs text-gray-500 mt-1">Email-ul nu poate fi modificat</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {t('myAccount.profile.emailNote')}
+                      </p>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-bold text-gray-700 mb-2">Telefon</label>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">
+                        {t('myAccount.profile.phone')}
+                      </label>
                       <input
                         type="tel"
                         disabled={!editMode}
                         value={profileForm.phone}
-                        onChange={(e) => setProfileForm({...profileForm, phone: e.target.value})}
+                        onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                        placeholder="+373 69 123 456"
+                        placeholder={t('myAccount.profile.placeholderPhone')}
                       />
                     </div>
 
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-bold text-gray-700 mb-2">Adresă</label>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">
+                        {t('myAccount.profile.address')}
+                      </label>
                       <input
                         type="text"
                         disabled={!editMode}
                         value={profileForm.address}
-                        onChange={(e) => setProfileForm({...profileForm, address: e.target.value})}
+                        onChange={(e) => setProfileForm({ ...profileForm, address: e.target.value })}
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                        placeholder="Str. Principală nr. 123"
+                        placeholder={t('myAccount.profile.placeholderAddress')}
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-bold text-gray-700 mb-2">Oraș</label>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">
+                        {t('myAccount.profile.city')}
+                      </label>
                       <input
                         type="text"
                         disabled={!editMode}
                         value={profileForm.city}
-                        onChange={(e) => setProfileForm({...profileForm, city: e.target.value})}
+                        onChange={(e) => setProfileForm({ ...profileForm, city: e.target.value })}
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                        placeholder="Chișinău"
+                        placeholder={t('myAccount.profile.placeholderCity')}
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-bold text-gray-700 mb-2">Cod Poștal</label>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">
+                        {t('myAccount.profile.postalCode')}
+                      </label>
                       <input
                         type="text"
                         disabled={!editMode}
                         value={profileForm.postalCode}
-                        onChange={(e) => setProfileForm({...profileForm, postalCode: e.target.value})}
+                        onChange={(e) => setProfileForm({ ...profileForm, postalCode: e.target.value })}
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                        placeholder="MD-2001"
+                        placeholder={t('myAccount.profile.placeholderPostalCode')}
                       />
                     </div>
                   </div>
@@ -381,7 +419,7 @@ const MyAccountPage = () => {
                         className="flex items-center gap-2 bg-teal-600 text-white px-8 py-3 rounded-xl hover:bg-teal-700 transition font-semibold"
                       >
                         <Save className="w-5 h-5" />
-                        Salvează Modificările
+                        {t('myAccount.profile.save')}
                       </button>
                     </div>
                   )}
@@ -392,18 +430,24 @@ const MyAccountPage = () => {
             {/* Orders Tab */}
             {activeTab === 'orders' && (
               <div className="bg-white rounded-2xl shadow-lg p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Comenzile Mele</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  {t('myAccount.orders.title')}
+                </h2>
 
                 {orders.length === 0 ? (
                   <div className="text-center py-12">
                     <Package className="w-20 h-20 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">Nicio comandă încă</h3>
-                    <p className="text-gray-600 mb-6">Nu ai plasat nicio comandă până acum.</p>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                      {t('myAccount.orders.emptyTitle')}
+                    </h3>
+                    <p className="text-gray-600 mb-6">
+                      {t('myAccount.orders.emptyDesc')}
+                    </p>
                     <Link
                       to="/"
                       className="inline-block bg-teal-600 text-white px-8 py-3 rounded-xl hover:bg-teal-700 transition font-semibold"
                     >
-                      Începe Cumpărăturile
+                      {t('myAccount.orders.startShopping')}
                     </Link>
                   </div>
                 ) : (
@@ -414,10 +458,11 @@ const MyAccountPage = () => {
                           <div>
                             <div className="flex items-center gap-3 mb-2">
                               <h3 className="text-lg font-bold text-gray-900">
-                                Comanda #{order.id.slice(0, 8).toUpperCase()}
+                                {t('myAccount.orders.order')} #{order.id.slice(0, 8).toUpperCase()}
                               </h3>
                               {getStatusBadge(order.status)}
                             </div>
+
                             <div className="flex items-center gap-4 text-sm text-gray-600">
                               <span className="flex items-center gap-1">
                                 <Clock className="w-4 h-4" />
@@ -428,24 +473,40 @@ const MyAccountPage = () => {
                                 })}
                               </span>
                               <span>•</span>
-                              <span>{order.items.length} {order.items.length === 1 ? 'produs' : 'produse'}</span>
+                              <span>
+                                {order.items.length}{' '}
+                                {order.items.length === 1
+                                  ? t('myAccount.orders.product')
+                                  : t('myAccount.orders.products')}
+                              </span>
                             </div>
                           </div>
+
                           <div className="text-right">
-                            <div className="text-2xl font-bold text-teal-600">{order.totalAmount.toFixed(2)} MDL</div>
-                            <div className="text-sm text-gray-600">{order.paymentMethod === 'cash_on_delivery' ? 'Cash la curier' : order.paymentMethod}</div>
+                            <div className="text-2xl font-bold text-teal-600">
+                              {order.totalAmount.toFixed(2)} MDL
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {order.paymentMethod === 'cash_on_delivery'
+                                ? t('myAccount.orders.cashOnDelivery')
+                                : order.paymentMethod}
+                            </div>
                           </div>
                         </div>
 
                         <div className="border-t pt-4">
-                          <h4 className="font-semibold text-gray-900 mb-3">Produse:</h4>
+                          <h4 className="font-semibold text-gray-900 mb-3">
+                            {t('myAccount.orders.productsLabel')}
+                          </h4>
                           <div className="space-y-2">
                             {order.items.map((item, index) => (
                               <div key={index} className="flex items-center justify-between text-sm">
                                 <span className="text-gray-700">
                                   {item.name} <span className="text-gray-500">x{item.quantity}</span>
                                 </span>
-                                <span className="font-semibold text-gray-900">{item.price.toFixed(2)} MDL</span>
+                                <span className="font-semibold text-gray-900">
+                                  {item.price.toFixed(2)} MDL
+                                </span>
                               </div>
                             ))}
                           </div>
@@ -453,7 +514,9 @@ const MyAccountPage = () => {
 
                         {order.shippingAddress && (
                           <div className="border-t mt-4 pt-4">
-                            <h4 className="font-semibold text-gray-900 mb-2">Adresă livrare:</h4>
+                            <h4 className="font-semibold text-gray-900 mb-2">
+                              {t('myAccount.orders.shippingAddress')}
+                            </h4>
                             <p className="text-sm text-gray-600">
                               {order.shippingAddress.address}, {order.shippingAddress.city}
                               {order.shippingAddress.postalCode && `, ${order.shippingAddress.postalCode}`}
@@ -470,15 +533,19 @@ const MyAccountPage = () => {
             {/* Addresses Tab */}
             {activeTab === 'addresses' && (
               <div className="bg-white rounded-2xl shadow-lg p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Adresele Mele</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  {t('myAccount.addresses.title')}
+                </h2>
                 <div className="bg-gray-50 rounded-xl p-6 text-center">
                   <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-gray-600">Adresa ta principală este setată în profil.</p>
+                  <p className="text-gray-600">
+                    {t('myAccount.addresses.desc')}
+                  </p>
                   <button
                     onClick={() => setActiveTab('profile')}
                     className="mt-4 text-teal-600 hover:text-teal-700 font-semibold"
                   >
-                    Vezi Profilul
+                    {t('myAccount.addresses.viewProfile')}
                   </button>
                 </div>
               </div>
@@ -487,29 +554,43 @@ const MyAccountPage = () => {
             {/* Settings Tab */}
             {activeTab === 'settings' && (
               <div className="bg-white rounded-2xl shadow-lg p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Setări Cont</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  {t('myAccount.settings.title')}
+                </h2>
                 <div className="space-y-4">
                   <div className="p-4 border-2 border-gray-200 rounded-xl">
-                    <h3 className="font-bold text-gray-900 mb-1">Schimbă Parola</h3>
-                    <p className="text-sm text-gray-600 mb-3">Actualizează parola contului tău</p>
+                    <h3 className="font-bold text-gray-900 mb-1">
+                      {t('myAccount.settings.changePassword.title')}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-3">
+                      {t('myAccount.settings.changePassword.desc')}
+                    </p>
                     <button className="text-teal-600 hover:text-teal-700 font-semibold text-sm">
-                      Schimbă Parola
+                      {t('myAccount.settings.changePassword.action')}
                     </button>
                   </div>
 
                   <div className="p-4 border-2 border-gray-200 rounded-xl">
-                    <h3 className="font-bold text-gray-900 mb-1">Notificări</h3>
-                    <p className="text-sm text-gray-600 mb-3">Gestionează preferințele de notificare</p>
+                    <h3 className="font-bold text-gray-900 mb-1">
+                      {t('myAccount.settings.notifications.title')}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-3">
+                      {t('myAccount.settings.notifications.desc')}
+                    </p>
                     <button className="text-teal-600 hover:text-teal-700 font-semibold text-sm">
-                      Configurează
+                      {t('myAccount.settings.notifications.action')}
                     </button>
                   </div>
 
                   <div className="p-4 border-2 border-red-200 rounded-xl bg-red-50">
-                    <h3 className="font-bold text-red-900 mb-1">Șterge Contul</h3>
-                    <p className="text-sm text-red-600 mb-3">Această acțiune este permanentă</p>
+                    <h3 className="font-bold text-red-900 mb-1">
+                      {t('myAccount.settings.deleteAccount.title')}
+                    </h3>
+                    <p className="text-sm text-red-600 mb-3">
+                      {t('myAccount.settings.deleteAccount.desc')}
+                    </p>
                     <button className="text-red-600 hover:text-red-700 font-semibold text-sm">
-                      Șterge Contul
+                      {t('myAccount.settings.deleteAccount.action')}
                     </button>
                   </div>
                 </div>

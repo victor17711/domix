@@ -134,19 +134,47 @@ export const translations = {
       }
     },
 
-    // Contact
+    // Contact Page
     contact: {
       title: 'Contactează-ne',
-      name: 'Nume',
-      email: 'Email',
-      subject: 'Subiect',
-      message: 'Mesaj',
-      send: 'Trimite',
-      sending: 'Se trimite...',
-      phone: 'Telefon',
-      address: 'Adresă',
-      workingHours: 'Program de lucru',
-      successMessage: 'Mesajul a fost trimis cu succes!'
+      desc: 'Suntem aici să te ajutăm! Trimite-ne un mesaj.',
+
+      breadcrumb: {
+        home: 'Acasă',
+        page: 'Contact'
+      },
+
+      cards: {
+        address: 'Adresă',
+        phone: 'Telefon',
+        email: 'Email'
+      },
+
+      socialTitle: 'Urmărește-ne',
+
+      form: {
+        title: 'Trimite-ne un mesaj!',
+        name: 'Nume *',
+        email: 'Email *',
+        phone: 'Telefon',
+        subject: 'Subiect *',
+        message: 'Mesaj *',
+
+        placeholderName: 'Numele tău',
+        placeholderEmail: 'email@exemplu.com',
+        placeholderPhone: '+373 69 123 456',
+        placeholderSubject: 'Subiectul mesajului',
+        placeholderMessage: 'Scrie mesajul tău aici...',
+
+        send: 'Trimite',
+        sending: 'Se trimite...'
+      },
+
+      schedule: 'Program',
+      social: 'Social Media',
+
+      success: 'Mesajul tău a fost trimis. Îți vom răspunde în curând!',
+      error: 'Nu s-a putut trimite mesajul. Te rog încearcă din nou.'
     },
 
     // Search
@@ -213,7 +241,282 @@ export const translations = {
       },
       title: 'Răspunsuri utile, clar explicate',
       desc: 'Am adunat cele mai importante întrebări pentru ca tu să găsești rapid informațiile de care ai nevoie.'
-    }
+    },
+
+    // Dynamic Page
+    dynamic: {
+      home: 'Acasă',
+      desc: 'Informații și detalii despre Domix'
+    },
+
+    // Brands Page
+    brands: {
+      title: 'Branduri',
+      desc: 'Descoperă toate brandurile disponibile',
+      breadcrumb: {
+        home: 'Acasă',
+        page: 'Branduri'
+      },
+      noneTitle: 'Niciun brand disponibil',
+      noneDesc: 'Brandurile vor apărea aici când vor fi adăugate.',
+      mainTitle: 'Toate brandurile',
+      mainDesc: 'branduri disponibile'
+    },
+
+    // About Us Page
+    about: {
+      heroTitle: 'Despre Noi',
+      heroDesc: 'Află mai multe despre compania noastră',
+      breadcrumb: {
+        home: 'Acasă',
+        page: 'Despre Noi'
+      },
+      mainTitle: 'Soluții complete pentru confortul casei tale',
+      missionTitle: 'Misiunea noastră',
+      missionDesc: 'Misiunea noastră este să oferim produse de calitate pentru încălzire, apă și climatizare, la prețuri accesibile. Ne dorim să ajutăm fiecare client să găsească soluții eficiente și durabile pentru locuința sa, fără compromisuri.',
+      visionTitle: 'Viziunea noastră',
+      visionDesc: 'Ne propunem să devenim unul dintre cele mai de încredere magazine online din Moldova în domeniul instalațiilor, oferind produse moderne, livrare rapidă și suport profesionist pentru fiecare client.',
+      stats: {
+        experience: 'Ani de experiență',
+        clients: 'Clienți mulțumiți',
+        products: 'Produse disponibile',
+        support: 'Suport și consultanță'
+      },
+      qualityTitle: 'Calitatea este prioritatea noastră',
+      qualityDesc: 'Produse sigure, eficiente și durabile pentru fiecare proiect.',
+      priorities: {
+        fastDelivery: 'Livrare rapidă',
+        fastDeliveryDesc: 'Expediem comenzile în cel mai scurt timp, direct la ușa ta.',
+        consulting: 'Consultanță profesională',
+        consultingDesc: 'Te ajutăm să alegi produsele potrivite pentru nevoile tale.',
+        price: 'Prețuri accesibile',
+        priceDesc: 'Oferim raport excelent calitate-preț pentru toate produsele.'
+      },
+      productsTitle: 'Tot ce ai nevoie pentru instalații, într-un singur loc',
+      productsDesc: 'La Domix găsești o gamă variată de produse pentru încălzire, apă, climatizare și instalații. Indiferent dacă lucrezi la o construcție nouă sau la renovare, avem soluții potrivite pentru fiecare proiect.',
+      features: {
+        item1: 'Încălzire și ACM – centrale, radiatoare și accesorii',
+        item2: 'Obiecte sanitare moderne pentru baie și bucătărie',
+        item3: 'Aer condiționat și sisteme de ventilare',
+        item4: 'Țevi, fitinguri și componente pentru instalații'
+      },
+      productsDesc2: 'Alege Domix pentru produse de încredere, livrare rapidă și prețuri corecte. Indiferent de proiect, îți oferim soluțiile potrivite, simplu și eficient.',
+      testimonialsTitle: 'Ce spun clienții despre noi',
+      testimonialsDesc: 'Feedback real de la clienți care au ales Domix',
+      whyTitle: 'De ce să alegi Domix?',
+      whyDesc: 'Cu peste 15 ani de experiență, oferim produse de încredere, livrare rapidă și suport dedicat. Punem accent pe calitate și pe satisfacția clientului, pentru ca fiecare comandă să fie o experiență sigură și eficientă.',
+      features2: {
+        item1: 'Garanție produse',
+        item2: 'Suport real, nu roboți',
+        item3: 'Produse testate și verificate',
+        item4: 'Livrare rapidă în toată Moldova'
+      },
+      verifiedClient: 'Client verificat',
+      reviews: {
+        verified: 'Client verificat',
+        item1: {
+          name: 'Andrei Ceban',
+          time: '10:25, 12 Feb, 2026',
+          text: 'Am comandat un radiator și câteva fitinguri, totul a ajuns rapid și bine ambalat. Calitatea produselor este foarte bună, iar prețurile sunt chiar ok comparativ cu alte magazine.',
+        },
+        item2: {
+          name: 'Natalia Rusu',
+          time: '14:10, 18 Dec, 2026',
+          text: 'Mi-a plăcut foarte mult că am primit ajutor la alegerea produselor. Nu eram sigură ce să aleg pentru baie, dar consultanța a fost foarte utilă. Recomand Domix fără dubii.',
+        },
+        item3: {
+          name: 'Sergiu Balan',
+          time: '09:40, 3 Ian, 2026',
+          text: 'Produse de calitate și livrare rapidă. Am comandat pentru un proiect de renovare și totul a fost exact cum trebuia. O să mai comand și pe viitor.',
+        },
+        item4: {
+          name: 'Irina Munteanu',
+          time: '17:55, 9 Iun, 2026',
+          text: 'Site-ul este simplu de folosit, iar produsele sunt bine descrise. Comanda a venit în timp scurt și fără probleme. Foarte mulțumită de experiență.',
+        },
+        item5: {
+          name: 'Vlad Cojocaru',
+          time: '11:20, 15 Feb, 2026',
+          text: 'Am cumpărat un aparat de aer condiționat și sunt foarte mulțumit. Livrarea a fost rapidă, iar produsul funcționează perfect. Se vede că lucrează profesionist.',
+        },
+        item6: {
+          name: 'Elena Rotaru',
+          time: '13:05, 22 Oct, 2026',
+          text: 'Raport calitate-preț foarte bun. Am găsit tot ce aveam nevoie pentru instalații într-un singur loc. Simplu, rapid și fără complicații.',
+        }
+      }
+    },
+
+    // Services Page
+    services: {
+      title: 'Servicii',
+      desc: 'Descoperă albumele cu lucrările și proiectele noastre',
+      breadcrumb: {
+        home: 'Acasă',
+        page: 'Servicii'
+      },
+      empty: 'Niciun album disponibil momentan',
+      albumsTitle: 'Albume servicii',
+      albumsDesc: 'Apasă pe un album pentru a vedea imaginile din galerie',
+      imagesCount: 'imagini',
+      albumImages: 'imagini în acest album',
+      back: 'Înapoi la servicii',
+      lightboxImage: 'Imaginea',
+      lightboxFrom: 'din'
+    },
+
+    // Catalog Page
+    catalog: {
+      title: 'Catalog',
+      desc: 'Explorează toate categoriile disponibile',
+      loading: 'Se încarcă catalogul...',
+      emptyTitle: 'Nu există categorii',
+      emptyDesc: 'Momentan nu au fost găsite categorii în catalog.',
+      subcategories: 'subcategorii'
+    },
+
+    // Catalog Category Page
+    catalogCategory: {
+      loading: 'Se încarcă categoria...',
+      notFound: 'Categoria nu a fost găsită',
+      back: 'Înapoi la catalog',
+      desc: 'Explorează subcategoriile disponibile',
+      breadcrumb: {
+        home: 'Acasă',
+        catalog: 'Catalog'
+      },
+      emptyTitle: 'Nu există subcategorii',
+      emptyDesc: 'Această categorie nu are subcategorii disponibile.',
+      products: 'produse'
+    },
+
+    // Category Page
+    categoryPage: {
+      loading: 'Se încarcă...',
+      notFound: 'Categoria nu a fost găsită',
+      backHome: 'Înapoi la Acasă',
+      breadcrumb: {
+        home: 'Acasă'
+      },
+      productsAvailable: 'produse disponibile',
+      filters: 'Filtre',
+      reset: 'Resetează',
+      resetFilters: 'Resetează filtrele',
+      price: 'Preț (MDL)',
+      min: 'Min',
+      max: 'Max',
+      apply: 'Aplică',
+      brand: 'Brand',
+      empty: 'Nu există produse în această categorie'
+    },
+
+    // Contul meu
+    myAccount: {
+      title: 'Contul meu',
+      welcome: 'Bun venit,',
+      breadcrumb: {
+        home: 'Acasă',
+        page: 'Contul meu'
+      },
+      authRequired: {
+        title: 'Trebuie să te autentifici',
+        desc: 'Pentru a accesa contul tău, autentifică-te mai întâi.',
+        backHome: 'Înapoi Acasă'
+      },
+      tabs: {
+        profile: 'Profilul Meu',
+        orders: 'Comenzile Mele',
+        addresses: 'Adrese',
+        settings: 'Setări',
+        logout: 'Deconectare'
+      },
+      profile: {
+        title: 'Informații Personale',
+        edit: 'Editează',
+        cancel: 'Anulează',
+        firstName: 'Prenume',
+        lastName: 'Nume',
+        email: 'Email',
+        emailNote: 'Email-ul nu poate fi modificat',
+        phone: 'Telefon',
+        address: 'Adresă',
+        city: 'Oraș',
+        postalCode: 'Cod Poștal',
+        placeholderPhone: '+373 69 123 456',
+        placeholderAddress: 'Str. Principală nr. 123',
+        placeholderCity: 'Chișinău',
+        placeholderPostalCode: 'MD-2001',
+        save: 'Salvează Modificările'
+      },
+      orders: {
+        title: 'Comenzile Mele',
+        emptyTitle: 'Nicio comandă încă',
+        emptyDesc: 'Nu ai plasat nicio comandă până acum.',
+        startShopping: 'Începe Cumpărăturile',
+        order: 'Comanda',
+        product: 'produs',
+        products: 'produse',
+        productsLabel: 'Produse:',
+        shippingAddress: 'Adresă livrare:',
+        cashOnDelivery: 'Cash la curier'
+      },
+      addresses: {
+        title: 'Adresele Mele',
+        desc: 'Adresa ta principală este setată în profil.',
+        viewProfile: 'Vezi Profilul'
+      },
+  settings: {
+        title: 'Setări Cont',
+        changePassword: {
+          title: 'Schimbă Parola',
+          desc: 'Actualizează parola contului tău',
+          action: 'Schimbă Parola'
+        },
+        notifications: {
+          title: 'Notificări',
+          desc: 'Gestionează preferințele de notificare',
+          action: 'Configurează'
+        },
+        deleteAccount: {
+          title: 'Șterge Contul',
+          desc: 'Această acțiune este permanentă',
+          action: 'Șterge Contul'
+        }
+      },
+      status: {
+        pending: 'În Așteptare',
+        processing: 'În Procesare',
+        shipped: 'Expediată',
+        delivered: 'Livrată',
+        cancelled: 'Anulată'
+      },
+      toast: {
+        successTitle: 'Succes',
+        successDesc: 'Profilul a fost actualizat!',
+        errorTitle: 'Eroare',
+        errorDesc: 'Nu s-a putut actualiza profilul',
+        logoutTitle: 'Deconectat',
+        logoutDesc: 'Te-ai deconectat cu succes'
+      }
+    },
+
+    // Cart Page
+    cart: {
+  emptyTitle: 'Coșul tău este gol',
+  emptyDesc: 'Adaugă produse pentru a continua cumpărăturile',
+  continueShopping: 'Continuă cumpărăturile',
+  title: 'Coșul meu',
+  orderSummary: 'Sumar comandă',
+  subtotal: 'Subtotal',
+  products: 'produse',
+  shipping: 'Livrare',
+  freeShipping: 'Gratuită',
+  total: 'Total',
+  checkout: 'Finalizează comanda',
+  freeShippingNote: 'Livrare gratuită pentru comenzi peste 500 MDL',
+  freeReturnNote: 'Retur gratuit în 30 de zile',
+  securePaymentNote: 'Plată securizată 100%'
+}
   },
 
   ru: {
@@ -350,19 +653,47 @@ export const translations = {
       }
     },
 
-    // Contact
+    // Contact Page
     contact: {
-      title: 'Связаться с нами',
-      name: 'Имя',
-      email: 'Email',
-      subject: 'Тема',
-      message: 'Сообщение',
-      send: 'Отправить',
-      sending: 'Отправка...',
-      phone: 'Телефон',
-      address: 'Адрес',
-      workingHours: 'Режим работы',
-      successMessage: 'Сообщение успешно отправлено!'
+      title: 'Свяжитесь с нами',
+      desc: 'Мы здесь, чтобы помочь вам! Отправьте нам сообщение.',
+
+      breadcrumb: {
+        home: 'Главная',
+        page: 'Контакты'
+      },
+
+      cards: {
+        address: 'Адрес',
+        phone: 'Телефон',
+        email: 'Электронная почта'
+      },
+
+      socialTitle: 'Подписывайтесь на нас',
+
+      form: {
+        title: 'Отправьте нам сообщение!',
+        name: 'Имя *',
+        email: 'Электронная почта *',
+        phone: 'Телефон',
+        subject: 'Тема *',
+        message: 'Сообщение *',
+
+        placeholderName: 'Ваше имя',
+        placeholderEmail: 'email@пример.com',
+        placeholderPhone: '+373 69 123 456',
+        placeholderSubject: 'Тема сообщения',
+        placeholderMessage: 'Напишите ваше сообщение...',
+
+        send: 'Отправить',
+        sending: 'Отправляется...'
+      },
+
+      schedule: 'График работы',
+      social: 'Социальные сети',
+
+      success: 'Ваше сообщение отправлено. Мы скоро свяжемся с вами!',
+      error: 'Не удалось отправить сообщение. Попробуйте ещё раз.'
     },
 
     // Search
@@ -429,6 +760,281 @@ export const translations = {
       },
       title: 'Полезные ответы, понятно объяснённые',
       desc: 'Мы собрали самые важные вопросы, чтобы вы могли быстро найти нужную информацию.'
-    }
+    },
+
+    // Dynamic Page
+    dynamic: {
+      home: 'Главная',
+      desc: 'Информация и подробности о Domix'
+    },
+
+    // Brands Page
+    brands: {
+      title: 'Бренды',
+      desc: 'Откройте для себя все доступные бренды',
+      breadcrumb: {
+        home: 'Главная',
+        page: 'Бренды'
+      },
+      noneTitle: 'Нет доступных брендов',
+      noneDesc: 'Бренды появятся здесь, когда будут добавлены.',
+      mainTitle: 'Все бренды',
+      mainDesc: 'доступные бренды'
+    },
+
+    // About Us Page
+    about: {
+      heroTitle: 'О нас',
+      heroDesc: 'Узнайте больше о нашей компании',
+      breadcrumb: {
+        home: 'Главная',
+        page: 'О нас'
+      },
+      mainTitle: 'Комплексные решения для комфорта вашего дома',
+      missionTitle: 'Наша миссия',
+      missionDesc: 'Наша миссия — предоставлять качественные решения для отопления, водоснабжения и климатических систем по доступным ценам. Мы стремимся помочь каждому клиенту найти эффективные и долговечные решения для своего дома.',
+      visionTitle: 'Наше видение',
+      visionDesc: 'Мы стремимся стать одним из самых надежных интернет-магазинов в Молдове в сфере инженерных систем, предлагая современные товары, быструю доставку и профессиональную поддержку.',
+      stats: {
+        experience: 'Лет опыта',
+        clients: 'Довольных клиентов',
+        products: 'Доступных товаров',
+        support: 'Поддержка и консультации'
+      },
+      qualityTitle: 'Качество — наш приоритет',
+      qualityDesc: 'Надежные, эффективные и долговечные решения для каждого проекта.',
+      priorities: {
+        fastDelivery: 'Быстрая доставка',
+        fastDeliveryDesc: 'Мы доставляем заказы в кратчайшие сроки прямо к вашей двери.',
+        consulting: 'Профессиональная консультация',
+        consultingDesc: 'Поможем выбрать подходящие товары для ваших задач.',
+        price: 'Доступные цены',
+        priceDesc: 'Отличное соотношение цены и качества для всех товаров.'
+      },
+      productsTitle: 'Все для инженерных систем в одном месте',
+      productsDesc: 'В Domix вы найдете широкий ассортимент товаров для отопления, водоснабжения, климатических систем и монтажа. Подходит как для нового строительства, так и для ремонта.',
+      features: {
+        item1: 'Отопление и ГВС — котлы, радиаторы и аксессуары',
+        item2: 'Современная сантехника для ванной и кухни',
+        item3: 'Кондиционирование и системы вентиляции',
+        item4: 'Трубы, фитинги и комплектующие'
+      },
+      productsDesc2: 'Выбирайте Domix — надежные товары, быстрая доставка и честные цены. Мы предлагаем оптимальные решения для любого проекта.',
+      testimonialsTitle: 'Что говорят о нас клиенты',
+      testimonialsDesc: 'Реальные отзывы клиентов, выбравших Domix',
+      whyTitle: 'Почему стоит выбрать Domix?',
+      whyDesc: 'Более 15 лет опыта, надежные товары, быстрая доставка и профессиональная поддержка. Мы ориентированы на качество и удовлетворенность клиентов.',
+      features2: {
+        item1: 'Гарантия на продукцию',
+        item2: 'Живая поддержка, не боты',
+        item3: 'Проверенные и качественные товары',
+        item4: 'Быстрая доставка по всей Молдове'
+      },
+      verifiedClient: 'Проверенный клиент',
+      reviews: {
+        verified: 'Проверенный клиент',
+        item1: {
+          name: 'Андрей Чебан',
+          time: '10:25, 12 фев, 2026',
+          text: 'Заказал радиатор и несколько фитингов, всё пришло быстро и хорошо упаковано. Качество продукции отличное, а цены вполне адекватные по сравнению с другими магазинами.',
+        },
+        item2: {
+          name: 'Наталия Русу',
+          time: '14:10, 18 дек, 2026',
+          text: 'Очень понравилось, что мне помогли с выбором товаров. Я не знала, что выбрать для ванной, но консультация была очень полезной. Рекомендую Domix.',
+        },
+        item3: {
+          name: 'Серджиу Балан',
+          time: '09:40, 3 янв, 2026',
+          text: 'Качественные товары и быстрая доставка. Заказывал для ремонта — всё пришло как нужно. Буду заказывать ещё.',
+        },
+        item4: {
+          name: 'Ирина Мунтяну',
+          time: '17:55, 9 июн, 2026',
+          text: 'Сайт удобный, товары хорошо описаны. Заказ пришёл быстро и без проблем. Очень довольна.',
+        },
+        item5: {
+          name: 'Влад Кожокару',
+          time: '11:20, 15 фев, 2026',
+          text: 'Купил кондиционер и остался очень доволен. Доставка быстрая, товар работает отлично. Видно, что работают профессионально.',
+        },
+        item6: {
+          name: 'Елена Ротару',
+          time: '13:05, 22 окт, 2026',
+          text: 'Отличное соотношение цены и качества. Нашла всё, что нужно, в одном месте. Быстро и удобно.',
+        }
+      }
+    },
+
+    // Services Page
+    services: {
+      title: 'Услуги',
+      desc: 'Откройте альбомы с нашими работами и проектами',
+      breadcrumb: {
+        home: 'Главная',
+        page: 'Услуги'
+      },
+      empty: 'На данный момент нет доступных альбомов',
+      albumsTitle: 'Альбомы услуг',
+      albumsDesc: 'Нажмите на альбом, чтобы посмотреть изображения в галерее',
+      imagesCount: 'изображений',
+      albumImages: 'изображений в этом альбоме',
+      back: 'Назад к услугам',
+      lightboxImage: 'Изображение',
+      lightboxFrom: 'из'
+    },
+
+    // Catalog Page
+    catalog: {
+      title: 'Каталог',
+      desc: 'Изучите все доступные категории',
+      loading: 'Загрузка каталога...',
+      emptyTitle: 'Нет категорий',
+      emptyDesc: 'На данный момент категории в каталоге не найдены.',
+      subcategories: 'подкатегорий'
+    },
+
+    // Catalog Category Page
+    catalogCategory: {
+      loading: 'Загрузка категории...',
+      notFound: 'Категория не найдена',
+      back: 'Назад в каталог',
+      desc: 'Изучите доступные подкатегории',
+      breadcrumb: {
+        home: 'Главная',
+        catalog: 'Каталог'
+      },
+      emptyTitle: 'Нет подкатегорий',
+      emptyDesc: 'В этой категории нет доступных подкатегорий.',
+      products: 'товаров'
+    },
+
+    // Category Page
+    categoryPage: {
+      loading: 'Загрузка...',
+      notFound: 'Категория не найдена',
+      backHome: 'Назад на главную',
+      breadcrumb: {
+        home: 'Главная'
+      },
+      productsAvailable: 'товаров доступно',
+      filters: 'Фильтры',
+      reset: 'Сбросить',
+      resetFilters: 'Сбросить фильтры',
+      price: 'Цена (MDL)',
+      min: 'Мин',
+      max: 'Макс',
+      apply: 'Применить',
+      brand: 'Бренд',
+      empty: 'В этой категории нет товаров'
+    },
+
+    // Contul meu
+    myAccount: {
+      title: 'Мой аккаунт',
+      welcome: 'Добро пожаловать,',
+      breadcrumb: {
+        home: 'Главная',
+        page: 'Мой аккаунт'
+      },
+      authRequired: {
+        title: 'Необходимо войти в аккаунт',
+        desc: 'Чтобы получить доступ к своему аккаунту, сначала выполните вход.',
+        backHome: 'Назад на главную'
+      },
+      tabs: {
+        profile: 'Мой профиль',
+        orders: 'Мои заказы',
+        addresses: 'Адреса',
+        settings: 'Настройки',
+        logout: 'Выйти'
+      },
+      profile: {
+        title: 'Личная информация',
+        edit: 'Редактировать',
+        cancel: 'Отмена',
+        firstName: 'Имя',
+        lastName: 'Фамилия',
+        email: 'Email',
+        emailNote: 'Email нельзя изменить',
+        phone: 'Телефон',
+        address: 'Адрес',
+        city: 'Город',
+        postalCode: 'Почтовый индекс',
+        placeholderPhone: '+373 69 123 456',
+        placeholderAddress: 'ул. Главная, 123',
+        placeholderCity: 'Кишинёв',
+        placeholderPostalCode: 'MD-2001',
+        save: 'Сохранить изменения'
+      },
+      orders: {
+        title: 'Мои заказы',
+        emptyTitle: 'Заказов пока нет',
+        emptyDesc: 'Вы ещё не оформили ни одного заказа.',
+        startShopping: 'Начать покупки',
+        order: 'Заказ',
+        product: 'товар',
+        products: 'товара',
+        productsLabel: 'Товары:',
+        shippingAddress: 'Адрес доставки:',
+        cashOnDelivery: 'Наличными курьеру'
+      },
+      addresses: {
+        title: 'Мои адреса',
+        desc: 'Ваш основной адрес указан в профиле.',
+        viewProfile: 'Посмотреть профиль'
+      },
+      settings: {
+        title: 'Настройки аккаунта',
+        changePassword: {
+          title: 'Сменить пароль',
+          desc: 'Обновите пароль вашего аккаунта',
+          action: 'Сменить пароль'
+        },
+        notifications: {
+          title: 'Уведомления',
+          desc: 'Управляйте настройками уведомлений',
+          action: 'Настроить'
+        },
+        deleteAccount: {
+          title: 'Удалить аккаунт',
+          desc: 'Это действие необратимо',
+          action: 'Удалить аккаунт'
+        }
+      },
+      status: {
+        pending: 'В ожидании',
+        processing: 'В обработке',
+        shipped: 'Отправлен',
+        delivered: 'Доставлен',
+        cancelled: 'Отменён'
+      },
+      toast: {
+        successTitle: 'Успешно',
+        successDesc: 'Профиль был обновлён!',
+        errorTitle: 'Ошибка',
+        errorDesc: 'Не удалось обновить профиль',
+        logoutTitle: 'Выход выполнен',
+        logoutDesc: 'Вы успешно вышли из аккаунта'
+      }
+    },
+
+    // Cart Page
+    cart: {
+  emptyTitle: 'Ваша корзина пуста',
+  emptyDesc: 'Добавьте товары, чтобы продолжить покупки',
+  continueShopping: 'Продолжить покупки',
+  title: 'Моя корзина',
+  orderSummary: 'Сводка заказа',
+  subtotal: 'Промежуточный итог',
+  products: 'товаров',
+  shipping: 'Доставка',
+  freeShipping: 'Бесплатно',
+  total: 'Итого',
+  checkout: 'Оформить заказ',
+  freeShippingNote: 'Бесплатная доставка для заказов свыше 500 MDL',
+  freeReturnNote: 'Бесплатный возврат в течение 30 дней',
+  securePaymentNote: '100% безопасная оплата'
+}
   }
 };
