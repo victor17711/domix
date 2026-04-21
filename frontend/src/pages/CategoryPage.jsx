@@ -133,6 +133,10 @@ const CategoryPage = () => {
     );
   }
 
+  // Define translated names
+  const categoryName = language === 'ru' && category.nameRu ? category.nameRu : category.name;
+  const subcategories = category.children || [];
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Breadcrumb */}
