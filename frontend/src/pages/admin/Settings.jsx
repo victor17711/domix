@@ -81,6 +81,7 @@ const Settings = () => {
     const parentItem = {
       id: `cat_${Date.now()}`,
       name: category.name,
+      nameRu: category.nameRu || '',
       url: `/category/${category.slug}`,
       type: 'category',
       icon: category.icon || category.image,
@@ -89,6 +90,7 @@ const Settings = () => {
       children: children.map((child, index) => ({
         id: `cat_${Date.now()}_child_${index}`,
         name: child.name,
+        nameRu: child.nameRu || '',
         url: `/category/${child.slug}`,
         type: 'category',
         icon: child.icon || child.image,
