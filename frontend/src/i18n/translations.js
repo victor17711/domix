@@ -102,15 +102,36 @@ export const translations = {
 
     // Footer
     footer: {
-      aboutUs: 'Despre noi',
-      contactUs: 'Contactează-ne',
+      aboutUs: 'Partenerul tău de încredere în construcții. Oferim o gamă variată de materiale de calitate pentru proiecte durabile, la prețuri competitive.',
+      menuFirst: 'Link-uri utile',
+      menuSecond: 'Informații',
+      menuThird: 'Categorii',
+      contactUs: 'Contacte',
       termsAndConditions: 'Termeni și condiții',
       privacyPolicy: 'Politica de confidențialitate',
-      followUs: 'Urmărește-ne',
-      newsletter: 'Newsletter',
-      newsletterText: 'Abonează-te pentru cele mai bune oferte',
+      call: 'Sună:',
+      newsletter: 'Abonează-te la noutăți',
+      newsletterDesc: 'Abonează-te la lista noastră de email pentru noutăți, actualizări și oferte exclusive.',
+      newsletterText: 'Adresa de email',
       subscribe: 'Abonează-te',
-      allRightsReserved: 'Toate drepturile rezervate'
+      allRightsReserved: 'Powered by',
+      address: 'or. Durleşti, str. Tudor Vladimirescu 67C',
+      links: {
+        about: 'Despre Noi',
+        catalog: 'Catalog',
+        services: 'Servicii',
+        brands: 'Branduri',
+        contacts: 'Contacte',
+        terms: 'Termeni și conditii',
+        policy: 'Politica de conf.',
+        policyCookie: 'Politica Cookie',
+        shipping: 'Livrare și plata',
+        faq: 'Întrebări frecvente',
+        allProducts: 'Toate produsele',
+        saleProducts: 'Produse cu reducere',
+        bestProducts: 'Cele mai vândute',
+        newProducts: 'Produse noi'
+      }
     },
 
     // Contact
@@ -180,6 +201,18 @@ export const translations = {
     notfound: {
       title: 'Ups... pagina nu există.',
       desc: 'Se pare că pagina pe care o cauți nu a fost găsită. Revino pe pagina principală sau contactează-ne pentru ajutor.'
+    },
+
+    // FAQPage
+    faq: {
+      mainTitle: 'Întrebări frecvente',
+      mainDesc: 'Găsește rapid răspunsurile la cele mai comune întrebări',
+      breadcrumb: {
+        home: 'Acasă',
+        page: 'Întrebări frecvente'
+      },
+      title: 'Răspunsuri utile, clar explicate',
+      desc: 'Am adunat cele mai importante întrebări pentru ca tu să găsești rapid informațiile de care ai nevoie.'
     }
   },
 
@@ -284,17 +317,37 @@ export const translations = {
       processing: 'Обработка...'
     },
 
-    // Footer
     footer: {
-      aboutUs: 'О нас',
-      contactUs: 'Связаться с нами',
+      aboutUs: 'Ваш надёжный партнёр в строительстве. Мы предлагаем широкий ассортимент качественных материалов для долговечных проектов по конкурентным ценам.',
+      menuFirst: 'Полезные ссылки',
+      menuSecond: 'Информация',
+      menuThird: 'Категории',
+      contactUs: 'Контакты',
       termsAndConditions: 'Условия и положения',
       privacyPolicy: 'Политика конфиденциальности',
-      followUs: 'Следите за нами',
-      newsletter: 'Новости',
-      newsletterText: 'Подпишитесь на лучшие предложения',
+      call: 'Позвоните:',
+      newsletter: 'Подпишитесь на новости',
+      newsletterDesc: 'Подпишитесь на нашу рассылку, чтобы получать новости, обновления и эксклюзивные предложения.',
+      newsletterText: 'Адрес электронной почты',
       subscribe: 'Подписаться',
-      allRightsReserved: 'Все права защищены'
+      allRightsReserved: 'Создано',
+      address: 'г. Дурлешты, ул. Тудор Владимиреску 67C',
+      links: {
+        about: 'О нас',
+        catalog: 'Каталог',
+        services: 'Услуги',
+        brands: 'Бренды',
+        contacts: 'Контакты',
+        terms: 'Условия и поло.',
+        policy: 'Политика конф.',
+        policyCookie: 'Политика Cookie',
+        shipping: 'Доставка и оплата',
+        faq: 'Вопросы и ответы',
+        allProducts: 'Все товары',
+        saleProducts: 'Товары со скидкой',
+        bestProducts: 'Хиты продаж',
+        newProducts: 'Новинки'
+      }
     },
 
     // Contact
@@ -364,6 +417,18 @@ export const translations = {
     notfound: {
       title: 'Упс... страница не существует.',
       desc: 'Похоже, что страница, которую вы ищете, не найдена. Вернитесь на главную страницу или свяжитесь с нами для помощи.'
+    },
+
+    // FAQ
+    faq: {
+      mainTitle: 'Часто задаваемые вопросы',
+      mainDesc: 'Быстро найдите ответы на самые распространённые вопросы',
+      breadcrumb: {
+        home: 'Главная',
+        page: 'Часто задаваемые вопросы'
+      },
+      title: 'Полезные ответы, понятно объяснённые',
+      desc: 'Мы собрали самые важные вопросы, чтобы вы могли быстро найти нужную информацию.'
     }
   }
 };

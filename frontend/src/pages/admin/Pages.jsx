@@ -15,8 +15,10 @@ const Pages = () => {
   const [editingPage, setEditingPage] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
+    titleRu: '',
     slug: '',
     content: '',
+    contentRu: '',
     isPublished: true
   });
   const [isContactPage, setIsContactPage] = useState(false);
@@ -70,7 +72,7 @@ const Pages = () => {
       setShowModal(false);
       setEditingPage(null);
       setIsContactPage(false);
-      setFormData({ title: '', slug: '', content: '', isPublished: true });
+      setFormData({ title: '', titleRu: '', slug: '', content: '', contentRu: '', isPublished: true });
       setContactData({ address: '', phone: '', email: '', hours: '', mapUrl: '' });
       fetchPages();
     } catch (error) {
@@ -98,8 +100,10 @@ const Pages = () => {
     setEditingPage(page);
     setFormData({
       title: page.title,
+      titleRu: page.titleRu || '',
       slug: page.slug,
       content: page.content,
+      contentRu: page.contentRu || '',
       isPublished: page.isPublished
     });
     
@@ -159,7 +163,7 @@ const Pages = () => {
           <button
             onClick={() => {
               setEditingPage(null);
-              setFormData({ title: '', slug: '', content: '', isPublished: true });
+              setFormData({ title: '', titleRu: '', slug: '', content: '', contentRu: '', isPublished: true });
               setShowModal(true);
             }}
             className="bg-white text-teal-600 px-6 py-3 rounded-xl hover:bg-teal-50 transition font-semibold flex items-center gap-2 shadow-lg"
@@ -255,7 +259,7 @@ const Pages = () => {
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-bold text-gray-900 mb-2">
-                  Titlu *
+                  Titlu (RO) *
                 </label>
                 <input
                   type="text"
@@ -264,6 +268,19 @@ const Pages = () => {
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                   placeholder="ex: Despre Noi"
                   required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-900 mb-2">
+                  Titlu RU 🇷🇺
+                </label>
+                <input
+                  type="text"
+                  value={formData.titleRu}
+                  onChange={(e) => setFormData({...formData, titleRu: e.target.value})}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="напр: О нас"
                 />
               </div>
 
@@ -287,7 +304,7 @@ const Pages = () => {
 
               <div>
                 <label className="block text-sm font-bold text-gray-900 mb-2">
-                  Conținut
+                  Conținut (RO)
                 </label>
                 {isContactPage ? (
                   <div className="space-y-4 border-2 border-gray-200 rounded-xl p-6 bg-gray-50">
@@ -353,14 +370,30 @@ const Pages = () => {
                     </div>
                   </div>
                 ) : (
-                  <textarea
-                    value={formData.content}
-                    onChange={(e) => setFormData({...formData, content: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 min-h-[300px]"
-                    placeholder="Scrie conținutul paginii aici..."
-                  />
+                  <>
+                    <textarea
+                      value={formData.content}
+                      onChange={(e) => setFormData({...formData, content: e.target.value})}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 min-h-[300px]"
+                      placeholder="Scrie conținutul paginii aici (RO)..."
+                    />
+                  </>
                 )}
               </div>
+
+              {!isContactPage && (
+                <div>
+                  <label className="block text-sm font-bold text-gray-900 mb-2">
+                    Conținut RU 🇷🇺
+                  </label>
+                  <textarea
+                    value={formData.contentRu}
+                    onChange={(e) => setFormData({...formData, contentRu: e.target.value})}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 min-h-[300px]"
+                    placeholder="Напишите содержание страницы здесь..."
+                  />
+                </div>
+              )}
 
               <div className="flex items-center gap-3">
                 <input

@@ -15,7 +15,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const FAQPage = () => {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const [activeIndex, setActiveIndex] = useState(null);
   const [faqData, setFaqData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -125,10 +125,10 @@ const FAQPage = () => {
         <div className="w-full px-4 md:px-6">
           <div className="flex items-center gap-3 mb-3">
             <HelpCircle className="w-10 h-10" />
-            <h1 className="text-3xl md:text-4xl font-bold">Întrebări frecvente</h1>
+            <h1 className="text-3xl md:text-4xl font-bold">{t('faq.mainTitle')}</h1>
           </div>
           <p className="text-teal-100">
-            Găsește rapid răspunsurile la cele mai comune întrebări
+            {t('faq.mainDesc')}
           </p>
         </div>
       </div>
@@ -138,10 +138,10 @@ const FAQPage = () => {
         <div className="w-full px-6 py-4">
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <Link to="/" className="hover:text-teal-600">
-              Acasă
+              {t('faq.breadcrumb.home')}
             </Link>
             <ChevronRight className="w-4 h-4" />
-            <span className="text-gray-900 font-semibold">Întrebări frecvente</span>
+            <span className="text-gray-900 font-semibold">{t('faq.breadcrumb.page')}</span>
           </div>
         </div>
       </div>
@@ -153,10 +153,10 @@ const FAQPage = () => {
 
 
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-              Răspunsuri utile, clar explicate
+              {t('faq.title')}
             </h2>
             <p className="text-gray-500 text-sm md:text-base mt-2 max-w-2xl mx-auto">
-              Am adunat cele mai importante întrebări pentru ca tu să găsești rapid informațiile de care ai nevoie.
+              {t('faq.desc')}
             </p>
           </div>
 

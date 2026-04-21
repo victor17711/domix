@@ -4,9 +4,11 @@ import { Mail, Phone, MapPin, Printer, BadgeDollarSign, ChevronRight, Facebook, 
 import { toast } from '../hooks/use-toast';
 import logo from '../assets/images/logo.png';
 import { FaFacebookF, FaInstagram, FaTiktok } from 'react-icons/fa';
+import { useLanguage } from '../context/LanguageContext';
 
 const Footer = () => {
   const [email, setEmail] = useState('');
+  const { language, changeLanguage, t } = useLanguage();
 
   const handleSubscribe = (e) => {
     e.preventDefault();
@@ -24,11 +26,11 @@ const Footer = () => {
         <div className="max-w-[1320px] mx-auto px-4">
           <div className="text-center">
             <h2 className="text-[#1d2433] text-[30px] md:text-[38px] font-bold leading-tight">
-              Abonează-te la noutăți
+              {t('footer.newsletter')}
             </h2>
 
             <p className="mt-5 text-[#94A3B8] text-[15px] md:text-[16px] leading-[1.7]">
-              Abonează-te la lista noastră de email pentru noutăți, actualizări și oferte exclusive.
+              {t('footer.newsletterDesc')}
             </p>
 
             <form
@@ -43,7 +45,7 @@ const Footer = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Adresa de email"
+                  placeholder={t('footer.newsletterText')}
                   required
                   className="flex-1 h-full bg-transparent outline-none px-2 md:px-4 text-[14px] md:text-[16px] text-[#64748B] placeholder:text-[#94A3B8]"
                 />
@@ -62,7 +64,7 @@ const Footer = () => {
       whitespace-nowrap
     "
                 >
-                  Abonează-te
+                  {t('footer.subscribe')}
                 </button>
               </div>
             </form>
@@ -87,7 +89,7 @@ const Footer = () => {
               </div>
 
               <p className="text-[#D8ECE6] text-base leading-[1.8] max-w-[330px]">
-                Partenerul tău de încredere în construcții. Oferim o gamă variată de materiale de calitate pentru proiecte durabile, la prețuri competitive.
+                {t('footer.aboutUs')}
               </p>
 
               <div className="flex flex-wrap gap-x-4 gap-y-4">
@@ -146,16 +148,16 @@ const Footer = () => {
             {/* Column 2 */}
             <div className="col-span-12 md:col-span-6 xl:col-span-2">
               <h5 className="text-[#D8ECE6] text-[20px] font-semibold pb-0 border-b border-[rgba(145,158,171,0.24)]">
-                Link-uri utile
+                {t('footer.menuFirst')}
               </h5>
 
               <ul className="flex flex-col gap-y-1.5 pt-4">
                 {[
-                  { to: '/despre-noi', label: 'Despre Noi' },
-                  { to: '/catalog', label: 'Catalog' },
-                  { to: '/servicii', label: 'Servicii' },
-                  { to: '/brands', label: 'Branduri' },
-                  { to: '/contact', label: 'Contacte' },
+                  { to: '/despre-noi', label: t('footer.links.about') },
+                  { to: '/catalog', label: t('footer.links.catalog') },
+                  { to: '/servicii', label: t('footer.links.services') },
+                  { to: '/brands', label: t('footer.links.brands') },
+                  { to: '/contact', label: t('footer.links.contacts') },
                 ].map((item) => (
                   <li key={item.label} className="py-1.5 flex items-center gap-x-2">
                     <span className="inline-flex items-center">
@@ -175,16 +177,16 @@ const Footer = () => {
             {/* Column 3 */}
             <div className="col-span-12 md:col-span-6 xl:col-span-2">
               <h5 className="text-[#D8ECE6] text-[20px] font-semibold pb-0 border-b border-[rgba(145,158,171,0.24)]">
-                Informații
+                {t('footer.menuSecond')}
               </h5>
 
               <ul className="flex flex-col gap-y-1.5 pt-4">
                 {[
-                  { to: '/page/termeni-si-conditii', label: 'Termeni și condiții' },
-                  { to: '/page/politica-de-confidentialitate', label: 'Politica de conf.' },
-                  { to: '/page/politica-cookie', label: 'Politica Cookie' },
-                  { to: '/page/livrare-si-plata', label: 'Livrare și plata' },
-                  { to: '/intrebari-frecvente', label: 'Întrebări frecvente' },
+                  { to: '/page/termeni-si-conditii', label: t('footer.links.terms') },
+                  { to: '/page/politica-de-confidentialitate', label: t('footer.links.policy') },
+                  { to: '/page/politica-cookie', label: t('footer.links.policyCookie') },
+                  { to: '/page/livrare-si-plata', label: t('footer.links.shipping') },
+                  { to: '/intrebari-frecvente', label: t('footer.links.faq') },
                 ].map((item) => (
                   <li key={item.label} className="py-1.5 flex items-center gap-x-2">
                     <span className="inline-flex items-center">
@@ -204,15 +206,15 @@ const Footer = () => {
             {/* Column 4 */}
             <div className="col-span-12 md:col-span-6 xl:col-span-2">
               <h5 className="text-[#D8ECE6] text-[20px] font-semibold pb-0 border-b border-[rgba(145,158,171,0.24)]">
-                Categorii
+                {t('footer.menuThird')}
               </h5>
 
               <ul className="flex flex-col gap-y-1.5 pt-4">
                 {[
-                  { to: '/toate-produsele', label: 'Toate produsele' },
-                  { to: '/produse-cu-reducere', label: 'Produse cu reducere' },
-                  { to: '/cele-mai-vandute', label: 'Cele mai vândute' },
-                  { to: '/produse-noi', label: 'Produse noi' },
+                  { to: '/toate-produsele', label: t('footer.links.allProducts') },
+                  { to: '/produse-cu-reducere', label: t('footer.links.saleProducts') },
+                  { to: '/cele-mai-vandute', label: t('footer.links.bestProducts') },
+                  { to: '/produse-noi', label: t('footer.links.newProducts') },
                   // { to: '/intrebari-frecvente', label: 'Întrebări frecvente' },
                 ].map((item) => (
                   <li key={item.label} className="py-1.5 flex items-center gap-x-2">
@@ -233,7 +235,7 @@ const Footer = () => {
             {/* Column 5 */}
             <div className="col-span-12 md:col-span-6 xl:col-span-3">
               <h5 className="text-[#D8ECE6] text-[20px] font-semibold pb-o border-b border-[rgba(145,158,171,0.24)]">
-                Contacte
+                {t('footer.contactUs')}
               </h5>
 
               <ul className="flex flex-col gap-y-3 py-4">
@@ -242,7 +244,7 @@ const Footer = () => {
                     <MapPin className="w-5 h-5 text-[#D8ECE6]" />
                   </span>
                   <p className="text-[#D8ECE6] font-semibold leading-[1.6]">
-                    Republica Moldova, or. Chișinău, str. Calea Ieșilor 2A
+                    {t('footer.address')}
                   </p>
                 </li>
 
@@ -251,7 +253,7 @@ const Footer = () => {
                     <Phone className="w-5 h-5 text-[#D8ECE6]" />
                   </span>
                   <p className="text-[#D8ECE6] font-semibold">
-                    Sună: (373) 697 11 967
+                    {t('footer.call')} (373) 697 11 967
                   </p>
                 </li>
 
@@ -310,7 +312,7 @@ const Footer = () => {
           <div className="text-center text-white pt-[22px] pb-px bg-no-repeat bg-center relative">
             <div className="absolute left-1/2 -translate-x-1/2 top-0 w-full max-w-[520px] h-[48px] border-t border-[#fff] rounded-t-[120px]" />
             <p className="relative z-10 text-[15px] text-[#EAF6F2]">
-              © 2026 Domix. Powered By{" "}
+              © 2026 Domix. {t('footer.allRightsReserved')}{" "}
               <a
                 href="https://nextify.md"
                 target="_blank"

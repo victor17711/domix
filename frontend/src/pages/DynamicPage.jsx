@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { ChevronRight, FileText } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const DynamicPage = () => {
   const { slug } = useParams();
+  const { language } = useLanguage();
   const [page, setPage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -57,6 +59,9 @@ const DynamicPage = () => {
     );
   }
 
+  const pageTitle = language === 'ru' && page.titleRu ? page.titleRu : page.title;
+  const pageContent = language === 'ru' && page.contentRu ? page.contentRu : page.content;
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* HERO */}
@@ -64,7 +69,7 @@ const DynamicPage = () => {
         <div className="w-full px-4 md:px-6">
           <div className="flex items-center gap-3 mb-3">
             <FileText className="w-10 h-10" />
-            <h1 className="text-3xl md:text-4xl font-bold">{page.title}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold">{pageTitle}</h1>
           </div>
           <p className="text-teal-100">
             Informații și detalii despre Domix
@@ -80,7 +85,7 @@ const DynamicPage = () => {
               Acasă
             </Link>
             <ChevronRight className="w-4 h-4" />
-            <span className="text-gray-900 font-semibold">{page.title}</span>
+            <span className="text-gray-900 font-semibold">{pageTitle}</span>
           </div>
         </div>
       </div>
@@ -89,7 +94,7 @@ const DynamicPage = () => {
       <div className="w-full px-4 md:px-6 py-8 md:py-12">
         <div className="bg-white rounded-2xl shadow-sm p-6 md:p-10">
           <div className="text-gray-700 leading-relaxed whitespace-pre-wrap text-[15px] md:text-base">
-            {page.content}
+            {pageContent}
           </div>
         </div>
       </div>

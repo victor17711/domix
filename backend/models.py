@@ -254,8 +254,10 @@ class Settings(SettingsCreate):
 # Page Models
 class PageCreate(BaseModel):
     title: str
+    titleRu: Optional[str] = ""
     slug: str
     content: str
+    contentRu: Optional[str] = ""
     isPublished: Optional[bool] = True
 
 class Page(PageCreate):
