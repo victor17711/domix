@@ -98,7 +98,7 @@ const CatalogPage = () => {
 
                   {category.children?.length > 0 && (
                     <p className="mt-2 text-sm text-gray-500">
-                      {category.children.length} subcategorii
+                      {category.children.length} {t('catalog.subcategories')}
                     </p>
                   )}
                 </Link>
