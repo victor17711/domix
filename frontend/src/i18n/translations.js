@@ -6,13 +6,18 @@ export const translations = {
       language: 'Română',
       allCategories: 'Toate categoriile',
       search: 'Caută produse...',
+      infoDesc: 'Ai nevoie de ajutor ?',
       account: 'Contul meu',
+      loginNow: 'Loghează-te',
       login: 'Autentificare',
       logout: 'Deconectare',
+      cart: 'Coș',
+      items: '- Articole',
+      support: '24/7 Suport',
       termsAndConditions: 'Termeni și condiții',
       privacyPolicy: 'Politica de confidențialitate'
     },
-    
+
     // Homepage
     home: {
       heroTitle: 'Reduceri de până la',
@@ -31,7 +36,7 @@ export const translations = {
       outOfStock: 'Stoc epuizat',
       readMore: 'Citește mai mult'
     },
-    
+
     // Product
     product: {
       price: 'Preț',
@@ -58,7 +63,7 @@ export const translations = {
       yourComment: 'Comentariul tău',
       submitReview: 'Trimite recenzia'
     },
-    
+
     // Cart
     cart: {
       title: 'Coșul meu',
@@ -76,7 +81,7 @@ export const translations = {
       remove: 'Șterge',
       update: 'Actualizează'
     },
-    
+
     // Checkout
     checkout: {
       title: 'Finalizare comandă',
@@ -94,7 +99,7 @@ export const translations = {
       placeOrder: 'Plasează comanda',
       processing: 'Se procesează...'
     },
-    
+
     // Footer
     footer: {
       aboutUs: 'Despre noi',
@@ -107,7 +112,7 @@ export const translations = {
       subscribe: 'Abonează-te',
       allRightsReserved: 'Toate drepturile rezervate'
     },
-    
+
     // Contact
     contact: {
       title: 'Contactează-ne',
@@ -122,7 +127,7 @@ export const translations = {
       workingHours: 'Program de lucru',
       successMessage: 'Mesajul a fost trimis cu succes!'
     },
-    
+
     // Search
     search: {
       title: 'Rezultate căutare',
@@ -135,7 +140,7 @@ export const translations = {
       newest: 'Cele mai noi',
       popular: 'Popularitate'
     },
-    
+
     // Account
     account: {
       myAccount: 'Contul meu',
@@ -151,7 +156,7 @@ export const translations = {
       orderStatus: 'Status',
       orderTotal: 'Total'
     },
-    
+
     // Common
     common: {
       loading: 'Se încarcă...',
@@ -169,9 +174,15 @@ export const translations = {
       next: 'Înainte',
       previous: 'Anterior',
       mdl: 'MDL'
+    },
+
+    // 404
+    notfound: {
+      title: 'Ups... pagina nu există.',
+      desc: 'Se pare că pagina pe care o cauți nu a fost găsită. Revino pe pagina principală sau contactează-ne pentru ajutor.'
     }
   },
-  
+
   ru: {
     // Navbar
     navbar: {
@@ -179,13 +190,14 @@ export const translations = {
       language: 'Русский',
       allCategories: 'Все категории',
       search: 'Поиск товаров...',
+      infoDesc: 'Нужна помощь?',
       account: 'Мой аккаунт',
       login: 'Войти',
       logout: 'Выйти',
       termsAndConditions: 'Условия и положения',
       privacyPolicy: 'Политика конфиденциальности'
     },
-    
+
     // Homepage
     home: {
       heroTitle: 'Скидки до',
@@ -204,7 +216,7 @@ export const translations = {
       outOfStock: 'Нет в наличии',
       readMore: 'Читать далее'
     },
-    
+
     // Product
     product: {
       price: 'Цена',
@@ -231,7 +243,7 @@ export const translations = {
       yourComment: 'Ваш комментарий',
       submitReview: 'Отправить отзыв'
     },
-    
+
     // Cart
     cart: {
       title: 'Моя корзина',
@@ -249,7 +261,7 @@ export const translations = {
       remove: 'Удалить',
       update: 'Обновить'
     },
-    
+
     // Checkout
     checkout: {
       title: 'Оформление заказа',
@@ -267,7 +279,7 @@ export const translations = {
       placeOrder: 'Разместить заказ',
       processing: 'Обработка...'
     },
-    
+
     // Footer
     footer: {
       aboutUs: 'О нас',
@@ -280,7 +292,7 @@ export const translations = {
       subscribe: 'Подписаться',
       allRightsReserved: 'Все права защищены'
     },
-    
+
     // Contact
     contact: {
       title: 'Связаться с нами',
@@ -295,7 +307,7 @@ export const translations = {
       workingHours: 'Режим работы',
       successMessage: 'Сообщение успешно отправлено!'
     },
-    
+
     // Search
     search: {
       title: 'Результаты поиска',
@@ -308,7 +320,7 @@ export const translations = {
       newest: 'Новые',
       popular: 'Популярность'
     },
-    
+
     // Account
     account: {
       myAccount: 'Мой аккаунт',
@@ -324,7 +336,7 @@ export const translations = {
       orderStatus: 'Статус',
       orderTotal: 'Итого'
     },
-    
+
     // Common
     common: {
       loading: 'Загрузка...',
@@ -342,6 +354,12 @@ export const translations = {
       next: 'Вперед',
       previous: 'Предыдущий',
       mdl: 'MDL'
+    },
+
+    // 404
+    notfound: {
+      title: 'Упс... страница не существует.',
+      desc: 'Похоже, что страница, которую вы ищете, не найдена. Вернитесь на главную страницу или свяжитесь с нами для помощи.'
     }
   }
 };

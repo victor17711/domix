@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { translations } from '../i18n/translations';
 
 const LanguageContext = createContext();
@@ -12,8 +13,15 @@ export const useLanguage = () => {
 };
 
 export const LanguageProvider = ({ children }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
   const [language, setLanguage] = useState(() => {
-    // Get language from localStorage or default to 'ro'
+    // Check URL for /ru prefix first
+    if (location.pathname.startsWith('/ru')) {
+      return 'ru';
+    }
+    // Otherwise get from localStorage or default to 'ro'
     return localStorage.getItem('language') || 'ro';
   });
 
@@ -21,6 +29,19 @@ export const LanguageProvider = ({ children }) => {
     // Save language to localStorage whenever it changes
     localStorage.setItem('language', language);
   }, [language]);
+
+  // Sync URL with language
+  useEffect(() => {
+    const currentPath = location.pathname;
+    
+    if (language === 'ru' && !currentPath.startsWith('/ru')) {
+      // Switch to Russian - add /ru prefix
+      navigate('/ru' + currentPath, { replace: true });
+    } else if (language === 'ro' && currentPath.startsWith('/ru')) {
+      // Switch to Romanian - remove /ru prefix
+      navigate(currentPath.replace(/^\/ru/, '') || '/', { replace: true });
+    }
+  }, [language, location.pathname, navigate]);
 
   const t = (key) => {
     // Navigate through nested keys (e.g., 'navbar.home')

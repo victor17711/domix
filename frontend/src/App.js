@@ -25,6 +25,7 @@ import OrderSuccessPage from './pages/OrderSuccessPage';
 import SearchResultsPage from './pages/SearchResultsPage';
 import ContactPage from './pages/ContactPage';
 import BrandsPage from './pages/BrandsPage';
+import NotFound from './pages/NotFound';
 import AdminLogin from './pages/admin/AdminLogin';
 import ContentManagement from './pages/admin/ContentManagement';
 import Dashboard from './pages/admin/Dashboard';
@@ -90,6 +91,16 @@ const AdminProtectedRoute = ({ children }) => {
 };
 
 function App() {
+  // Helper function to create routes with and without /ru prefix
+  const createDualRoutes = (path, element) => {
+    return (
+      <>
+        <Route path={path} element={element} />
+        <Route path={`/ru${path}`} element={element} />
+      </>
+    );
+  };
+
   return (
     <BrowserRouter>
       <AuthProvider>
@@ -100,146 +111,155 @@ function App() {
                 <ScrollToTop />
                 <RouteChangeHandler>
                 <Routes>
-                  {/* Public Routes */}
-                  <Route path="/" element={
+                  {/* Public Routes - with RO and RU versions */}
+                  {createDualRoutes("/", (
                     <>
                       <Navbar />
                       <HomePage />
                       <Footer />
                     </>
-                  } />
+                  ))}
 
-                {/* Contact Page Route - MUST be before /page/:slug */}
-                <Route path="/contact" element={
+                {/* Contact Page Route */}
+                {createDualRoutes("/contact", (
                   <>
                     <Navbar />
                     <ContactPage />
                     <Footer />
                   </>
-                } />
+                ))}
 
                 {/* Brands Page Route */}
-                <Route path="/brands" element={
+                {createDualRoutes("/brands", (
                   <>
                     <Navbar />
                     <BrandsPage />
                     <Footer />
                   </>
-                } />
+                ))}
 
                 {/* Search Results Route */}
-                <Route path="/search" element={
+                {createDualRoutes("/search", (
                   <>
                     <Navbar />
                     <SearchResultsPage />
                     <Footer />
                   </>
-                } />
+                ))}
 
                 {/* Dynamic Page Route */}
-                <Route path="/page/:slug" element={
+                {createDualRoutes("/page/:slug", (
                   <>
                     <Navbar />
                     <DynamicPage />
                     <Footer />
                   </>
-                } />
+                ))}
 
                 {/* Category Page Route */}
-                <Route path="/category/:slug" element={
+                {createDualRoutes("/category/:slug", (
                   <>
                     <Navbar />
                     <CategoryPage />
                     <Footer />
                   </>
-                } />
+                ))}
 
                 {/* Product Detail Page Route */}
-                <Route path="/product/:id" element={
+                {createDualRoutes("/product/:id", (
                   <>
                     <Navbar />
                     <ProductDetailPage />
                     <Footer />
                   </>
-                } />
+                ))}
 
                 {/* Cart Page Route */}
-                <Route path="/cart" element={
+                {createDualRoutes("/cart", (
                   <>
                     <Navbar />
                     <CartPage />
                     <Footer />
                   </>
-                } />
+                ))}
 
                 {/* Checkout Page Route */}
-                <Route path="/checkout" element={
+                {createDualRoutes("/checkout", (
                   <>
                     <Navbar />
                     <CheckoutPage />
                     <Footer />
                   </>
-                } />
+                ))}
 
                 {/* Services Page Route */}
-                <Route path="/servicii" element={
+                {createDualRoutes("/servicii", (
                   <>
                     <Navbar />
                     <ServicesPage />
                     <Footer />
                   </>
-                } />
+                ))}
 
                 {/* About Us Page Route */}
-                <Route path="/despre-noi" element={
+                {createDualRoutes("/despre-noi", (
                   <>
                     <Navbar />
                     <AboutUsPage />
                     <Footer />
                   </>
-                } />
+                ))}
 
                 {/* Catalog Page Route */}
-                <Route path="/catalog" element={
+                {createDualRoutes("/catalog", (
                   <>
                     <Navbar />
                     <CatalogPage />
                     <Footer />
                   </>
-                } />
+                ))}
 
                 {/* Catalog Page Detail Route */}
-                <Route path="/catalog/:categoryId" element={
+                {createDualRoutes("/catalog/:categoryId", (
                   <>
                     <Navbar />
                     <CatalogCategoryPage />
                     <Footer />
                   </>
-                } />
+                ))}
 
                 {/* FAQ Page Route */}
-                <Route path="/intrebari-frecvente" element={
+                {createDualRoutes("/intrebari-frecvente", (
                   <>
                     <Navbar />
                     <FAQPage />
                     <Footer />
                   </>
-                } />
+                ))}
 
                 {/* Order Success Page Route */}
-                <Route path="/order-success" element={
+                {createDualRoutes("/order-success", (
                   <>
                     <Navbar />
                     <OrderSuccessPage />
                     <Footer />
                   </>
-                } />
+                ))}
 
                 {/* My Account Page Route */}
-                <Route path="/contul-meu" element={
+                {createDualRoutes("/contul-meu", (
                   <>
                     <Navbar />
                     <MyAccountPage />
+                    <Footer />
+                  </>
+                ))}
+
+                {/* 404 Page Route */}
+                <Route path="*" element={
+                  <>
+                    <Navbar />
+                    <NotFound />
                     <Footer />
                   </>
                 } />

@@ -242,11 +242,11 @@ const ProductDetailPage = () => {
   
   {/* Brand Logo */}
   {brand && brand.logo && (
-    <div className="bg-white border-2 border-teal-500 rounded-xl px-5 md:px-12 py-3 md:py-4 flex items-center justify-center">
+    <div className="hidden md:flex bg-white border-2 border-teal-500 rounded-xl px-5 md:px-12 py-3 md:py-4 flex items-center justify-center">
   <img 
     src={brand.logo} 
     alt={brand.name}
-    className="h-10 md:h-7 max-h-full object-contain"
+    className="h-6 md:h-7 max-h-full object-contain"
   />
 </div>
   )}
@@ -254,7 +254,7 @@ const ProductDetailPage = () => {
   {/* Favorite Icon */}
   <button
     onClick={handleAddToWishlist}
-    className="bg-white border-2 border-red-500 rounded-xl p-3 md:p-4 hover:bg-red-50 transition group"
+    className="hidden md:flex bg-white border-2 border-red-500 rounded-xl p-3 md:p-4 hover:bg-red-50 transition group"
   >
     <Heart className="w-6 h-6 md:w-7 md:h-7 text-red-500 group-hover:fill-red-500 transition" />
   </button>

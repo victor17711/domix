@@ -111,7 +111,7 @@ const Navbar = () => {
               <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
                 <Headphones className="w-4 h-4" />
               </div>
-              <span>Ai nevoie de ajutor ?</span>
+              <span>{t('navbar.infoDesc')}</span>
               <span className="bg-yellow-400 text-black px-4 py-1 rounded-full font-bold text-sm">
                 (+373) 697 11 967
               </span>
@@ -123,7 +123,7 @@ const Navbar = () => {
                   <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
                     <Headphones className="w-3.5 h-3.5" />
                   </div>
-                  <span className="text-sm font-bold">Ai nevoie de ajutor ?</span>
+                  <span className="text-sm font-bold">{t('navbar.infoDesc')}</span>
                   <span className="bg-yellow-400 text-black px-4 py-1.5 rounded-full font-bold text-sm">
                     (+373) 697 11 967
                   </span>
@@ -151,7 +151,7 @@ const Navbar = () => {
                         }}
                         className={`w-full px-4 py-2 text-left hover:bg-teal-50 transition flex items-center gap-2 ${language === 'ro' ? 'bg-teal-100 font-bold' : ''}`}
                       >
-                        🇲🇩 Română
+                        Română
                       </button>
                       <button
                         onClick={() => {
@@ -160,7 +160,7 @@ const Navbar = () => {
                         }}
                         className={`w-full px-4 py-2 text-left hover:bg-teal-50 transition flex items-center gap-2 ${language === 'ru' ? 'bg-teal-100 font-bold' : ''}`}
                       >
-                        🇷🇺 Русский
+                        Русский
                       </button>
                     </div>
                   )}
@@ -289,7 +289,7 @@ const Navbar = () => {
                   </div>
                   <div className="text-left">
                     <div className="text-sm font-semibold text-gray-900">{t('navbar.account')}</div>
-                    <div className="text-sm text-gray-600">Loghează-te</div>
+                    <div className="text-sm text-gray-600">{t('navbar.loginNow')}</div>
                   </div>
                 </button>
               )}
@@ -304,8 +304,8 @@ const Navbar = () => {
                   )}
                 </div>
                 <div className="text-left">
-                  <div className="text-sm font-semibold text-gray-900">Coș</div>
-                  <div className="text-sm text-gray-600">{cartCount}- Articole</div>
+                  <div className="text-sm font-semibold text-gray-900">{t('navbar.cart')}</div>
+                  <div className="text-sm text-gray-600">{cartCount} {t('navbar.items')}</div>
                 </div>
               </Link>
             </div>
@@ -420,7 +420,7 @@ const Navbar = () => {
                 <Phone className="w-6 h-6 text-gray-600" />
               </div>
               <div>
-                <div className="text-sm text-gray-500">24/7 Suport</div>
+                <div className="text-sm text-gray-500">{t('navbar.support')}</div>
                 <div className="text-base font-bold text-gray-900">069 711 967</div>
               </div>
             </div>
@@ -527,7 +527,7 @@ const Navbar = () => {
                       }}
                       className="w-full rounded-2xl bg-yellow-400 text-gray-900 font-bold px-4 py-3 text-left"
                     >
-                      Loghează-te
+                      {t('navbar.loginNow')}
                     </button>
                   ) : (
                     <div className="space-y-3">
@@ -553,7 +553,7 @@ const Navbar = () => {
                         }}
                         className="w-full rounded-2xl border border-gray-200 px-4 py-3 text-left font-semibold text-gray-700"
                       >
-                        Ieși din cont
+                        {t('navbar.logout')}
                       </button>
                     </div>
                   )}
@@ -607,9 +607,40 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Menu Footer */}
-          <div className="border-t border-gray-200 p-4 bg-white">
+          <div className="border-t border-gray-200 p-4 bg-white space-y-3">
+            {/* Language Switcher */}
+            <div className="rounded-2xl bg-gradient-to-r from-teal-50 to-teal-100 px-4 py-3">
+              <div className="text-sm text-gray-600 mb-2 flex items-center gap-2">
+                <Globe className="w-4 h-4" />
+                <span className="font-semibold">Limba / Язык</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => changeLanguage('ro')}
+                  className={`px-3 py-2 rounded-lg text-sm font-semibold transition ${
+                    language === 'ro'
+                      ? 'bg-teal-600 text-white shadow-sm'
+                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  🇷🇴 Română
+                </button>
+                <button
+                  onClick={() => changeLanguage('ru')}
+                  className={`px-3 py-2 rounded-lg text-sm font-semibold transition ${
+                    language === 'ru'
+                      ? 'bg-teal-600 text-white shadow-sm'
+                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  🇷🇺 Русский
+                </button>
+              </div>
+            </div>
+
+            {/* Support Phone */}
             <div className="rounded-2xl bg-gray-50 px-4 py-3">
-              <div className="text-sm text-gray-500">24/7 Suport</div>
+              <div className="text-sm text-gray-500">{t('navbar.support')}</div>
               <a href="tel:069711967" className="text-lg font-bold text-gray-900">
                 069 711 967
               </a>
