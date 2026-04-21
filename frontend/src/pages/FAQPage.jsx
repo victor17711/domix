@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { useLanguage } from '../context/LanguageContext';
 import {
   ChevronRight,
   HelpCircle,
@@ -14,6 +15,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const FAQPage = () => {
+  const { language } = useLanguage();
   const [activeIndex, setActiveIndex] = useState(null);
   const [faqData, setFaqData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -73,7 +75,7 @@ const FAQPage = () => {
           </div>
 
           <span className="font-semibold text-gray-900 text-lg leading-snug">
-            {item.question}
+            {language === 'ru' && item.questionRu ? item.questionRu : item.question}
           </span>
         </div>
 
@@ -93,7 +95,7 @@ const FAQPage = () => {
       >
         <div className="overflow-hidden">
           <div className="relative z-10 px-6 pb-6 pl-[70px] text-gray-600 leading-relaxed text-sm">
-            {item.answer}
+            {language === 'ru' && item.answerRu ? item.answerRu : item.answer}
           </div>
         </div>
       </div>

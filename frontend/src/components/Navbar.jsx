@@ -360,7 +360,7 @@ const Navbar = () => {
                             </div>
                           )}
                           <div className="font-semibold text-gray-900 hover:text-teal-600 transition text-base">
-                            {item.name}
+                            {language === 'ru' && item.nameRu ? item.nameRu : item.name}
                           </div>
                         </div>
                         {item.hasChildren && item.children && item.children.length > 0 && (
@@ -390,7 +390,7 @@ const Navbar = () => {
                                 </div>
                               )}
                               <div className="font-medium text-gray-700 hover:text-teal-600 transition text-sm">
-                                {child.name}
+                                {language === 'ru' && child.nameRu ? child.nameRu : child.name}
                               </div>
                             </Link>
                           ))}
@@ -403,16 +403,19 @@ const Navbar = () => {
             </div>
 
             <nav className="hidden lg:flex items-center gap-8 text-base font-medium">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.id}
-                  to={item.url}
-                  className="text-gray-700 hover:text-teal-600 font-bold transition flex items-center gap-1 uppercase"
-                >
-                  {item.icon && <span className="text-lg">{item.icon}</span>}
-                  {item.name}
-                </Link>
-              ))}
+              {menuItems.map((item) => {
+                const displayName = language === 'ru' && item.nameRu ? item.nameRu : item.name;
+                return (
+                  <Link
+                    key={item.id}
+                    to={item.url}
+                    className="text-gray-700 hover:text-teal-600 font-bold transition flex items-center gap-1 uppercase"
+                  >
+                    {item.icon && <span className="text-lg">{item.icon}</span>}
+                    {displayName}
+                  </Link>
+                );
+              })}
             </nav>
 
             <div className="hidden lg:flex items-center gap-3">
@@ -503,20 +506,23 @@ const Navbar = () => {
           <div className="flex-1 overflow-y-auto px-4 py-4">
             {mobileMenuTab === 'menu' ? (
               <nav className="space-y-2">
-                {menuItems.map((item) => (
-                  <Link
-                    key={item.id}
-                    to={item.url}
-                    onClick={closeMobileMenu}
-                    className="flex items-center justify-between gap-3 rounded-2xl px-4 py-3 text-gray-800 hover:bg-gray-100 transition"
-                  >
-                    <div className="flex items-center gap-3">
-                      {item.icon && <span className="text-lg">{item.icon}</span>}
-                      <span className="font-semibold">{item.name}</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-gray-400" />
-                  </Link>
-                ))}
+                {menuItems.map((item) => {
+                  const displayName = language === 'ru' && item.nameRu ? item.nameRu : item.name;
+                  return (
+                    <Link
+                      key={item.id}
+                      to={item.url}
+                      onClick={closeMobileMenu}
+                      className="flex items-center justify-between gap-3 rounded-2xl px-4 py-3 text-gray-800 hover:bg-gray-100 transition"
+                    >
+                      <div className="flex items-center gap-3">
+                        {item.icon && <span className="text-lg">{item.icon}</span>}
+                        <span className="font-semibold">{displayName}</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </Link>
+                  );
+                })}
 
                 <div className="pt-4 mt-4 border-t border-gray-200">
                   {!isAuthenticated ? (
@@ -561,47 +567,53 @@ const Navbar = () => {
               </nav>
             ) : (
               <div className="space-y-3">
-                {categoryMenuItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="rounded-2xl border border-gray-100 bg-gray-50 px-3 py-2"
-                  >
-                    <Link
-                      to={item.url}
-                      onClick={closeMobileMenu}
-                      className="flex items-center gap-3 py-2"
+                {categoryMenuItems.map((item) => {
+                  const itemDisplayName = language === 'ru' && item.nameRu ? item.nameRu : item.name;
+                  return (
+                    <div
+                      key={item.id}
+                      className="rounded-2xl border border-gray-100 bg-gray-50 px-3 py-2"
                     >
-                      {item.icon && (
-                        <div className="w-10 h-10 min-w-[40px] rounded-xl flex items-center justify-center shadow-sm overflow-hidden bg-white flex-shrink-0">
-                          {typeof item.icon === 'string' && item.icon.startsWith('data:image') ? (
-                            <img src={item.icon} alt={item.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <span className="text-lg">{item.icon}</span>
-                          )}
+                      <Link
+                        to={item.url}
+                        onClick={closeMobileMenu}
+                        className="flex items-center gap-3 py-2"
+                      >
+                        {item.icon && (
+                          <div className="w-10 h-10 min-w-[40px] rounded-xl flex items-center justify-center shadow-sm overflow-hidden bg-white flex-shrink-0">
+                            {typeof item.icon === 'string' && item.icon.startsWith('data:image') ? (
+                              <img src={item.icon} alt={itemDisplayName} className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="text-lg">{item.icon}</span>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="flex-1">
+                          <div className="font-semibold text-gray-900">{itemDisplayName}</div>
+                        </div>
+                      </Link>
+
+                      {item.hasChildren && item.children && item.children.length > 0 && (
+                        <div className="ml-13 mt-1 space-y-1 pb-2">
+                          {item.children.map((child) => {
+                            const childDisplayName = language === 'ru' && child.nameRu ? child.nameRu : child.name;
+                            return (
+                              <Link
+                                key={child.id}
+                                to={child.url}
+                                onClick={closeMobileMenu}
+                                className="block rounded-xl px-3 py-2 text-sm text-gray-600 hover:text-teal-600 hover:bg-white transition"
+                              >
+                                {childDisplayName}
+                              </Link>
+                            );
+                          })}
                         </div>
                       )}
-
-                      <div className="flex-1">
-                        <div className="font-semibold text-gray-900">{item.name}</div>
-                      </div>
-                    </Link>
-
-                    {item.hasChildren && item.children && item.children.length > 0 && (
-                      <div className="ml-13 mt-1 space-y-1 pb-2">
-                        {item.children.map((child) => (
-                          <Link
-                            key={child.id}
-                            to={child.url}
-                            onClick={closeMobileMenu}
-                            className="block rounded-xl px-3 py-2 text-sm text-gray-600 hover:text-teal-600 hover:bg-white transition"
-                          >
-                            {child.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { ChevronRight, Minus, Plus, ShoppingCart, Heart, Star, Truck, RefreshCw, Shield } from 'lucide-react';
+import { ChevronRight, Minus, Plus, ShoppingCart, Heart, Star, Truck, RefreshCw, Shield, X, ChevronLeft } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
 import { toast } from '../hooks/use-toast';
@@ -20,6 +20,8 @@ const ProductDetailPage = () => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [galleryIndex, setGalleryIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [quantity, setQuantity] = useState(1);
@@ -146,6 +148,25 @@ const ProductDetailPage = () => {
     toast({ title: 'Succes', description: 'Produs adăugat la favorite!' });
   };
 
+  const openGallery = (index) => {
+    setGalleryIndex(index);
+    setIsGalleryOpen(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeGallery = () => {
+    setIsGalleryOpen(false);
+    document.body.style.overflow = '';
+  };
+
+  const nextImage = () => {
+    setGalleryIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = () => {
+    setGalleryIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -191,7 +212,10 @@ const ProductDetailPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
           {/* Images */}
           <div>
-            <div className="bg-white rounded-2xl overflow-hidden mb-4 border-2 border-gray-100">
+            <div 
+              className="bg-white rounded-2xl overflow-hidden mb-4 border-2 border-gray-100 cursor-pointer hover:border-teal-500 transition"
+              onClick={() => openGallery(selectedImage)}
+            >
               <img 
                 src={images[selectedImage]} 
                 alt={product.name}
@@ -204,8 +228,8 @@ const ProductDetailPage = () => {
                   <button
                     key={idx}
                     onClick={() => setSelectedImage(idx)}
-                    className={`bg-white rounded-lg overflow-hidden border-2 transition ${
-                      selectedImage === idx ? 'border-teal-600' : 'border-gray-200 hover:border-gray-300'
+                    className={`bg-white rounded-lg overflow-hidden border-2 transition cursor-pointer hover:border-teal-400 ${
+                      selectedImage === idx ? 'border-teal-600' : 'border-gray-200'
                     }`}
                   >
                     <img src={img} alt="" className="w-full h-[60px] md:h-[100px] object-cover" />
@@ -487,12 +511,16 @@ const ProductDetailPage = () => {
               <div>
                 {product.specifications && product.specifications.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {product.specifications.map((spec, index) => (
-                      <div key={index} className="border-b pb-2">
-                        <strong className="text-gray-900">{spec.title}:</strong>
-                        <span className="ml-2 text-gray-700">{spec.value}</span>
-                      </div>
-                    ))}
+                    {product.specifications.map((spec, index) => {
+                      const specTitle = language === 'ru' && spec.titleRu ? spec.titleRu : spec.title;
+                      const specValue = language === 'ru' && spec.valueRu ? spec.valueRu : spec.value;
+                      return (
+                        <div key={index} className="border-b pb-2">
+                          <strong className="text-gray-900">{specTitle}:</strong>
+                          <span className="ml-2 text-gray-700">{specValue}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : (
                   <p className="text-gray-600">Nicio specificație disponibilă</p>
@@ -830,6 +858,72 @@ const ProductDetailPage = () => {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Image Gallery Modal */}
+      {isGalleryOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-[999]">
+          {/* Close Button */}
+          <button
+            onClick={closeGallery}
+            className="absolute top-4 right-4 p-3 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full transition z-[1000]"
+          >
+            <X className="w-6 h-6 text-white" />
+          </button>
+
+          {/* Previous Button */}
+          {images.length > 1 && (
+            <button
+              onClick={prevImage}
+              className="absolute left-4 p-3 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full transition z-[1000]"
+            >
+              <ChevronLeft className="w-8 h-8 text-white" />
+            </button>
+          )}
+
+          {/* Image */}
+          <div className="max-w-7xl max-h-[90vh] px-4">
+            <img 
+              src={images[galleryIndex]} 
+              alt={product.name}
+              className="max-w-full max-h-[90vh] object-contain"
+            />
+          </div>
+
+          {/* Next Button */}
+          {images.length > 1 && (
+            <button
+              onClick={nextImage}
+              className="absolute right-4 p-3 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full transition z-[1000]"
+            >
+              <ChevronRight className="w-8 h-8 text-white" />
+            </button>
+          )}
+
+          {/* Image Counter */}
+          {images.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 bg-white bg-opacity-20 rounded-full text-white font-semibold">
+              {galleryIndex + 1} / {images.length}
+            </div>
+          )}
+
+          {/* Thumbnails */}
+          {images.length > 1 && (
+            <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex gap-2 max-w-[90vw] overflow-x-auto px-4">
+              {images.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setGalleryIndex(idx)}
+                  className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition ${
+                    galleryIndex === idx ? 'border-teal-500' : 'border-white border-opacity-30 hover:border-opacity-60'
+                  }`}
+                >
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
