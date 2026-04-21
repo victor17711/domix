@@ -193,6 +193,7 @@ class DashboardStats(BaseModel):
 class MenuItem(BaseModel):
     id: str
     name: str
+    nameRu: Optional[str] = ""  # Russian translation
     url: str
     type: str  # 'link', 'category', 'page'
     icon: Optional[str] = None
@@ -221,7 +222,9 @@ class ServiceAlbum(BaseModel):
 # FAQ Models
 class FAQ(BaseModel):
     question: str
+    questionRu: Optional[str] = ""  # Russian translation
     answer: str
+    answerRu: Optional[str] = ""  # Russian translation
 
 # Contact Info Models
 class ContactInfo(BaseModel):

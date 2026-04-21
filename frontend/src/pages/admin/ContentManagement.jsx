@@ -53,7 +53,9 @@ const ContentManagement = () => {
   const [uploadingGallery, setUploadingGallery] = useState(false);
   const [faqForm, setFaqForm] = useState({
     question: '',
-    answer: ''
+    questionRu: '',
+    answer: '',
+    answerRu: ''
   });
   const [tempGalleryUrl, setTempGalleryUrl] = useState('');
 
@@ -717,7 +719,7 @@ const ContentManagement = () => {
                 <button
                   onClick={() => {
                     setEditingFaq(null);
-                    setFaqForm({ question: '', answer: '' });
+                    setFaqForm({ question: '', questionRu: '', answer: '', answerRu: '' });
                     setShowFaqModal(true);
                   }}
                   className="flex items-center gap-2 bg-teal-600 text-white px-6 py-3 rounded-xl hover:bg-teal-700 transition font-semibold"
@@ -1228,7 +1230,7 @@ const ContentManagement = () => {
             <form onSubmit={handleFaqSubmit} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-bold text-gray-900 mb-2">
-                  Întrebare *
+                  Întrebare (RO) *
                 </label>
                 <input
                   type="text"
@@ -1242,7 +1244,20 @@ const ContentManagement = () => {
 
               <div>
                 <label className="block text-sm font-bold text-gray-900 mb-2">
-                  Răspuns *
+                  Întrebare (RU) 🇷🇺
+                </label>
+                <input
+                  type="text"
+                  value={faqForm.questionRu}
+                  onChange={(e) => setFaqForm({...faqForm, questionRu: e.target.value})}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="напр: Как я могу разместить заказ?"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-900 mb-2">
+                  Răspuns (RO) *
                 </label>
                 <textarea
                   value={faqForm.answer}
@@ -1251,6 +1266,19 @@ const ContentManagement = () => {
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="Răspunsul complet la întrebare..."
                   required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-900 mb-2">
+                  Răspuns (RU) 🇷🇺
+                </label>
+                <textarea
+                  value={faqForm.answerRu}
+                  onChange={(e) => setFaqForm({...faqForm, answerRu: e.target.value})}
+                  rows="5"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Полный ответ на вопрос..."
                 />
               </div>
 

@@ -23,6 +23,7 @@ const Settings = () => {
   
   const [newMainItem, setNewMainItem] = useState({ 
     name: '', 
+    nameRu: '',
     url: '', 
     type: 'link',
     categoryId: '',
@@ -136,6 +137,7 @@ const Settings = () => {
     const newItem = {
       id: `main_${Date.now()}`,
       name: newMainItem.name,
+      nameRu: newMainItem.nameRu || '',
       url: url,
       type: newMainItem.type,
       icon: icon,
@@ -144,7 +146,7 @@ const Settings = () => {
     };
 
     setMenuItems([...menuItems, newItem]);
-    setNewMainItem({ name: '', url: '', type: 'link', categoryId: '', pageId: '' });
+    setNewMainItem({ name: '', nameRu: '', url: '', type: 'link', categoryId: '', pageId: '' });
     toast({ title: 'Succes', description: 'Item adăugat în meniul principal' });
   };
 
@@ -402,6 +404,14 @@ const Settings = () => {
               placeholder="Nume (ex: Acasă, Contact)"
               value={newMainItem.name}
               onChange={(e) => setNewMainItem({...newMainItem, name: e.target.value})}
+              className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+
+            <input
+              type="text"
+              placeholder="Nume RU 🇷🇺 (ex: Главная, Контакты)"
+              value={newMainItem.nameRu}
+              onChange={(e) => setNewMainItem({...newMainItem, nameRu: e.target.value})}
               className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
 

@@ -16,6 +16,7 @@ const CategoriesManagement = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [formData, setFormData] = useState({ 
     name: '', 
+    nameRu: '',
     slug: '', 
     icon: '',
     image: '',
@@ -99,6 +100,7 @@ const CategoriesManagement = () => {
     setEditingCategory(category);
     setFormData({
       name: category.name,
+      nameRu: category.nameRu || '',
       slug: category.slug,
       icon: category.icon || '',
       image: category.image || category.icon || '',
@@ -136,7 +138,7 @@ const CategoriesManagement = () => {
             <p className="text-teal-100">Total: {categories.length} categorii</p>
           </div>
           <button
-            onClick={() => { setShowModal(true); setEditingCategory(null); setFormData({ name: '', slug: '', icon: '', parentId: null, image: '' }); }}
+            onClick={() => { setShowModal(true); setEditingCategory(null); setFormData({ name: '', nameRu: '', slug: '', icon: '', parentId: null, image: '' }); }}
             className="bg-white text-teal-700 px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-teal-50 transition font-semibold"
           >
             <Plus className="w-5 h-5" />
@@ -302,6 +304,17 @@ const CategoriesManagement = () => {
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                   placeholder="ex: Haine Femei"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Nume Categorie RU 🇷🇺</label>
+                <input
+                  type="text"
+                  value={formData.nameRu}
+                  onChange={(e) => setFormData({...formData, nameRu: e.target.value})}
+                  placeholder="напр: Женская одежда"
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>

@@ -192,8 +192,12 @@ export const translations = {
       search: 'Поиск товаров...',
       infoDesc: 'Нужна помощь?',
       account: 'Мой аккаунт',
+      loginNow: 'Войти',
       login: 'Войти',
       logout: 'Выйти',
+      cart: 'Корзина',
+      items: '- Товары',
+      support: 'Поддержка 24/7',
       termsAndConditions: 'Условия и положения',
       privacyPolicy: 'Политика конфиденциальности'
     },
