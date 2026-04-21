@@ -9,7 +9,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const CategoryPage = () => {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const { slug } = useParams();
   const [category, setCategory] = useState(null);
   const [products, setProducts] = useState([]);
@@ -143,9 +143,9 @@ const CategoryPage = () => {
             <ChevronRight className="w-4 h-4" />
             <div className="flex items-center gap-2">
               {category.image && (
-                <img src={category.image} alt={category.name} className="w-6 h-6 rounded object-cover" />
+                <img src={category.image} alt={categoryName} className="w-6 h-6 rounded object-cover" />
               )}
-              <span className="text-gray-900 font-semibold">{category.name}</span>
+              <span className="text-gray-900 font-semibold">{categoryName}</span>
             </div>
           </div>
         </div>
@@ -159,13 +159,13 @@ const CategoryPage = () => {
   <div className="w-16 h-16 flex-shrink-0 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center overflow-hidden">
     <img 
       src={category.image} 
-      alt={category.name} 
+      alt={categoryName} 
       className="w-full h-full object-contain" 
     />
   </div>
 )}
             <div>
-              <h1 className="text-3xl md:text-5xl font-bold">{category.name}</h1>
+              <h1 className="text-3xl md:text-5xl font-bold">{categoryName}</h1>
               <p className="text-teal-100 mt-2">{products.length} {t('categoryPage.productsAvailable')}</p>
             </div>
           </div>

@@ -6,7 +6,7 @@ import { useLanguage } from '../context/LanguageContext';
 
 const CartPage = () => {
   const navigate = useNavigate();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const { cart, removeFromCart, updateQuantity, getCartTotal } = useCart();
 
   if (cart.length === 0) {
