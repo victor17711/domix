@@ -225,6 +225,13 @@ class ServiceAlbum(BaseModel):
     coverImage: str
     galleryImages: List[str] = []
 
+# Home section tab configuration (BestSellers / FreshFinds)
+class HomeSectionTab(BaseModel):
+    categoryId: str  # Reference to Category.id
+    label: Optional[str] = ""  # Optional custom label; falls back to category name
+    labelRu: Optional[str] = ""  # Optional custom Russian label
+    order: Optional[int] = 0
+
 # FAQ Models
 class FAQ(BaseModel):
     question: str
@@ -252,6 +259,8 @@ class SettingsCreate(BaseModel):
     contactInfo: Optional[ContactInfo] = ContactInfo()
     websiteName: Optional[str] = "DOMIX"
     favicon: Optional[str] = ""
+    bestSellersTabs: Optional[List[HomeSectionTab]] = []
+    freshFindsTabs: Optional[List[HomeSectionTab]] = []
 
 class Settings(SettingsCreate):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))

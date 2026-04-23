@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAdmin } from '../../context/AdminContext';
 import { toast } from '../../hooks/use-toast';
-import { Image, Plus, Edit, Trash2, Save, X, ChevronDown, ChevronUp, Images, HelpCircle, Phone } from 'lucide-react';
+import { Image, Plus, Edit, Trash2, Save, X, ChevronDown, ChevronUp, Images, HelpCircle, Phone, Layout, ArrowUp, ArrowDown } from 'lucide-react';
+import HomeTabsEditor from './HomeTabsEditor';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -31,6 +32,7 @@ const ContentManagement = () => {
   const [expandedSections, setExpandedSections] = useState({
     heroBanners: true,
     serviceAlbums: true,
+    homeTabs: true,
     faqs: true,
     contactInfo: true
   });
@@ -63,6 +65,9 @@ const ContentManagement = () => {
     answerRu: ''
   });
   const [tempGalleryUrl, setTempGalleryUrl] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [bestSellersTabs, setBestSellersTabs] = useState([]);
+  const [freshFindsTabs, setFreshFindsTabs] = useState([]);
 
   useEffect(() => {
     fetchContent();
@@ -70,7 +75,10 @@ const ContentManagement = () => {
 
   const fetchContent = async () => {
     try {
-      const response = await axios.get(`${API}/settings`);
+      const [response, catRes] = await Promise.all([
+        axios.get(`${API}/settings`),
+        axios.get(`${API}/categories`)
+      ]);
       setBanners(response.data.heroBanners || []);
       setAlbums(response.data.albums || []);
       setFaqs(response.data.faqs || []);
@@ -83,6 +91,9 @@ const ContentManagement = () => {
         instagram: '',
         tiktok: ''
       });
+      setBestSellersTabs(response.data.bestSellersTabs || []);
+      setFreshFindsTabs(response.data.freshFindsTabs || []);
+      setCategories(catRes.data || []);
     } catch (error) {
       console.error('Error fetching content:', error);
       setBanners([]);
@@ -124,6 +135,102 @@ const ContentManagement = () => {
     } catch (error) {
       console.error('Error saving settings:', error);
       throw error;
+    }
+  };
+
+  // Save home section tabs (BestSellers / FreshFinds)
+  const saveHomeTabs = async (updatedBestSellers, updatedFreshFinds) => {
+    try {
+      const currentSettings = await axios.get(`${API}/settings`);
+      const merged = {
+        ...currentSettings.data,
+        bestSellersTabs: updatedBestSellers,
+        freshFindsTabs: updatedFreshFinds
+      };
+      await axios.post(`${API}/settings`, merged, getAuthHeaders());
+      return true;
+    } catch (error) {
+      console.error('Error saving home tabs:', error);
+      throw error;
+    }
+  };
+
+  const handleAddTab = async (section, categoryId) => {
+    if (!categoryId) return;
+    const currentList = section === 'best' ? bestSellersTabs : freshFindsTabs;
+    if (currentList.some((t) => t.categoryId === categoryId)) {
+      toast({ title: 'Atenție', description: 'Această categorie e deja în listă', variant: 'destructive' });
+      return;
+    }
+    const newList = [
+      ...currentList,
+      { categoryId, label: '', labelRu: '', order: currentList.length }
+    ];
+    try {
+      if (section === 'best') {
+        await saveHomeTabs(newList, freshFindsTabs);
+        setBestSellersTabs(newList);
+      } else {
+        await saveHomeTabs(bestSellersTabs, newList);
+        setFreshFindsTabs(newList);
+      }
+      toast({ title: 'Succes', description: 'Tab adăugat!' });
+    } catch (error) {
+      toast({ title: 'Eroare', description: 'Nu s-a putut salva', variant: 'destructive' });
+    }
+  };
+
+  const handleRemoveTab = async (section, categoryId) => {
+    const currentList = section === 'best' ? bestSellersTabs : freshFindsTabs;
+    const newList = currentList.filter((t) => t.categoryId !== categoryId);
+    try {
+      if (section === 'best') {
+        await saveHomeTabs(newList, freshFindsTabs);
+        setBestSellersTabs(newList);
+      } else {
+        await saveHomeTabs(bestSellersTabs, newList);
+        setFreshFindsTabs(newList);
+      }
+      toast({ title: 'Succes', description: 'Tab eliminat!' });
+    } catch (error) {
+      toast({ title: 'Eroare', description: 'Nu s-a putut salva', variant: 'destructive' });
+    }
+  };
+
+  const handleMoveTab = async (section, categoryId, direction) => {
+    const currentList = section === 'best' ? bestSellersTabs : freshFindsTabs;
+    const idx = currentList.findIndex((t) => t.categoryId === categoryId);
+    if (idx < 0) return;
+    const newIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (newIdx < 0 || newIdx >= currentList.length) return;
+    const reordered = [...currentList];
+    [reordered[idx], reordered[newIdx]] = [reordered[newIdx], reordered[idx]];
+    const withOrder = reordered.map((t, i) => ({ ...t, order: i }));
+    try {
+      if (section === 'best') {
+        await saveHomeTabs(withOrder, freshFindsTabs);
+        setBestSellersTabs(withOrder);
+      } else {
+        await saveHomeTabs(bestSellersTabs, withOrder);
+        setFreshFindsTabs(withOrder);
+      }
+    } catch (error) {
+      toast({ title: 'Eroare', description: 'Nu s-a putut reordona', variant: 'destructive' });
+    }
+  };
+
+  const handleUpdateTabLabel = (section, categoryId, field, value) => {
+    const setter = section === 'best' ? setBestSellersTabs : setFreshFindsTabs;
+    const list = section === 'best' ? bestSellersTabs : freshFindsTabs;
+    setter(list.map((t) => (t.categoryId === categoryId ? { ...t, [field]: value } : t)));
+  };
+
+  const handleSaveTabLabels = async (section) => {
+    try {
+      await saveHomeTabs(bestSellersTabs, freshFindsTabs);
+      toast({ title: 'Succes', description: 'Etichetele au fost salvate!' });
+    } catch (error) {
+      toast({ title: 'Eroare', description: 'Nu s-au putut salva etichetele', variant: 'destructive' });
     }
   };
 
@@ -698,6 +805,62 @@ const ContentManagement = () => {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+        </div>
+
+
+        {/* Home Sections Tabs (BestSellers + FreshFinds) */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <button
+            onClick={() => toggleSection('homeTabs')}
+            className="w-full px-6 py-5 flex items-center justify-between bg-gradient-to-r from-teal-600 to-teal-700 text-white hover:from-teal-700 hover:to-teal-800 transition"
+          >
+            <div className="flex items-center gap-3">
+              <Layout className="w-6 h-6" />
+              <div className="text-left">
+                <h2 className="text-xl font-bold">Taburi Home: Bestsellers & Produse Noi</h2>
+                <p className="text-sm text-teal-100">
+                  Alege categoriile care apar ca tab-uri pe homepage
+                </p>
+              </div>
+            </div>
+            {expandedSections.homeTabs ? (
+              <ChevronUp className="w-6 h-6" />
+            ) : (
+              <ChevronDown className="w-6 h-6" />
+            )}
+          </button>
+
+          {expandedSections.homeTabs && (
+            <div className="p-6 space-y-8">
+              {/* BestSellers Tabs */}
+              <HomeTabsEditor
+                title="Secțiunea Bestsellers (Cele mai vândute)"
+                subtitle='Tab-urile din componenta "Cele mai vândute" pe home page'
+                tabs={bestSellersTabs}
+                categories={categories}
+                onAdd={(catId) => handleAddTab('best', catId)}
+                onRemove={(catId) => handleRemoveTab('best', catId)}
+                onMove={(catId, dir) => handleMoveTab('best', catId, dir)}
+                onLabelChange={(catId, field, val) => handleUpdateTabLabel('best', catId, field, val)}
+                onSaveLabels={() => handleSaveTabLabels('best')}
+                testIdPrefix="bestsellers"
+              />
+
+              {/* FreshFinds Tabs */}
+              <HomeTabsEditor
+                title="Secțiunea Produse Noi (Fresh Finds)"
+                subtitle='Tab-urile din componenta "Produse noi" pe home page'
+                tabs={freshFindsTabs}
+                categories={categories}
+                onAdd={(catId) => handleAddTab('fresh', catId)}
+                onRemove={(catId) => handleRemoveTab('fresh', catId)}
+                onMove={(catId, dir) => handleMoveTab('fresh', catId, dir)}
+                onLabelChange={(catId, field, val) => handleUpdateTabLabel('fresh', catId, field, val)}
+                onSaveLabels={() => handleSaveTabLabels('fresh')}
+                testIdPrefix="freshfinds"
+              />
             </div>
           )}
         </div>

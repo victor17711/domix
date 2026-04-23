@@ -1,43 +1,84 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import axios from 'axios';
 import ProductCard from './ProductCard';
 import { useLanguage } from '../context/LanguageContext';
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+
 const BestSellersSection = ({ products = [] }) => {
   const { language } = useLanguage();
-  const [activeTab, setActiveTab] = useState('tevi-fitinguri');
+  const [tabs, setTabs] = useState([]); // [{ id, categoryName, label, labelRu }]
+  const [activeTabId, setActiveTabId] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const tabs = [
-    { id: 'tevi-fitinguri', label: 'Tevi' },
-    { id: 'womens', label: "Women's Fashion" },
-    { id: 'kids', label: 'Kids Clothing' },
-    { id: 'accessories', label: 'Accessories' },
-    { id: 'jewelry', label: 'Jewelry & Watches' }
-  ];
+  // Load admin-configured tabs
+  useEffect(() => {
+    const fetchTabs = async () => {
+      try {
+        const [settingsRes, categoriesRes] = await Promise.all([
+          axios.get(`${API}/settings`),
+          axios.get(`${API}/categories`)
+        ]);
 
-  const bestSellerProducts = isMobile
-    ? products.slice(6, 14)
-    : products.slice(6, 16);
+        const categories = categoriesRes.data || [];
+        const configured = (settingsRes.data?.bestSellersTabs || [])
+          .slice()
+          .sort((a, b) => (a.order || 0) - (b.order || 0));
 
-  if (!bestSellerProducts.length) {
-    return null;
-  }
+        const resolved = configured
+          .map((cfg) => {
+            const cat = categories.find((c) => c.id === cfg.categoryId);
+            if (!cat) return null;
+            return {
+              id: cat.id,
+              categoryName: cat.name,
+              label: cfg.label || cat.name,
+              labelRu: cfg.labelRu || cat.nameRu || cat.name
+            };
+          })
+          .filter(Boolean);
+
+        setTabs(resolved);
+        if (resolved.length > 0) {
+          setActiveTabId(resolved[0].id);
+        }
+      } catch (error) {
+        console.error('Error fetching BestSellers tabs:', error);
+      }
+    };
+    fetchTabs();
+  }, []);
+
+  // Filter products by the active tab's category
+  const filteredProducts = useMemo(() => {
+    if (!activeTabId || tabs.length === 0) return [];
+    const activeTab = tabs.find((t) => t.id === activeTabId);
+    if (!activeTab) return [];
+    const catName = activeTab.categoryName;
+    return products.filter(
+      (p) =>
+        p.category === catName ||
+        (Array.isArray(p.categories) && p.categories.includes(catName))
+    );
+  }, [products, activeTabId, tabs]);
+
+  const visibleProducts = isMobile ? filteredProducts.slice(0, 8) : filteredProducts.slice(0, 10);
+
+  // Hide the section entirely if no admin config yet
+  if (tabs.length === 0) return null;
 
   return (
-    <section className="py-6">
+    <section className="py-6" data-testid="best-sellers-section">
       <div className="w-full px-6">
         <div className="mb-8 border-b">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-
             <h2 className="text-2xl font-bold text-gray-900 text-center md:text-left">
               {language === 'ru' ? 'Самые продаваемые' : 'Cele mai vândute'}
             </h2>
@@ -46,26 +87,34 @@ const BestSellersSection = ({ products = [] }) => {
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex-shrink-0 px-5 md:px-6 py-3 font-semibold transition border-b-2 whitespace-nowrap ${activeTab === tab.id
+                  onClick={() => setActiveTabId(tab.id)}
+                  data-testid={`best-sellers-tab-${tab.id}`}
+                  className={`flex-shrink-0 px-5 md:px-6 py-3 font-semibold transition border-b-2 whitespace-nowrap ${
+                    activeTabId === tab.id
                       ? 'border-teal-600 text-teal-600'
                       : 'border-transparent text-gray-600 hover:text-gray-900'
-                    }`}
+                  }`}
                 >
-                  {tab.label}
+                  {language === 'ru' ? tab.labelRu : tab.label}
                 </button>
               ))}
             </div>
-
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-          {bestSellerProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-
+        {visibleProducts.length === 0 ? (
+          <div className="text-center py-10 text-gray-500">
+            {language === 'ru'
+              ? 'В этой категории пока нет товаров'
+              : 'Nu există produse în această categorie'}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            {visibleProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
