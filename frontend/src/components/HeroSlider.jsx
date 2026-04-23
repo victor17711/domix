@@ -2,12 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useLanguage } from '../context/LanguageContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const HeroSlider = () => {
   const navigate = useNavigate();
+  const { language } = useLanguage();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [sliderData, setSliderData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -77,12 +79,20 @@ const HeroSlider = () => {
 
   const currentItem = sliderData[currentSlide];
 
+  // Choose language-specific fields with fallback to default (Romanian)
+  const isRu = language === 'ru';
+  const displayBadge = currentItem && (isRu && currentItem.badgeRu ? currentItem.badgeRu : currentItem.badge);
+  const displayTitle = currentItem && (isRu && currentItem.titleRu ? currentItem.titleRu : currentItem.title);
+  const displaySubtitle = currentItem && (isRu && currentItem.subtitleRu ? currentItem.subtitleRu : currentItem.subtitle);
+  const displayDescription = currentItem && (isRu && currentItem.descriptionRu ? currentItem.descriptionRu : currentItem.description);
+  const displayButtonText = currentItem && (isRu && currentItem.buttonTextRu ? currentItem.buttonTextRu : currentItem.buttonText);
+
   const hasContent =
-    currentItem?.badge ||
-    currentItem?.title ||
-    currentItem?.subtitle ||
-    currentItem?.description ||
-    currentItem?.buttonText;
+    displayBadge ||
+    displayTitle ||
+    displaySubtitle ||
+    displayDescription ||
+    displayButtonText;
 
   if (loading || sliderData.length === 0) {
     return (
@@ -105,7 +115,7 @@ const HeroSlider = () => {
         {/* BACKGROUND */}
         <img
   src={currentItem.image}
-  alt={currentItem.title || 'Slide image'}
+  alt={displayTitle || 'Slide image'}
   className="absolute inset-0 w-full h-full object-cover object-center md:object-center select-none pointer-events-none"
   draggable="false"
 />
@@ -119,31 +129,31 @@ const HeroSlider = () => {
         {hasContent && (
           <div className="relative z-10 h-full flex items-center justify-start px-6 md:px-32">
             <div className="max-w-2xl text-white space-y-4 md:space-y-6 text-left">
-              {currentItem.badge && (
+              {displayBadge && (
                 <span className="inline-block text-sm md:text-base font-medium opacity-90">
-                  {currentItem.badge}
+                  {displayBadge}
                 </span>
               )}
 
-              {currentItem.title && (
+              {displayTitle && (
                 <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
-                  {currentItem.title}
+                  {displayTitle}
                 </h1>
               )}
 
-              {currentItem.description && (
+              {displayDescription && (
                 <p className="text-sm md:text-lg opacity-90 max-w-[90%] md:max-w-lg">
-                  {currentItem.description}
+                  {displayDescription}
                 </p>
               )}
 
-              {currentItem.buttonText && currentItem.buttonLink && (
+              {displayButtonText && currentItem.buttonLink && (
                 <div className="flex justify-start">
                   <button 
                     onClick={() => navigate(currentItem.buttonLink)}
                     className="bg-teal-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-full flex items-center gap-2 hover:bg-teal-700 transition group shadow-lg font-semibold text-sm md:text-base cursor-pointer"
                   >
-                    {currentItem.buttonText}
+                    {displayButtonText}
                     <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition" />
                   </button>
                 </div>

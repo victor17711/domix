@@ -207,12 +207,17 @@ class MenuItem(BaseModel):
 # Settings Models
 class HeroBanner(BaseModel):
     title: Optional[str] = ""
+    titleRu: Optional[str] = ""  # Russian translation
     subtitle: Optional[str] = ""
+    subtitleRu: Optional[str] = ""  # Russian translation
     description: Optional[str] = ""
+    descriptionRu: Optional[str] = ""  # Russian translation
     buttonText: Optional[str] = ""
+    buttonTextRu: Optional[str] = ""  # Russian translation
     buttonLink: Optional[str] = ""
     image: Optional[str] = ""
     badge: Optional[str] = ""
+    badgeRu: Optional[str] = ""  # Russian translation
     order: Optional[int] = 0
 
 class ServiceAlbum(BaseModel):

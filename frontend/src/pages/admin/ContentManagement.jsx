@@ -36,12 +36,17 @@ const ContentManagement = () => {
   });
   const [bannerForm, setBannerForm] = useState({
     title: '',
+    titleRu: '',
     subtitle: '',
+    subtitleRu: '',
     description: '',
+    descriptionRu: '',
     buttonText: '',
+    buttonTextRu: '',
     buttonLink: '',
     image: '',
     badge: '',
+    badgeRu: '',
     order: 0
   });
   const [albumForm, setAlbumForm] = useState({
@@ -168,12 +173,17 @@ const ContentManagement = () => {
       setEditingBanner(null);
       setBannerForm({
         title: '',
+        titleRu: '',
         subtitle: '',
+        subtitleRu: '',
         description: '',
+        descriptionRu: '',
         buttonText: '',
+        buttonTextRu: '',
         buttonLink: '',
         image: '',
         badge: '',
+        badgeRu: '',
         order: 0
       });
     } catch (error) {
@@ -515,12 +525,17 @@ const ContentManagement = () => {
                     setEditingBanner(null);
                     setBannerForm({
                       title: '',
+                      titleRu: '',
                       subtitle: '',
+                      subtitleRu: '',
                       description: '',
+                      descriptionRu: '',
                       buttonText: '',
+                      buttonTextRu: '',
                       buttonLink: '',
                       image: '',
                       badge: '',
+                      badgeRu: '',
                       order: banners.length
                     });
                     setShowBannerModal(true);
@@ -963,6 +978,20 @@ const ContentManagement = () => {
                 />
               </div>
 
+              {/* Badge RU */}
+              <div>
+                <label className="block text-sm font-bold text-gray-900 mb-2">
+                  Badge — Rusă 🇷🇺 (opțional)
+                </label>
+                <input
+                  type="text"
+                  value={bannerForm.badgeRu || ''}
+                  onChange={(e) => setBannerForm({...bannerForm, badgeRu: e.target.value})}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="ex: Новинка!, Скидка 50%"
+                />
+              </div>
+
               {/* Title */}
               <div>
                 <label className="block text-sm font-bold text-gray-900 mb-2">
@@ -974,6 +1003,20 @@ const ContentManagement = () => {
                   onChange={(e) => setBannerForm({...bannerForm, title: e.target.value})}
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                   placeholder="ex: Colecția de Vară 2024"
+                />
+              </div>
+
+              {/* Title RU */}
+              <div>
+                <label className="block text-sm font-bold text-gray-900 mb-2">
+                  Titlu — Rusă 🇷🇺 (opțional)
+                </label>
+                <input
+                  type="text"
+                  value={bannerForm.titleRu || ''}
+                  onChange={(e) => setBannerForm({...bannerForm, titleRu: e.target.value})}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="ex: Летняя коллекция 2024"
                 />
               </div>
 
@@ -991,6 +1034,20 @@ const ContentManagement = () => {
                 />
               </div>
 
+              {/* Subtitle RU */}
+              <div>
+                <label className="block text-sm font-bold text-gray-900 mb-2">
+                  Subtitlu — Rusă 🇷🇺 (opțional)
+                </label>
+                <input
+                  type="text"
+                  value={bannerForm.subtitleRu || ''}
+                  onChange={(e) => setBannerForm({...bannerForm, subtitleRu: e.target.value})}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="ex: Сезонные тренды"
+                />
+              </div>
+
               {/* Description */}
               <div>
                 <label className="block text-sm font-bold text-gray-900 mb-2">
@@ -1002,6 +1059,34 @@ const ContentManagement = () => {
                   rows="3"
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                   placeholder="Descriere scurtă pentru banner..."
+                />
+              </div>
+
+              {/* Description RU */}
+              <div>
+                <label className="block text-sm font-bold text-gray-900 mb-2">
+                  Descriere — Rusă 🇷🇺 (opțional)
+                </label>
+                <textarea
+                  value={bannerForm.descriptionRu || ''}
+                  onChange={(e) => setBannerForm({...bannerForm, descriptionRu: e.target.value})}
+                  rows="3"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="Краткое описание баннера..."
+                />
+              </div>
+
+              {/* Button Text RU */}
+              <div>
+                <label className="block text-sm font-bold text-gray-900 mb-2">
+                  Text Buton — Rusă 🇷🇺 (opțional)
+                </label>
+                <input
+                  type="text"
+                  value={bannerForm.buttonTextRu || ''}
+                  onChange={(e) => setBannerForm({...bannerForm, buttonTextRu: e.target.value})}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="ex: Смотреть товары"
                 />
               </div>
 
