@@ -7,6 +7,7 @@ from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
+import asyncio
 from pathlib import Path
 from typing import List, Optional
 from datetime import datetime, timezone
@@ -35,6 +36,7 @@ from models import (
 )
 from auth_utils import verify_password, get_password_hash, create_access_token
 from dependencies import get_current_user, get_current_admin_user
+from telegram_notifier import send_telegram_message, format_order_message
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -1067,6 +1069,12 @@ async def create_order(order_data: OrderCreate):
             }
         )
     
+    # Fire-and-forget Telegram notification (never block or fail the order)
+    try:
+        asyncio.create_task(send_telegram_message(format_order_message(new_order)))
+    except Exception as exc:
+        logging.warning("Could not schedule Telegram notification: %s", exc)
+
     return new_order
 
 
