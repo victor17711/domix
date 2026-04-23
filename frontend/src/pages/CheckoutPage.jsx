@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import axios from 'axios';
 import { toast } from '../hooks/use-toast';
 import { Package, MapPin, CreditCard, Check } from 'lucide-react';
@@ -13,6 +14,7 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const { cart, getCartTotal, clearCart } = useCart();
   const { user } = useAuth();
+  const { language, t } = useLanguage();
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -24,6 +26,10 @@ const CheckoutPage = () => {
     postalCode: '',
     notes: ''
   });
+
+  const getProductName = (item) => {
+    return language === 'ru' && item.nameRu ? item.nameRu : item.name;
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -42,9 +48,9 @@ const CheckoutPage = () => {
         customerEmail: formData.email,
         customerName: formData.fullName,
         customerPhone: formData.phone,
-        items: cart.map(item => ({
+        items: cart.map((item) => ({
           productId: item.id,
-          name: item.name,
+          name: getProductName(item),
           price: item.price,
           quantity: item.quantity,
           image: item.image,
@@ -65,28 +71,23 @@ const CheckoutPage = () => {
         paymentMethod: 'cash_on_delivery'
       };
 
-      console.log('Sending order:', orderData);
-      const response = await axios.post(`${API}/orders`, orderData);
-      console.log('Order response:', response.data);
-      
-      // Clear cart BEFORE navigation
+      await axios.post(`${API}/orders`, orderData);
+
       clearCart();
-      
-      toast({ 
-        title: 'Succes', 
-        description: 'Comanda ta a fost plasată cu succes!' 
+
+      toast({
+        title: t('checkout.successTitle'),
+        description: t('checkout.successDesc')
       });
-      
-      // Small delay to ensure cart is cleared
+
       setTimeout(() => {
         navigate('/order-success');
       }, 100);
     } catch (error) {
-      console.error('Error placing order:', error.response?.data || error.message);
-      toast({ 
-        title: 'Eroare', 
-        description: error.response?.data?.detail || 'Nu s-a putut plasa comanda. Te rog încearcă din nou.',
-        variant: 'destructive' 
+      toast({
+        title: t('checkout.errorTitle'),
+        description: error.response?.data?.detail || t('checkout.errorDesc'),
+        variant: 'destructive'
       });
     } finally {
       setLoading(false);
@@ -101,13 +102,16 @@ const CheckoutPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="w-full px-6 py-8">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Finalizare Comandă</h1>
-          <p className="text-gray-600 mb-8">Completează detaliile pentru livrare</p>
+        <div className="mx-auto">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            {t('checkout.title')}
+          </h1>
+          <p className="text-gray-600 mb-8">
+            {t('checkout.desc')}
+          </p>
 
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Shipping Form */}
               <div className="lg:col-span-2 space-y-6">
                 {/* Contact Information */}
                 <div className="bg-white rounded-2xl p-6 border-2 border-gray-100">
@@ -115,13 +119,15 @@ const CheckoutPage = () => {
                     <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
                       <MapPin className="w-5 h-5 text-teal-600" />
                     </div>
-                    <h2 className="text-xl font-bold text-gray-900">Informații Contact</h2>
+                    <h2 className="text-xl font-bold text-gray-900">
+                      {t('checkout.contactInfo')}
+                    </h2>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Nume Complet *
+                        {t('checkout.fullName')}
                       </label>
                       <input
                         type="text"
@@ -130,13 +136,13 @@ const CheckoutPage = () => {
                         value={formData.fullName}
                         onChange={handleChange}
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
-                        placeholder="Ion Popescu"
+                        placeholder={t('checkout.placeholderFullName')}
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Telefon *
+                        {t('checkout.phone')}
                       </label>
                       <input
                         type="tel"
@@ -145,13 +151,13 @@ const CheckoutPage = () => {
                         value={formData.phone}
                         onChange={handleChange}
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
-                        placeholder="+373 69 123 456"
+                        placeholder={t('checkout.placeholderPhone')}
                       />
                     </div>
 
                     <div className="md:col-span-2">
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Email *
+                        {t('checkout.email')}
                       </label>
                       <input
                         type="email"
@@ -160,7 +166,7 @@ const CheckoutPage = () => {
                         value={formData.email}
                         onChange={handleChange}
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
-                        placeholder="email@exemplu.com"
+                        placeholder={t('checkout.placeholderEmail')}
                       />
                     </div>
                   </div>
@@ -172,13 +178,15 @@ const CheckoutPage = () => {
                     <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
                       <Package className="w-5 h-5 text-teal-600" />
                     </div>
-                    <h2 className="text-xl font-bold text-gray-900">Adresă Livrare</h2>
+                    <h2 className="text-xl font-bold text-gray-900">
+                      {t('checkout.shippingAddress')}
+                    </h2>
                   </div>
 
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Adresă Completă *
+                        {t('checkout.address')}
                       </label>
                       <input
                         type="text"
@@ -187,14 +195,14 @@ const CheckoutPage = () => {
                         value={formData.address}
                         onChange={handleChange}
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
-                        placeholder="Strada, Nr., Bloc, Apartament"
+                        placeholder={t('checkout.placeholderAddress')}
                       />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          Oraș *
+                          {t('checkout.city')}
                         </label>
                         <input
                           type="text"
@@ -203,13 +211,13 @@ const CheckoutPage = () => {
                           value={formData.city}
                           onChange={handleChange}
                           className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
-                          placeholder="Chișinău"
+                          placeholder={t('checkout.placeholderCity')}
                         />
                       </div>
 
                       <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          Cod Poștal
+                          {t('checkout.postalCode')}
                         </label>
                         <input
                           type="text"
@@ -217,14 +225,14 @@ const CheckoutPage = () => {
                           value={formData.postalCode}
                           onChange={handleChange}
                           className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
-                          placeholder="MD-2001"
+                          placeholder={t('checkout.placeholderPostalCode')}
                         />
                       </div>
                     </div>
 
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Notițe Suplimentare (Opțional)
+                        {t('checkout.notes')}
                       </label>
                       <textarea
                         name="notes"
@@ -232,7 +240,7 @@ const CheckoutPage = () => {
                         onChange={handleChange}
                         rows="3"
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
-                        placeholder="Instrucțiuni speciale pentru livrare..."
+                        placeholder={t('checkout.placeholderNotes')}
                       />
                     </div>
                   </div>
@@ -244,15 +252,26 @@ const CheckoutPage = () => {
                     <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
                       <CreditCard className="w-5 h-5 text-teal-600" />
                     </div>
-                    <h2 className="text-xl font-bold text-gray-900">Metodă Plată</h2>
+                    <h2 className="text-xl font-bold text-gray-900">
+                      {t('checkout.paymentMethod')}
+                    </h2>
                   </div>
 
                   <div className="space-y-3">
                     <label className="flex items-center gap-4 p-4 border-2 border-teal-600 rounded-xl bg-teal-50 cursor-pointer">
-                      <input type="radio" name="payment" defaultChecked className="w-5 h-5 text-teal-600" />
+                      <input
+                        type="radio"
+                        name="payment"
+                        defaultChecked
+                        className="w-5 h-5 text-teal-600"
+                      />
                       <div className="flex-1">
-                        <div className="font-semibold text-gray-900">Cash la curier</div>
-                        <div className="text-sm text-gray-600">Plătește când primești comanda</div>
+                        <div className="font-semibold text-gray-900">
+                          {t('checkout.cashOnDelivery')}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {t('checkout.cashOnDeliveryDesc')}
+                        </div>
                       </div>
                       <Check className="w-6 h-6 text-teal-600" />
                     </label>
@@ -263,40 +282,53 @@ const CheckoutPage = () => {
               {/* Order Summary */}
               <div className="lg:col-span-1">
                 <div className="bg-white rounded-2xl p-6 border-2 border-gray-100 sticky top-24">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">Sumar Comandă</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                    {t('checkout.orderSummary')}
+                  </h2>
 
-                  {/* Products */}
                   <div className="space-y-4 mb-6 max-h-64 overflow-y-auto">
-                    {cart.map((item) => (
-                      <div key={`${item.id}-${item.selectedSize}`} className="flex gap-3">
-                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-sm text-gray-900 truncate">{item.name}</div>
-                          <div className="text-xs text-gray-600">
-                            {item.selectedSize && `Mărime: ${item.selectedSize}`}
+                    {cart.map((item) => {
+                      const productName =
+                        language === 'ru' && item.nameRu ? item.nameRu : item.name;
+
+                      return (
+                        <div key={`${item.id}-${item.selectedSize}`} className="flex gap-3">
+                          <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                            <img
+                              src={item.image}
+                              alt={productName}
+                              className="w-full h-full object-cover"
+                            />
                           </div>
-                          <div className="text-sm font-semibold text-teal-600">
-                            {item.price} MDL x {item.quantity}
+                          <div className="flex-1 min-w-0">
+                            <div className="font-semibold text-sm text-gray-900 truncate">
+                              {productName}
+                            </div>
+                            <div className="text-xs text-gray-600">
+                              {item.selectedSize && `${t('checkout.size')}: ${item.selectedSize}`}
+                            </div>
+                            <div className="text-sm font-semibold text-teal-600">
+                              {item.price} MDL x {item.quantity}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
-                  {/* Totals */}
                   <div className="space-y-3 pt-6 border-t">
                     <div className="flex justify-between text-gray-600">
-                      <span>Subtotal</span>
+                      <span>{t('checkout.subtotal')}</span>
                       <span className="font-semibold">{getCartTotal()} MDL</span>
                     </div>
                     <div className="flex justify-between text-gray-600">
-                      <span>Livrare</span>
-                      <span className="font-semibold text-green-600">Gratuită</span>
+                      <span>{t('checkout.shipping')}</span>
+                      <span className="font-semibold text-green-600">
+                        {t('checkout.freeShipping')}
+                      </span>
                     </div>
                     <div className="flex justify-between text-xl font-bold text-gray-900 pt-3 border-t">
-                      <span>Total</span>
+                      <span>{t('checkout.total')}</span>
                       <span className="text-teal-600">{getCartTotal()} MDL</span>
                     </div>
                   </div>
@@ -306,11 +338,15 @@ const CheckoutPage = () => {
                     disabled={loading}
                     className="w-full bg-teal-600 text-white py-4 rounded-xl hover:bg-teal-700 transition font-bold text-lg mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {loading ? 'Se procesează...' : 'Plasează Comanda'}
+                    {loading ? t('checkout.processing') : t('checkout.placeOrder')}
                   </button>
 
                   <p className="text-xs text-gray-500 text-center mt-4">
-                    Prin plasarea comenzii, accepți <a href="/termeni-si-conditii" className="text-teal-600 hover:underline">Termenii și Condițiile</a> noastre
+                    {t('checkout.termsText')}{' '}
+                    <a href="/termeni-si-conditii" className="text-teal-600 hover:underline">
+                      {t('checkout.termsLink')}
+                    </a>{' '}
+                    {t('checkout.termsSuffix')}
                   </p>
                 </div>
               </div>

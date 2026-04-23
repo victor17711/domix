@@ -86,3 +86,25 @@ input:focus, textarea:focus, select:focus {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeLoop 40s linear infinite;
+}
+
+.marquee-group {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+@keyframes marqueeLoop {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-25%);
+  }
+}

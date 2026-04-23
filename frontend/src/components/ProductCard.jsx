@@ -8,7 +8,7 @@ import QuickViewModal from './QuickViewModal';
 
 const ProductCard = ({ product, showProgress = false }) => {
   const { addToCart, addToWishlist, isInWishlist } = useCart();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const inWishlist = isInWishlist(product.id);
 
@@ -25,7 +25,7 @@ const ProductCard = ({ product, showProgress = false }) => {
       selectedSize: product.sizes?.[0] || null,
       selectedColor: product.colors?.[0] || null
     });
-    toast({ title: 'Success', description: `${product.name} added to cart!` });
+    toast({ title: t('productCard.success'), description: `${productName} ${t('productCard.addedToCart')}` });
   };
 
   const handleAddToWishlist = (e) => {
@@ -33,7 +33,7 @@ const ProductCard = ({ product, showProgress = false }) => {
     e.stopPropagation();
     if (!inWishlist) {
       addToWishlist(product);
-      toast({ title: 'Success', description: `${product.name} added to wishlist!` });
+      toast({ title: t('productCard.success'), description: `${productName} ${t('productCard.addedToWishlist')}` });
     }
   };
 
@@ -44,6 +44,7 @@ const ProductCard = ({ product, showProgress = false }) => {
   };
 
   const discountPercent = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+
 
   return (
     <>
@@ -158,7 +159,7 @@ const ProductCard = ({ product, showProgress = false }) => {
               className="w-full bg-teal-600 text-white font-bold py-2 rounded-md hover:bg-teal-700 transition flex items-center justify-center gap-2"
             >
               <ShoppingCart className="w-4 h-4" strokeWidth={2.5} />
-              Cumpără
+              {t('productCard.buy')}
             </button>
           </div>
         </div>

@@ -465,7 +465,7 @@ export const translations = {
         desc: 'Adresa ta principală este setată în profil.',
         viewProfile: 'Vezi Profilul'
       },
-  settings: {
+      settings: {
         title: 'Setări Cont',
         changePassword: {
           title: 'Schimbă Parola',
@@ -502,21 +502,203 @@ export const translations = {
 
     // Cart Page
     cart: {
-  emptyTitle: 'Coșul tău este gol',
-  emptyDesc: 'Adaugă produse pentru a continua cumpărăturile',
-  continueShopping: 'Continuă cumpărăturile',
-  title: 'Coșul meu',
-  orderSummary: 'Sumar comandă',
-  subtotal: 'Subtotal',
-  products: 'produse',
-  shipping: 'Livrare',
-  freeShipping: 'Gratuită',
-  total: 'Total',
-  checkout: 'Finalizează comanda',
-  freeShippingNote: 'Livrare gratuită pentru comenzi peste 500 MDL',
-  freeReturnNote: 'Retur gratuit în 30 de zile',
-  securePaymentNote: 'Plată securizată 100%'
-}
+      emptyTitle: 'Coșul tău este gol',
+      emptyDesc: 'Adaugă produse pentru a continua cumpărăturile',
+      continueShopping: 'Continuă cumpărăturile',
+      title: 'Coșul meu',
+      orderSummary: 'Sumar comandă',
+      subtotal: 'Subtotal',
+      products: 'produse',
+      shipping: 'Livrare',
+      freeShipping: 'Gratuită',
+      total: 'Total',
+      checkout: 'Finalizează comanda',
+      freeShippingNote: 'Livrare gratuită pentru comenzi peste 500 MDL',
+      freeReturnNote: 'Retur gratuit în 30 de zile',
+      securePaymentNote: 'Plată securizată 100%'
+    },
+
+    // Checkout Page
+    checkout: {
+      title: 'Finalizare Comandă',
+      desc: 'Completează detaliile pentru livrare',
+      contactInfo: 'Informații Contact',
+      shippingAddress: 'Adresă Livrare',
+      paymentMethod: 'Metodă Plată',
+      orderSummary: 'Sumar Comandă',
+      fullName: 'Nume Complet *',
+      phone: 'Telefon *',
+      email: 'Email *',
+      address: 'Adresă Completă *',
+      city: 'Oraș *',
+      postalCode: 'Cod Poștal',
+      notes: 'Notițe Suplimentare (Opțional)',
+      placeholderFullName: 'Ion Popescu',
+      placeholderPhone: '+373 69 123 456',
+      placeholderEmail: 'email@exemplu.com',
+      placeholderAddress: 'Strada, Nr., Bloc, Apartament',
+      placeholderCity: 'Chișinău',
+      placeholderPostalCode: 'MD-2001',
+      placeholderNotes: 'Instrucțiuni speciale pentru livrare...',
+      cashOnDelivery: 'Cash la curier',
+      cashOnDeliveryDesc: 'Plătește când primești comanda',
+      size: 'Mărime',
+      subtotal: 'Subtotal',
+      shipping: 'Livrare',
+      freeShipping: 'Gratuită',
+      total: 'Total',
+      processing: 'Se procesează...',
+      placeOrder: 'Plasează Comanda',
+      termsText: 'Prin plasarea comenzii, accepți',
+      termsLink: 'Termenii și Condițiile',
+      termsSuffix: 'noastre',
+      successTitle: 'Succes',
+      successDesc: 'Comanda ta a fost plasată cu succes!',
+      errorTitle: 'Eroare',
+      errorDesc: 'Nu s-a putut plasa comanda. Te rog încearcă din nou.'
+    },
+
+    // Product Card
+    productCard: {
+      addedToCart: "Produs adăugat în coș!",
+      addedToWishlist: "Produs adăugat la favorite!",
+      buy: "Cumpără",
+      success: "Succes"
+    },
+
+    // Auth Modal
+    auth: {
+      loginTitle: "Autentificare",
+      registerTitle: "Creează un cont",
+      forgotTitle: "Ai uitat parola",
+      firstName: "Prenume",
+      lastName: "Nume",
+      email: "Email",
+      password: "Parolă",
+      confirmPassword: "Confirmă parola",
+      forgotPassword: "Ai uitat parola?",
+      loginButton: "Conectează-te",
+      registerButton: "Creează cont",
+      resetPasswordButton: "Resetează parola",
+      backToLogin: "Înapoi la autentificare",
+      noAccount: "Nu ai cont?",
+      createAccount: "Creează cont",
+      alreadyHaveAccount: "Ai deja cont?",
+      success: "Succes",
+      error: "Eroare",
+      loginSuccess: "Autentificare realizată cu succes!",
+      registerSuccess: "Cont creat cu succes!",
+      passwordsDoNotMatch: "Parolele nu coincid!",
+      genericError: "A apărut o eroare. Încearcă din nou.",
+      resetLinkSent: "Link de resetare trimis pe email!"
+    },
+
+    // Search Page
+    search: {
+      title: "Rezultate căutare",
+      searching: "Se caută...",
+      found: "Găsite",
+      result: "rezultat",
+      results: "rezultate",
+      for: "pentru",
+      filter: "Filtrează",
+      allCategories: "Toate categoriile",
+      noResultsTitle: "Niciun rezultat găsit",
+      noResultsDesc: "Nu am găsit produse care să corespundă căutării tale pentru",
+      backHome: "Înapoi la homepage"
+    },
+
+    // Order Success
+    orderSuccess: {
+      title: "Comandă plasată cu succes!",
+      description: "Mulțumim pentru comandă!",
+      nextTitle: "Ce urmează?",
+      nextDesc: "Comanda ta va fi procesată în 24 de ore. Vei primi un SMS cu detaliile de livrare.",
+      backHome: "Înapoi la acasă",
+      viewOrders: "Vezi comenzile mele"
+    },
+
+    // Detail Products Page
+    productDetail: {
+      notFound: "Produs negăsit",
+      backHome: "Înapoi la acasă",
+
+      sku: "Codul produsului",
+      reviews: "recenzii",
+      sold: "vândute",
+
+      quantity: "Cantitate",
+      available: "disponibile",
+      inStock: "În stoc",
+
+      orderByPhone: "Comandă prin telefon",
+      addToCart: "Adaugă în coș",
+      buyNow: "Cumpără acum",
+
+      installmentTitle: "Achită în 3 rate",
+      perMonth: "/ lună",
+      noInterest: "Fără dobândă • Fără comisioane",
+      learnMore: "Află mai multe",
+
+      freeDelivery: "Livrare gratuită",
+      freeDeliveryDesc: "Pentru comenzi peste 500 MDL",
+
+      return: "Retur 30 zile",
+      returnDesc: "Garanție returnare",
+
+      securePayment: "Plată securizată",
+      securePaymentDesc: "100% protejat",
+
+      tabs: {
+        description: "Descriere",
+        specifications: "Specificații",
+        reviews: "Recenzii"
+      },
+
+      noDescription: "Descriere disponibilă în curând.",
+      noSpecifications: "Nicio specificație disponibilă",
+
+      writeReview: "Scrie o recenzie",
+      yourName: "Numele tău",
+      email: "Email",
+      rating: "Rating",
+      comment: "Comentariu ..",
+      commentPlaceholder: "Scrie recenzia ta ..",
+      submitReview: "Trimite recenzia",
+      submitting: "Se trimite...",
+      reviewAdded: 'Recenzie adăugată cu succes',
+
+      customerReviews: "Recenzii clienți",
+      noReviews: "Nicio recenzie încă. Fii primul care evaluează acest produs!",
+
+      relatedProducts: "Produse similare",
+
+      installmentModal: {
+        title: "Plata în rate",
+        plan: "Plan de plată",
+        total: "Preț total",
+        monthly: "Rata lunară",
+        schedule: "Calendar plăți",
+        month: "Luna",
+        request: "Trimite cerere",
+        fullName: "Nume complet",
+        phone: "Telefon",
+        send: "Trimite cererea",
+        success: "Cerere trimisă!",
+        error: "Nu s-a putut trimite cererea. Te rog încearcă din nou.",
+        note: "Vă vom contacta în cel mai scurt timp pentru a finaliza cererea de plată în rate.",
+
+        benefits: {
+          noInterest: "Fără dobândă",
+          noFees: "Fără comisioane",
+          fastApproval: "Aprobare rapidă",
+          online: "100% online"
+        }
+      }
+    },
+
+    // Produse cu reducere
+    discountProducts: "Produse cu reducere",
   },
 
   ru: {
@@ -1021,20 +1203,202 @@ export const translations = {
 
     // Cart Page
     cart: {
-  emptyTitle: 'Ваша корзина пуста',
-  emptyDesc: 'Добавьте товары, чтобы продолжить покупки',
-  continueShopping: 'Продолжить покупки',
-  title: 'Моя корзина',
-  orderSummary: 'Сводка заказа',
-  subtotal: 'Промежуточный итог',
-  products: 'товаров',
-  shipping: 'Доставка',
-  freeShipping: 'Бесплатно',
-  total: 'Итого',
-  checkout: 'Оформить заказ',
-  freeShippingNote: 'Бесплатная доставка для заказов свыше 500 MDL',
-  freeReturnNote: 'Бесплатный возврат в течение 30 дней',
-  securePaymentNote: '100% безопасная оплата'
-}
+      emptyTitle: 'Ваша корзина пуста',
+      emptyDesc: 'Добавьте товары, чтобы продолжить покупки',
+      continueShopping: 'Продолжить покупки',
+      title: 'Моя корзина',
+      orderSummary: 'Сводка заказа',
+      subtotal: 'Промежуточный итог',
+      products: 'товаров',
+      shipping: 'Доставка',
+      freeShipping: 'Бесплатно',
+      total: 'Итого',
+      checkout: 'Оформить заказ',
+      freeShippingNote: 'Бесплатная доставка для заказов свыше 500 MDL',
+      freeReturnNote: 'Бесплатный возврат в течение 30 дней',
+      securePaymentNote: '100% безопасная оплата'
+    },
+
+    // Checkout Page
+    checkout: {
+      title: 'Оформление заказа',
+      desc: 'Заполните данные для доставки',
+      contactInfo: 'Контактная информация',
+      shippingAddress: 'Адрес доставки',
+      paymentMethod: 'Способ оплаты',
+      orderSummary: 'Сводка заказа',
+      fullName: 'Полное имя *',
+      phone: 'Телефон *',
+      email: 'Email *',
+      address: 'Полный адрес *',
+      city: 'Город *',
+      postalCode: 'Почтовый индекс',
+      notes: 'Дополнительные примечания (необязательно)',
+      placeholderFullName: 'Ион Попеску',
+      placeholderPhone: '+373 69 123 456',
+      placeholderEmail: 'email@пример.com',
+      placeholderAddress: 'Улица, №, блок, квартира',
+      placeholderCity: 'Кишинёв',
+      placeholderPostalCode: 'MD-2001',
+      placeholderNotes: 'Особые инструкции для доставки...',
+      cashOnDelivery: 'Наличными курьеру',
+      cashOnDeliveryDesc: 'Оплатите при получении заказа',
+      size: 'Размер',
+      subtotal: 'Промежуточный итог',
+      shipping: 'Доставка',
+      freeShipping: 'Бесплатно',
+      total: 'Итого',
+      processing: 'Обработка...',
+      placeOrder: 'Оформить заказ',
+      termsText: 'Оформляя заказ, вы принимаете наши',
+      termsLink: 'Условия и положения',
+      termsSuffix: '',
+      successTitle: 'Успешно',
+      successDesc: 'Ваш заказ был успешно оформлен!',
+      errorTitle: 'Ошибка',
+      errorDesc: 'Не удалось оформить заказ. Пожалуйста, попробуйте снова.'
+    },
+
+    // Product Card
+    productCard: {
+      addedToCart: "Товар добавлен в корзину!",
+      addedToWishlist: "Товар добавлен в избранное!",
+      buy: "Купить",
+      success: "Успешно"
+    },
+
+    // Auth Modal
+    auth: {
+      loginTitle: "Вход",
+      registerTitle: "Создать аккаунт",
+      forgotTitle: "Забыли пароль",
+      firstName: "Имя",
+      lastName: "Фамилия",
+      email: "Email",
+      password: "Пароль",
+      confirmPassword: "Подтвердите пароль",
+      forgotPassword: "Забыли пароль?",
+      loginButton: "Войти",
+      registerButton: "Создать аккаунт",
+      resetPasswordButton: "Сбросить пароль",
+      backToLogin: "Назад ко входу",
+      noAccount: "Нет аккаунта?",
+      createAccount: "Создать аккаунт",
+      alreadyHaveAccount: "Уже есть аккаунт?",
+      success: "Успешно",
+      error: "Ошибка",
+      loginSuccess: "Вход выполнен успешно!",
+      registerSuccess: "Аккаунт успешно создан!",
+      passwordsDoNotMatch: "Пароли не совпадают!",
+      genericError: "Произошла ошибка. Попробуйте снова.",
+      resetLinkSent: "Ссылка для сброса отправлена на email!"
+    },
+
+    // Search Page
+    search: {
+      title: "Результаты поиска",
+      searching: "Поиск...",
+      found: "Найдено",
+      result: "результат",
+      results: "результатов",
+      for: "по запросу",
+      filter: "Фильтр",
+      allCategories: "Все категории",
+      noResultsTitle: "Ничего не найдено",
+      noResultsDesc: "Мы не нашли товары, соответствующие вашему запросу",
+      backHome: "Вернуться на главную"
+    },
+
+    // Order Success
+    orderSuccess: {
+      title: "Заказ успешно оформлен!",
+      description: "Спасибо за заказ!",
+      nextTitle: "Что дальше?",
+      nextDesc: "Ваш заказ будет обработан в течение 24 часов. Вы получите SMS с деталями доставки.",
+      backHome: "На главную",
+      viewOrders: "Мои заказы"
+    },
+
+    // Product Detail Page
+    productDetail: {
+      notFound: "Товар не найден",
+      backHome: "На главную",
+
+      sku: "Код товара",
+      reviews: "отзывов",
+      sold: "продано",
+
+      quantity: "Количество",
+      available: "в наличии",
+      inStock: "Есть в наличии",
+
+      orderByPhone: "Заказать по телефону",
+      addToCart: "Добавить в корзину",
+      buyNow: "Купить сейчас",
+
+      installmentTitle: "Оплата в 3 рассрочки",
+      perMonth: "/ месяц",
+      noInterest: "Без процентов • Без комиссии",
+      learnMore: "Узнать больше",
+
+      freeDelivery: "Бесплатная доставка",
+      freeDeliveryDesc: "Для заказов свыше 500 MDL",
+
+      return: "Возврат 30 дней",
+      returnDesc: "Гарантия возврата",
+
+      securePayment: "Безопасная оплата",
+      securePaymentDesc: "100% защита",
+
+      tabs: {
+        description: "Описание",
+        specifications: "Характеристики",
+        reviews: "Отзывы"
+      },
+
+      noDescription: "Описание скоро будет доступно.",
+      noSpecifications: "Нет доступных характеристик",
+
+      writeReview: "Оставить отзыв",
+      yourName: "Ваше имя",
+      email: "Email",
+      rating: "Оценка",
+      comment: "Комментарий",
+      commentPlaceholder: "Напишите ваш отзыв..",
+      submitReview: "Отправить отзыв",
+      submitting: "Отправка...",
+      reviewAdded: 'Отзыв успешно добавлен',
+
+      customerReviews: "Отзывы клиентов",
+      noReviews: "Пока нет отзывов. Будьте первым!",
+
+      relatedProducts: "Похожие товары",
+
+      installmentModal: {
+        title: "Оплата в рассрочку",
+        plan: "План оплаты",
+        total: "Общая сумма",
+        monthly: "Ежемесячный платеж",
+        schedule: "График платежей",
+        month: "Месяц",
+        request: "Отправить заявку",
+        fullName: "Полное имя",
+        phone: "Телефон",
+        send: "Отправить заявку",
+        success: "Заявка отправлена!",
+        error: "Не удалось отправить заявку. Попробуйте снова.",
+        note: "Мы свяжемся с вами в ближайшее время для завершения заявки.",
+
+        benefits: {
+          noInterest: "Без процентов",
+          noFees: "Без комиссии",
+          fastApproval: "Быстрое одобрение",
+          online: "100% онлайн"
+        }
+      }
+    },
+
+    // Produse cu reducere
+    discountProducts: "Товары со скидкой"
   }
 };

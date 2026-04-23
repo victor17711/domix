@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 const CountdownTimer = ({ targetDate }) => {
+  const { language } = useLanguage();
+
   const calculateTimeLeft = () => {
     const difference = +new Date(targetDate) - +new Date();
     let timeLeft = {};
@@ -31,7 +34,11 @@ const CountdownTimer = ({ targetDate }) => {
 
   return (
     <div className="inline-flex items-center gap-2 bg-red-100 text-red-600 px-4 py-2 rounded-full">
-      <span className="font-semibold">Reducere:</span>
+      
+      <span className="font-semibold">
+        {language === 'ru' ? 'Истекает:' : 'Expiră:'}
+      </span>
+
       <div className="flex items-center gap-1">
         <span className="font-bold">{formatNumber(timeLeft.days || 259)}</span>
         <span>:</span>

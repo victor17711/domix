@@ -160,11 +160,11 @@ const CategoryPage = () => {
         <div className="w-full px-6 py-8">
           <div className="flex items-center gap-4">
             {category.image && (
-  <div className="w-16 h-16 flex-shrink-0 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center overflow-hidden">
+  <div className="w-16 h-16 flex-shrink-0 rounded-2xl flex items-center justify-center overflow-hidden">
     <img 
       src={category.image} 
       alt={categoryName} 
-      className="w-full h-full object-contain" 
+      className="w-full h-full object-contain brightness-0 invert" 
     />
   </div>
 )}

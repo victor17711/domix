@@ -90,12 +90,14 @@ const BrandsPage = () => {
             {/* GRID MODERN */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
               
-              {brands.map((brand) => (
-                <Link
-                  key={brand.id}
-                  to={`/category/${encodeURIComponent('All')}?brand=${brand.id}`}
-                  className="group bg-white rounded-2xl p-5 flex items-center justify-center border border-gray-200 hover:border-teal-500 hover:shadow-xl transition-all duration-300 relative overflow-hidden"
-                >
+              {brands.map((brand) => {
+                const brandSlug = brand.name.toLowerCase().replace(/\s+/g, '-');
+                return (
+                  <Link
+                    key={brand.id}
+                    to={`/brand/${brandSlug}`}
+                    className="group bg-white rounded-2xl p-5 flex items-center justify-center border border-gray-200 hover:border-teal-500 hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+                  >
                   
                   {/* hover glow */}
                   <div className="absolute inset-0 bg-gradient-to-tr from-teal-500/0 via-teal-500/0 to-teal-500/10 opacity-0 group-hover:opacity-100 transition"></div>
@@ -125,7 +127,8 @@ const BrandsPage = () => {
 
                   </div>
                 </Link>
-              ))}
+              );
+            })}
 
             </div>
           </>

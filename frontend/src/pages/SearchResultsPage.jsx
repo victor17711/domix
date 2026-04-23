@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Search, X, Filter } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
+import { useLanguage } from '../context/LanguageContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const SearchResultsPage = () => {
+  const { t, language } = useLanguage();
+
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
@@ -24,25 +28,39 @@ const SearchResultsPage = () => {
   const searchProducts = async () => {
     setLoading(true);
     try {
-      // Search in products by name, category
       const response = await axios.get(`${API}/products`);
       const allProducts = response.data;
 
-      // Filter products
-      const filtered = allProducts.filter(product => {
-        const searchLower = query.toLowerCase();
-        const matchesName = product.name.toLowerCase().includes(searchLower);
-        const matchesCategory = product.category.toLowerCase().includes(searchLower);
-        const matchesId = product.id.toLowerCase().includes(searchLower);
-        const matchesDescription = product.description?.toLowerCase().includes(searchLower);
+      const searchLower = query.toLowerCase();
 
-        return matchesName || matchesCategory || matchesId || matchesDescription;
+      const filtered = allProducts.filter(product => {
+        const name = product.name?.toLowerCase() || '';
+        const nameRu = product.nameRu?.toLowerCase() || '';
+        const category = product.category?.toLowerCase() || '';
+        const categoryRu = product.categoryRu?.toLowerCase() || '';
+        const id = product.id?.toLowerCase() || '';
+        const description = product.description?.toLowerCase() || '';
+
+        return (
+          name.includes(searchLower) ||
+          nameRu.includes(searchLower) ||
+          category.includes(searchLower) ||
+          categoryRu.includes(searchLower) ||
+          id.includes(searchLower) ||
+          description.includes(searchLower)
+        );
       });
 
       setProducts(filtered);
 
-      // Extract unique categories from results
-      const uniqueCategories = [...new Set(filtered.map(p => p.category))];
+      const uniqueCategories = [
+        ...new Set(
+          filtered.map(p =>
+            language === 'ru' && p.categoryRu ? p.categoryRu : p.category
+          )
+        )
+      ];
+
       setCategories(uniqueCategories);
     } catch (error) {
       console.error('Search error:', error);
@@ -52,7 +70,10 @@ const SearchResultsPage = () => {
   };
 
   const filteredProducts = selectedCategory
-    ? products.filter(p => p.category === selectedCategory)
+    ? products.filter(p => {
+        const cat = language === 'ru' && p.categoryRu ? p.categoryRu : p.category;
+        return cat === selectedCategory;
+      })
     : products;
 
   return (
@@ -62,14 +83,24 @@ const SearchResultsPage = () => {
         <div className="w-full px-6 py-6">
           <div className="flex items-center gap-3 mb-2">
             <Search className="w-6 h-6 text-teal-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Rezultate Căutare</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              {t('search.title')}
+            </h1>
           </div>
+
           <p className="text-gray-600">
             {loading ? (
-              'Se caută...'
+              t('search.searching')
             ) : (
               <>
-                Găsite <span className="font-bold text-teal-600">{filteredProducts.length}</span> {filteredProducts.length === 1 ? 'rezultat' : 'rezultate'} pentru "{query}"
+                {t('search.found')}{' '}
+                <span className="font-bold text-teal-600">
+                  {filteredProducts.length}
+                </span>{' '}
+                {filteredProducts.length === 1
+                  ? t('search.result')
+                  : t('search.results')}{' '}
+                {t('search.for')} "{query}"
               </>
             )}
           </p>
@@ -78,37 +109,49 @@ const SearchResultsPage = () => {
 
       <div className="w-full px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Sidebar Filters */}
+          
+          {/* Sidebar */}
           {categories.length > 0 && (
             <div className="lg:col-span-1">
               <div className="bg-white rounded-2xl shadow-lg p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <Filter className="w-5 h-5 text-teal-600" />
-                  <h3 className="font-bold text-gray-900">Filtrează</h3>
+                  <h3 className="font-bold text-gray-900">
+                    {t('search.filter')}
+                  </h3>
                 </div>
 
                 <div className="space-y-2">
                   <button
                     onClick={() => setSelectedCategory('')}
                     className={`w-full text-left px-4 py-2 rounded-lg transition ${
-                      selectedCategory === '' 
-                        ? 'bg-teal-50 text-teal-600 font-semibold' 
+                      selectedCategory === ''
+                        ? 'bg-teal-50 text-teal-600 font-semibold'
                         : 'text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    Toate Categoriile ({products.length})
+                    {t('search.allCategories')} ({products.length})
                   </button>
+
                   {categories.map(category => (
                     <button
                       key={category}
                       onClick={() => setSelectedCategory(category)}
                       className={`w-full text-left px-4 py-2 rounded-lg transition ${
-                        selectedCategory === category 
-                          ? 'bg-teal-50 text-teal-600 font-semibold' 
+                        selectedCategory === category
+                          ? 'bg-teal-50 text-teal-600 font-semibold'
                           : 'text-gray-700 hover:bg-gray-50'
                       }`}
                     >
-                      {category} ({products.filter(p => p.category === category).length})
+                      {category} (
+                      {products.filter(p => {
+                        const cat =
+                          language === 'ru' && p.categoryRu
+                            ? p.categoryRu
+                            : p.category;
+                        return cat === category;
+                      }).length}
+                      )
                     </button>
                   ))}
                 </div>
@@ -125,15 +168,20 @@ const SearchResultsPage = () => {
             ) : filteredProducts.length === 0 ? (
               <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
                 <Search className="w-20 h-20 text-gray-300 mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Niciun rezultat găsit</h2>
+
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  {t('search.noResultsTitle')}
+                </h2>
+
                 <p className="text-gray-600 mb-6">
-                  Nu am găsit produse care să corespundă căutării tale pentru "{query}"
+                  {t('search.noResultsDesc')} "{query}"
                 </p>
+
                 <Link
                   to="/"
                   className="inline-block bg-teal-600 text-white px-8 py-3 rounded-xl hover:bg-teal-700 transition font-semibold"
                 >
-                  Înapoi la Homepage
+                  {t('search.backHome')}
                 </Link>
               </div>
             ) : (
@@ -144,6 +192,7 @@ const SearchResultsPage = () => {
               </div>
             )}
           </div>
+
         </div>
       </div>
     </div>

@@ -34,143 +34,159 @@ const CartPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="w-full px-6 py-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-8">
+      <div className="w-full px-4 md:px-6 py-6 md:py-8">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 md:mb-8">
           {t('cart.title')}
         </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            {cart.map((item) => (
-              <div
-                key={`${item.id}-${item.selectedSize}-${item.selectedColor}`}
-                className="bg-white rounded-2xl p-6 border-2 border-gray-100"
-              >
-                <div className="flex gap-6">
-                  {/* Image */}
-                  <div className="w-32 h-32 flex-shrink-0 rounded-xl overflow-hidden bg-gray-100">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+            {cart.map((item) => {
+              const productName =
+                language === 'ru' && item.nameRu ? item.nameRu : item.name;
 
-                  {/* Info */}
-                  <div className="flex-1">
-                    <Link to={`/product/${item.id}`}>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2 hover:text-teal-600 transition">
-                        {item.name}
-                      </h3>
-                    </Link>
+              return (
+                <div
+                  key={`${item.id}-${item.selectedSize}-${item.selectedColor}`}
+                  className="bg-white rounded-2xl p-4 md:p-6 border-2 border-gray-100"
+                >
+                  <div className="relative">
+                    {/* Remove button mobile */}
+                    <button
+                      onClick={() =>
+                        removeFromCart(item.id, item.selectedSize, item.selectedColor)
+                      }
+                      className="absolute top-0 right-0 md:hidden text-red-500 hover:text-red-700 transition p-1"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
 
-                    <div className="text-sm text-gray-600 space-y-1 mb-4">
-                      {item.specifications && item.specifications.length > 0 && (
-                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 mb-4">
-                          {item.specifications.slice(0, 3).map((spec, index) => (
-                            <div key={index} className="whitespace-nowrap">
-                              <span className="font-semibold">{spec.title}:</span> {spec.value}
+                    <div className="flex gap-4 md:gap-6 pr-8 md:pr-0">
+                      {/* Image */}
+                      <div className="w-24 h-24 md:w-32 md:h-32 flex-shrink-0 rounded-xl overflow-hidden bg-gray-100">
+                        <img
+                          src={item.image}
+                          alt={productName}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <Link to={`/product/${item.id}`}>
+                          <h3 className="text-base md:text-xl font-bold text-gray-900 mb-2 hover:text-teal-600 transition leading-snug break-words">
+                            {productName}
+                          </h3>
+                        </Link>
+
+                        {item.specifications && item.specifications.length > 0 && (
+                          <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs md:text-sm text-gray-600 mb-4">
+                            {item.specifications.slice(0, 3).map((spec, index) => (
+                              <div key={index} className="break-words">
+                                <span className="font-semibold">{spec.title}:</span> {spec.value}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                          {/* Quantity */}
+                          <div className="flex items-center border-2 border-gray-300 rounded-lg w-fit">
+                            <button
+                              onClick={() =>
+                                updateQuantity(
+                                  item.id,
+                                  Math.max(1, item.quantity - 1),
+                                  item.selectedSize,
+                                  item.selectedColor
+                                )
+                              }
+                              className="p-2 hover:bg-gray-100 transition"
+                            >
+                              <Minus className="w-4 h-4" />
+                            </button>
+
+                            <span className="px-4 py-2 font-semibold min-w-[44px] text-center">
+                              {item.quantity}
+                            </span>
+
+                            <button
+                              onClick={() =>
+                                updateQuantity(
+                                  item.id,
+                                  item.quantity + 1,
+                                  item.selectedSize,
+                                  item.selectedColor
+                                )
+                              }
+                              className="p-2 hover:bg-gray-100 transition"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </button>
+                          </div>
+
+                          {/* Price */}
+                          <div className="text-left md:text-right">
+                            <div className="text-lg md:text-2xl font-bold text-teal-600 break-words">
+                              {item.price * item.quantity} MDL
                             </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      {/* Quantity */}
-                      <div className="flex items-center border-2 border-gray-300 rounded-lg">
-                        <button
-                          onClick={() =>
-                            updateQuantity(
-                              item.id,
-                              Math.max(1, item.quantity - 1),
-                              item.selectedSize,
-                              item.selectedColor
-                            )
-                          }
-                          className="p-2 hover:bg-gray-100 transition"
-                        >
-                          <Minus className="w-4 h-4" />
-                        </button>
-
-                        <span className="px-4 py-2 font-semibold">{item.quantity}</span>
-
-                        <button
-                          onClick={() =>
-                            updateQuantity(
-                              item.id,
-                              item.quantity + 1,
-                              item.selectedSize,
-                              item.selectedColor
-                            )
-                          }
-                          className="p-2 hover:bg-gray-100 transition"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
-                      </div>
-
-                      {/* Price */}
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-teal-600">
-                          {item.price * item.quantity} MDL
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {item.price} MDL x {item.quantity}
+                            <div className="text-xs md:text-sm text-gray-500 break-words">
+                              {item.price} MDL x {item.quantity}
+                            </div>
+                          </div>
                         </div>
                       </div>
+
+                      {/* Remove desktop */}
+                      <button
+                        onClick={() =>
+                          removeFromCart(item.id, item.selectedSize, item.selectedColor)
+                        }
+                        className="hidden md:block text-red-500 hover:text-red-700 transition self-start"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
                     </div>
                   </div>
-
-                  {/* Remove */}
-                  <button
-                    onClick={() =>
-                      removeFromCart(item.id, item.selectedSize, item.selectedColor)
-                    }
-                    className="text-red-500 hover:text-red-700 transition"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
                 </div>
-              </div>
-            )
-          )}
+              );
+            })}
           </div>
 
           {/* Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl p-6 border-2 border-gray-100 sticky top-4">
+            <div className="bg-white rounded-2xl p-5 md:p-6 border-2 border-gray-100 sticky top-4">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 {t('cart.orderSummary')}
               </h2>
 
               <div className="space-y-4 mb-6">
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-gray-600 gap-4">
                   <span>
                     {t('cart.subtotal')} ({cart.length} {t('cart.products')})
                   </span>
-                  <span className="font-semibold">{getCartTotal()} MDL</span>
+                  <span className="font-semibold text-right">{getCartTotal()} MDL</span>
                 </div>
 
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-gray-600 gap-4">
                   <span>{t('cart.shipping')}</span>
-                  <span className="font-semibold text-green-600">
+                  <span className="font-semibold text-green-600 text-right">
                     {t('cart.freeShipping')}
                   </span>
                 </div>
 
                 <div className="border-t pt-4">
-                  <div className="flex justify-between text-xl font-bold text-gray-900">
+                  <div className="flex justify-between text-lg md:text-xl font-bold text-gray-900 gap-4">
                     <span>{t('cart.total')}</span>
-                    <span className="text-teal-600">{getCartTotal()} MDL</span>
+                    <span className="text-teal-600 text-right">{getCartTotal()} MDL</span>
                   </div>
                 </div>
               </div>
 
               <button
                 onClick={() => navigate('/checkout')}
-                className="w-full bg-teal-600 text-white py-4 rounded-xl hover:bg-teal-700 transition font-bold text-lg mb-4"
+                className="w-full bg-teal-600 text-white py-4 rounded-xl hover:bg-teal-700 transition font-bold text-base md:text-lg mb-4"
               >
                 {t('cart.checkout')}
               </button>
@@ -182,7 +198,6 @@ const CartPage = () => {
                 {t('cart.continueShopping')}
               </Link>
 
-              {/* Features */}
               <div className="mt-6 pt-6 border-t space-y-3 text-sm text-gray-600">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-teal-600 rounded-full"></div>

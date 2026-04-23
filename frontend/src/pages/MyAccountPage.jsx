@@ -558,30 +558,6 @@ const MyAccountPage = () => {
                   {t('myAccount.settings.title')}
                 </h2>
                 <div className="space-y-4">
-                  <div className="p-4 border-2 border-gray-200 rounded-xl">
-                    <h3 className="font-bold text-gray-900 mb-1">
-                      {t('myAccount.settings.changePassword.title')}
-                    </h3>
-                    <p className="text-sm text-gray-600 mb-3">
-                      {t('myAccount.settings.changePassword.desc')}
-                    </p>
-                    <button className="text-teal-600 hover:text-teal-700 font-semibold text-sm">
-                      {t('myAccount.settings.changePassword.action')}
-                    </button>
-                  </div>
-
-                  <div className="p-4 border-2 border-gray-200 rounded-xl">
-                    <h3 className="font-bold text-gray-900 mb-1">
-                      {t('myAccount.settings.notifications.title')}
-                    </h3>
-                    <p className="text-sm text-gray-600 mb-3">
-                      {t('myAccount.settings.notifications.desc')}
-                    </p>
-                    <button className="text-teal-600 hover:text-teal-700 font-semibold text-sm">
-                      {t('myAccount.settings.notifications.action')}
-                    </button>
-                  </div>
-
                   <div className="p-4 border-2 border-red-200 rounded-xl bg-red-50">
                     <h3 className="font-bold text-red-900 mb-1">
                       {t('myAccount.settings.deleteAccount.title')}

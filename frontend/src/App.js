@@ -138,6 +138,15 @@ function App() {
                   </>
                 ))}
 
+                {/* Brand Detail Page Route */}
+                {createDualRoutes("/brand/:slug", (
+                  <>
+                    <Navbar />
+                    <BrandPage />
+                    <Footer />
+                  </>
+                ))}
+
                 {/* Search Results Route */}
                 {createDualRoutes("/search", (
                   <>

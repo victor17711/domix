@@ -97,7 +97,7 @@ const HeroSlider = () => {
   return (
     <div className="w-full px-4 md:px-6 py-6 md:py-10">
       <div
-        className="relative rounded-3xl overflow-hidden h-[250px] md:h-[600px] touch-pan-y"
+        className="relative rounded-3xl overflow-hidden h-[200px] md:h-[600px] touch-pan-y"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
