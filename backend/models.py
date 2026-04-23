@@ -65,7 +65,8 @@ class ProductCreate(BaseModel):
     price: float
     originalPrice: Optional[float] = None
     discount: Optional[int] = 0
-    category: Optional[str] = ""  # Made optional for flexibility
+    category: Optional[str] = ""  # Primary category (backward compatibility)
+    categories: Optional[List[str]] = []  # Multiple categories support
     categoryId: Optional[str] = None  # Support both category and categoryId
     brandId: Optional[str] = None
     storeName: Optional[str] = ""

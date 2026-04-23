@@ -29,6 +29,7 @@ const ProductsManagement = () => {
     price: '',
     originalPrice: '',
     category: '',
+    categories: [],
     brandId: '',
     storeName: '',
     image: '',
@@ -168,6 +169,7 @@ const ProductsManagement = () => {
       price: product.price,
       originalPrice: product.originalPrice,
       category: product.category,
+      categories: product.categories || [],
       brandId: product.brandId || '',
       storeName: product.storeName || '',
       image: product.image,
@@ -192,6 +194,7 @@ const ProductsManagement = () => {
       price: '',
       originalPrice: '',
       category: '',
+      categories: [],
       brandId: '',
       storeName: '',
       image: '',
@@ -494,7 +497,7 @@ const ProductsManagement = () => {
 
               <div className="grid grid-cols-1 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Categorie *</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Categorie Principală *</label>
                   <select
                     required
                     value={formData.category}
@@ -507,6 +510,38 @@ const ProductsManagement = () => {
                     ))}
                   </select>
                 </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Categorii Adiționale</label>
+                  <div className="border-2 border-gray-200 rounded-xl p-3 max-h-48 overflow-y-auto bg-gray-50">
+                    {categories.map((cat) => (
+                      <label key={cat.id} className="flex items-center gap-2 py-1.5 cursor-pointer hover:bg-white px-2 rounded">
+                        <input
+                          type="checkbox"
+                          checked={formData.categories?.includes(cat.name) || false}
+                          onChange={(e) => {
+                            const currentCategories = formData.categories || [];
+                            if (e.target.checked) {
+                              setFormData({
+                                ...formData,
+                                categories: [...currentCategories, cat.name]
+                              });
+                            } else {
+                              setFormData({
+                                ...formData,
+                                categories: currentCategories.filter(c => c !== cat.name)
+                              });
+                            }
+                          }}
+                          className="w-4 h-4 text-teal-600 rounded focus:ring-teal-500"
+                        />
+                        <span className="text-sm text-gray-700">{cat.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Produsul va apărea în toate categoriile selectate</p>
+                </div>
+
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2">Brand</label>
                   <select
