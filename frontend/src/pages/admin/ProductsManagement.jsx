@@ -32,6 +32,7 @@ const ProductsManagement = () => {
     categories: [],
     brandId: '',
     storeName: '',
+    storeNameRu: '',
     image: '',
     images: [],
     available: 100,
@@ -172,6 +173,7 @@ const ProductsManagement = () => {
       categories: product.categories || [],
       brandId: product.brandId || '',
       storeName: product.storeName || '',
+      storeNameRu: product.storeNameRu || '',
       image: product.image,
       images: product.images || [],
       available: product.available,
@@ -197,6 +199,7 @@ const ProductsManagement = () => {
       categories: [],
       brandId: '',
       storeName: '',
+      storeNameRu: '',
       image: '',
       images: [],
       available: 100,
@@ -386,7 +389,7 @@ const ProductsManagement = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-gradient-to-r from-teal-600 to-teal-700 text-white px-6 py-4 flex justify-between items-center rounded-t-2xl">
+            <div className="sticky top-0 z-50 bg-gradient-to-r from-teal-600 to-teal-700 text-white px-6 py-4 flex justify-between items-center rounded-t-2xl">
               <h3 className="text-2xl font-bold">{editingProduct ? 'Editează Produs' : 'Adaugă Produs Nou'}</h3>
               <button onClick={() => { setShowModal(false); setEditingProduct(null); resetForm(); }} className="text-white hover:text-gray-200">
                 <X className="w-6 h-6" />
@@ -623,6 +626,16 @@ const ProductsManagement = () => {
                     type="text"
                     value={formData.storeName}
                     onChange={(e) => setFormData({...formData, storeName: e.target.value})}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Magazin — Rusă 🇷🇺</label>
+                  <input
+                    type="text"
+                    value={formData.storeNameRu}
+                    onChange={(e) => setFormData({...formData, storeNameRu: e.target.value})}
+                    placeholder="ex: Магазин"
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>

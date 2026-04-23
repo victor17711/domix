@@ -15,6 +15,7 @@ const ProductCard = ({ product, showProgress = false }) => {
   // Get translated content
   const productName = language === 'ru' && product.nameRu ? product.nameRu : product.name;
   const productBadge = language === 'ru' && product.badgeRu ? product.badgeRu : product.badge;
+  const productStoreName = language === 'ru' && product.storeNameRu ? product.storeNameRu : product.storeName;
 
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -89,8 +90,8 @@ const ProductCard = ({ product, showProgress = false }) => {
 
           {/* Product Info */}
           <div className="p-4">
-            {product.storeName && (
-              <p className="text-xs text-gray-500 mb-1">{product.storeName}</p>
+            {productStoreName && (
+              <p className="text-xs text-gray-500 mb-1">{productStoreName}</p>
             )}
             <h3 className="font-semibold text-gray-800 mb-2 line-clamp-2 hover:text-teal-600 transition">
               {productName}

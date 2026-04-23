@@ -70,6 +70,7 @@ class ProductCreate(BaseModel):
     categoryId: Optional[str] = None  # Support both category and categoryId
     brandId: Optional[str] = None
     storeName: Optional[str] = ""
+    storeNameRu: Optional[str] = ""  # Russian translation
     image: Optional[str] = ""  # Primary image (optional for backward compatibility)
     images: Optional[List[str]] = []  # Up to 5 images
     colors: Optional[List[str]] = []
