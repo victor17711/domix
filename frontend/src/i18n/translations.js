@@ -97,7 +97,7 @@ export const translations = {
       cardPayment: 'Plată cu cardul',
       orderSummary: 'Sumar comandă',
       placeOrder: 'Plasează comanda',
-      processing: 'Se procesează...'
+      processing: 'Se procesează...',
     },
 
     // Footer
@@ -565,7 +565,8 @@ export const translations = {
       successTitle: 'Succes',
       successDesc: 'Comanda ta a fost plasată cu succes!',
       errorTitle: 'Eroare',
-      errorDesc: 'Nu s-a putut plasa comanda. Te rog încearcă din nou.'
+      errorDesc: 'Nu s-a putut plasa comanda. Te rog încearcă din nou.',
+      thankYou: 'Mulțumim'
     },
 
     // Product Card
@@ -707,6 +708,16 @@ export const translations = {
         }
       }
     },
+
+    // Brand Category Page
+    brandPage: {
+  home: 'Acasă',
+  brands: 'Branduri',
+  brandNotFound: 'Brand-ul nu a fost găsit',
+  loadError: 'Eroare la încărcarea datelor',
+  backToBrands: 'Înapoi la Branduri',
+  noProducts: 'Nu există produse disponibile pentru acest brand'
+},
 
     // Produse cu reducere
     discountProducts: "Produse cu reducere",
@@ -1277,7 +1288,8 @@ export const translations = {
       successTitle: 'Успешно',
       successDesc: 'Ваш заказ был успешно оформлен!',
       errorTitle: 'Ошибка',
-      errorDesc: 'Не удалось оформить заказ. Пожалуйста, попробуйте снова.'
+      errorDesc: 'Не удалось оформить заказ. Пожалуйста, попробуйте снова.',
+      thankYou: 'Спасибо'
     },
 
     // Product Card
@@ -1419,6 +1431,16 @@ export const translations = {
         }
       }
     },
+
+    // Brand Category Page
+    brandPage: {
+  home: 'Главная',
+  brands: 'Бренды',
+  brandNotFound: 'Бренд не найден',
+  loadError: 'Ошибка при загрузке данных',
+  backToBrands: 'Назад к брендам',
+  noProducts: 'Для этого бренда нет доступных товаров'
+},
 
     // Produse cu reducere
     discountProducts: "Товары со скидкой"

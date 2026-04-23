@@ -610,15 +610,15 @@ const Settings = () => {
       <div className="bg-white rounded-2xl p-6 border-2 border-gray-100">
         <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
           <Folder className="w-6 h-6 text-teal-600" />
-          Categorie Featured Homepage
+          Categorie carousel pagina principala
         </h3>
         <p className="text-sm text-gray-600 mb-4">
-          Selectează categoria de produse care va apărea în carousel-ul "Today's Hot Picks" pe pagina principală
+          Selectează categoria de produse care va apărea în carousel-ul "Produse cu reducere" pe pagina principală
         </p>
         
         <div className="max-w-md">
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Categorie Featured
+            Categorie
           </label>
           <select
             value={featuredCategoryId}

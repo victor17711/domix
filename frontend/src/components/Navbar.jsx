@@ -619,45 +619,51 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Menu Footer */}
-          <div className="border-t border-gray-200 p-4 bg-white space-y-3">
-            {/* Language Switcher */}
-            <div className="rounded-2xl bg-gradient-to-r from-teal-50 to-teal-100 px-4 py-3">
-              <div className="text-sm text-gray-600 mb-2 flex items-center gap-2">
-                <Globe className="w-4 h-4" />
-                <span className="font-semibold">Limba / Язык</span>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => changeLanguage('ro')}
-                  className={`px-3 py-2 rounded-lg text-sm font-semibold transition ${
-                    language === 'ro'
-                      ? 'bg-teal-600 text-white shadow-sm'
-                      : 'bg-white text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  🇷🇴 Română
-                </button>
-                <button
-                  onClick={() => changeLanguage('ru')}
-                  className={`px-3 py-2 rounded-lg text-sm font-semibold transition ${
-                    language === 'ru'
-                      ? 'bg-teal-600 text-white shadow-sm'
-                      : 'bg-white text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  🇷🇺 Русский
-                </button>
-              </div>
-            </div>
+<div className="border-t border-gray-200 px-4 py-3 bg-white space-y-2">
 
-            {/* Support Phone */}
-            <div className="rounded-2xl bg-gray-50 px-4 py-3">
-              <div className="text-sm text-gray-500">{t('navbar.support')}</div>
-              <a href="tel:069711967" className="text-lg font-bold text-gray-900">
-                069 711 967
-              </a>
-            </div>
-          </div>
+  {/* Language Switcher */}
+  <div className="flex items-center justify-between bg-gray-50 rounded-xl px-3 py-2">
+    
+    <div className="flex items-center gap-2 text-xs text-gray-500">
+      <Globe className="w-4 h-4" />
+      <span className="font-medium">RO / RU</span>
+    </div>
+
+    <div className="flex items-center gap-1">
+      <button
+        onClick={() => changeLanguage('ro')}
+        className={`px-2 py-1 rounded-md text-xs font-semibold transition ${
+          language === 'ro'
+            ? 'bg-teal-600 text-white'
+            : 'text-gray-600 hover:bg-gray-100'
+        }`}
+      >
+        RO
+      </button>
+
+      <button
+        onClick={() => changeLanguage('ru')}
+        className={`px-2 py-1 rounded-md text-xs font-semibold transition ${
+          language === 'ru'
+            ? 'bg-teal-600 text-white'
+            : 'text-gray-600 hover:bg-gray-100'
+        }`}
+      >
+        RU
+      </button>
+    </div>
+
+  </div>
+
+  {/* Support Phone */}
+  <div className="flex items-center justify-between bg-gray-50 rounded-xl px-3 py-2">
+    <span className="text-xs text-gray-500">{t('navbar.support')}</span>
+    <a href="tel:069711967" className="text-sm font-semibold text-gray-900">
+      069 711 967
+    </a>
+  </div>
+
+</div>
         </div>
       </div>
 

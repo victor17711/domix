@@ -379,9 +379,9 @@ async def export_products(
         
         # Headers
         headers = [
-            "ID", "Name", "Name RU", "Description", "Description RU", "Price", "Stock", "Category ID", 
+            "ID", "Name RO", "Name RU", "Description RO", "Description RU", "Price", "Stock", "Category ID", 
             "Brand ID", "SKU", "Is Active", "Images (comma-separated)", 
-            "Specifications (JSON)", "Badge", "Badge RU"
+            "Specifications (JSON)", "Badge RO", "Badge RU"
         ]
         ws.append(headers)
         

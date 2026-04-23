@@ -20,38 +20,36 @@ const BrandPage = () => {
     const fetchBrandAndProducts = async () => {
       try {
         setLoading(true);
-        
-        // Fetch all brands to find the one with this slug
+
         const brandsRes = await axios.get(`${API}/brands`);
-        const foundBrand = brandsRes.data.find(b => 
-          b.name.toLowerCase().replace(/\s+/g, '-') === slug
+        const foundBrand = brandsRes.data.find(
+          (b) => b.name.toLowerCase().replace(/\s+/g, '-') === slug
         );
-        
+
         if (!foundBrand) {
-          setError('Brand-ul nu a fost găsit');
+          setError(t('brandPage.brandNotFound'));
           setLoading(false);
           return;
         }
-        
+
         setBrand(foundBrand);
-        
-        // Fetch products for this brand
+
         const productsRes = await axios.get(`${API}/products`);
         const brandProducts = productsRes.data.filter(
-          p => p.brandId === foundBrand.id
+          (p) => p.brandId === foundBrand.id
         );
-        
+
         setProducts(brandProducts);
         setLoading(false);
       } catch (err) {
         console.error('Error fetching brand data:', err);
-        setError('Eroare la încărcarea datelor');
+        setError(t('brandPage.loadError'));
         setLoading(false);
       }
     };
 
     fetchBrandAndProducts();
-  }, [slug]);
+  }, [slug, t]);
 
   if (loading) {
     return (
@@ -66,17 +64,40 @@ const BrandPage = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
-          <p className="text-xl text-gray-600 mb-6">{error || 'Brand-ul nu a fost găsit'}</p>
+          <p className="text-xl text-gray-600 mb-6">
+            {error || t('brandPage.brandNotFound')}
+          </p>
           <Link
             to="/brands"
             className="bg-teal-600 text-white px-6 py-3 rounded-xl hover:bg-teal-700 transition font-semibold inline-block"
           >
-            Înapoi la Branduri
+            {t('brandPage.backToBrands')}
           </Link>
         </div>
       </div>
     );
   }
+
+  const brandName =
+    language === 'ru' && brand.nameRu ? brand.nameRu : brand.name;
+
+  const productsText =
+    language === 'ru'
+      ? products.length === 1
+        ? 'товар'
+        : 'товаров'
+      : products.length === 1
+      ? 'produs'
+      : 'produse';
+
+  const availableText =
+    language === 'ru'
+      ? products.length === 1
+        ? 'доступен'
+        : 'доступно'
+      : products.length === 1
+      ? 'disponibil'
+      : 'disponibile';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -84,11 +105,15 @@ const BrandPage = () => {
       <div className="bg-white border-b">
         <div className="w-full px-6 py-4">
           <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Link to="/" className="hover:text-teal-600">Acasă</Link>
+            <Link to="/" className="hover:text-teal-600">
+              {t('brandPage.home')}
+            </Link>
             <ChevronRight className="w-4 h-4" />
-            <Link to="/brands" className="hover:text-teal-600">Branduri</Link>
+            <Link to="/brands" className="hover:text-teal-600">
+              {t('brandPage.brands')}
+            </Link>
             <ChevronRight className="w-4 h-4" />
-            <span className="text-gray-900 font-semibold">{brand.name}</span>
+            <span className="text-gray-900 font-semibold">{brandName}</span>
           </div>
         </div>
       </div>
@@ -99,16 +124,18 @@ const BrandPage = () => {
           <div className="flex items-center gap-6">
             {brand.logo && (
               <div className="w-24 h-24 bg-white rounded-2xl p-4 flex items-center justify-center">
-                <img 
-                  src={brand.logo} 
-                  alt={brand.name} 
-                  className="w-full h-full object-contain" 
+                <img
+                  src={brand.logo}
+                  alt={brandName}
+                  className="w-full h-full object-contain"
                 />
               </div>
             )}
             <div>
-              <h1 className="text-3xl md:text-5xl font-bold mb-2">{brand.name}</h1>
-              <p className="text-teal-100">{products.length} {products.length === 1 ? 'produs' : 'produse'} disponibil{products.length === 1 ? '' : 'e'}</p>
+              <h1 className="text-3xl md:text-5xl font-bold mb-2">{brandName}</h1>
+              <p className="text-teal-100">
+                {products.length} {productsText} {availableText}
+              </p>
             </div>
           </div>
         </div>
@@ -124,12 +151,14 @@ const BrandPage = () => {
           </div>
         ) : (
           <div className="text-center py-16">
-            <p className="text-xl text-gray-600 mb-4">Nu există produse disponibile pentru acest brand</p>
+            <p className="text-xl text-gray-600 mb-4">
+              {t('brandPage.noProducts')}
+            </p>
             <Link
               to="/brands"
               className="inline-block bg-teal-600 text-white px-6 py-3 rounded-xl hover:bg-teal-700 transition font-semibold"
             >
-              Înapoi la Branduri
+              {t('brandPage.backToBrands')}
             </Link>
           </div>
         )}

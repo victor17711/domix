@@ -1060,32 +1060,6 @@ const ContentManagement = () => {
             </div>
           )}
         </div>
-
-        {/* Future Sections - Promo Banners */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden opacity-50">
-          <div className="px-6 py-5 bg-gray-100 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Image className="w-6 h-6 text-gray-500" />
-              <div>
-                <h2 className="text-xl font-bold text-gray-700">Bannere Promoționale</h2>
-                <p className="text-sm text-gray-500">În curând...</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Future Sections - Footer */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden opacity-50">
-          <div className="px-6 py-5 bg-gray-100 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Image className="w-6 h-6 text-gray-500" />
-              <div>
-                <h2 className="text-xl font-bold text-gray-700">Footer & Social Links</h2>
-                <p className="text-sm text-gray-500">În curând...</p>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Banner Modal */}

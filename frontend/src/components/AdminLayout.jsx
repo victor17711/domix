@@ -68,27 +68,28 @@ const AdminLayout = ({ children }) => {
           </div>
 
           {/* Navigation */}
-          <nav className="space-y-2">
-            {menuItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-4 px-5 py-3.5 rounded-xl transition-all duration-200 ${
-                    isActive 
-                      ? 'bg-white text-teal-700 shadow-lg transform scale-105' 
-                      : 'text-teal-50 hover:bg-teal-600 hover:text-white hover:translate-x-1'
-                  }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span className="font-semibold">{item.label}</span>
-                </Link>
-              );
-            })}</nav>
+          <nav className="space-y-1.5">
+  {menuItems.map((item) => {
+    const Icon = item.icon;
+    const isActive = location.pathname === item.path;
+
+    return (
+      <Link
+        key={item.path}
+        to={item.path}
+        onClick={() => setSidebarOpen(false)}
+        className={`flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-200 ${
+          isActive
+            ? 'bg-white text-teal-700 shadow-md'
+            : 'text-teal-50 hover:bg-teal-600 hover:text-white hover:translate-x-1'
+        }`}
+      >
+        <Icon className="w-[18px] h-[18px]" />
+        <span className="font-semibold text-[15px]">{item.label}</span>
+      </Link>
+    );
+  })}
+</nav>
         </div>
 
         {/* User Profile at Bottom */}
