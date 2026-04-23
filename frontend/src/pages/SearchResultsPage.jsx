@@ -23,7 +23,7 @@ const SearchResultsPage = () => {
     if (query) {
       searchProducts();
     }
-  }, [query]);
+  }, [query, language]);
 
   const searchProducts = async () => {
     setLoading(true);

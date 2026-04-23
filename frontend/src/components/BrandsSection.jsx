@@ -79,37 +79,40 @@ const BrandsSection = () => {
             }}
             className="brands-swiper"
           >
-            {brands.map((brand) => (
-              <SwiperSlide key={brand.id}>
-                <Link
-                  to={`/category/${encodeURIComponent('All')}?brand=${brand.id}`}
-                  className="group bg-white rounded-2xl p-5 flex items-center justify-center border border-gray-200 hover:border-teal-500 hover:shadow-xl transition-all duration-300 relative overflow-hidden h-[130px]"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-tr from-teal-500/0 via-teal-500/0 to-teal-500/10 opacity-0 group-hover:opacity-100 transition"></div>
+            {brands.map((brand) => {
+              const brandSlug = brand.name.toLowerCase().replace(/\s+/g, '-');
+              return (
+                <SwiperSlide key={brand.id}>
+                  <Link
+                    to={`/brand/${brandSlug}`}
+                    className="group bg-white rounded-2xl p-5 flex items-center justify-center border border-gray-200 hover:border-teal-500 hover:shadow-xl transition-all duration-300 relative overflow-hidden h-[130px]"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-tr from-teal-500/0 via-teal-500/0 to-teal-500/10 opacity-0 group-hover:opacity-100 transition"></div>
 
-                  <div className="flex flex-col items-center justify-center gap-3 z-10 w-full">
-                    <div className="w-24 h-16 flex items-center justify-center">
-                      {brand.logo ? (
-                        <img
-                          src={brand.logo}
-                          alt={brand.name}
-                          className="max-h-full max-w-full object-contain grayscale group-hover:grayscale-0 transition duration-300"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                          }}
-                        />
-                      ) : (
-                        <Tag className="w-7 h-7 text-gray-400" />
-                      )}
+                    <div className="flex flex-col items-center justify-center gap-3 z-10 w-full">
+                      <div className="w-24 h-16 flex items-center justify-center">
+                        {brand.logo ? (
+                          <img
+                            src={brand.logo}
+                            alt={brand.name}
+                            className="max-h-full max-w-full object-contain grayscale group-hover:grayscale-0 transition duration-300"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <Tag className="w-7 h-7 text-gray-400" />
+                        )}
+                      </div>
+
+                      <span className="text-sm font-semibold text-gray-700 group-hover:text-teal-600 transition text-center">
+                        {brand.name}
+                      </span>
                     </div>
-
-                    <span className="text-sm font-semibold text-gray-700 group-hover:text-teal-600 transition text-center">
-                      {brand.name}
-                    </span>
-                  </div>
-                </Link>
-              </SwiperSlide>
-            ))}
+                  </Link>
+                </SwiperSlide>
+              );
+            })}
           </Swiper>
 
           {/* Săgeți doar desktop
