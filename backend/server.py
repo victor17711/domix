@@ -198,6 +198,30 @@ async def get_products(
     
     # Sort by createdAt descending (newest first)
     products = await db.products.find(query, {"_id": 0}).sort("createdAt", -1).skip(skip).limit(limit).to_list(limit)
+
+    # Recompute the real review count and average rating for each product from the reviews collection
+    product_ids = [p["id"] for p in products if p.get("id")]
+    if product_ids:
+        pipeline = [
+            {"$match": {"productId": {"$in": product_ids}}},
+            {"$group": {
+                "_id": "$productId",
+                "count": {"$sum": 1},
+                "avgRating": {"$avg": "$rating"},
+            }},
+        ]
+        stats = {
+            s["_id"]: s async for s in db.reviews.aggregate(pipeline)
+        }
+        for p in products:
+            s = stats.get(p.get("id"))
+            if s:
+                p["reviews"] = s["count"]
+                p["rating"] = round(s["avgRating"], 1)
+            else:
+                p["reviews"] = 0
+                p["rating"] = 0.0
+
     return [Product(**product) for product in products]
 
 
@@ -214,6 +238,15 @@ async def get_product(product_identifier: str):
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
+    # Recompute real review count and average rating from the reviews collection
+    all_reviews = await db.reviews.find({"productId": product["id"]}, {"_id": 0}).to_list(1000)
+    if all_reviews:
+        product["reviews"] = len(all_reviews)
+        product["rating"] = round(sum(r["rating"] for r in all_reviews) / len(all_reviews), 1)
+    else:
+        product["reviews"] = 0
+        product["rating"] = 0.0
+
     return Product(**product)
 
 
