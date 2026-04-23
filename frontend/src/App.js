@@ -25,6 +25,7 @@ import OrderSuccessPage from './pages/OrderSuccessPage';
 import SearchResultsPage from './pages/SearchResultsPage';
 import ContactPage from './pages/ContactPage';
 import BrandsPage from './pages/BrandsPage';
+import BrandPage from './pages/BrandPage';
 import NotFound from './pages/NotFound';
 import AdminLogin from './pages/admin/AdminLogin';
 import ContentManagement from './pages/admin/ContentManagement';
