@@ -177,7 +177,11 @@ async def get_products(
     query = {}
     
     if category:
-        query["category"] = category
+        # Match either the legacy single `category` field or the new `categories` array
+        query["$or"] = [
+            {"category": category},
+            {"categories": category}
+        ]
     
     if search:
         query["name"] = {"$regex": search, "$options": "i"}
@@ -571,8 +575,14 @@ async def get_categories():
     
     # Count products for each category
     for category in categories:
-        # Count products where category matches the category name
-        product_count = await db.products.count_documents({"category": category["name"]})
+        # Count products where the category name matches either the legacy `category`
+        # field or exists inside the new `categories` array
+        product_count = await db.products.count_documents({
+            "$or": [
+                {"category": category["name"]},
+                {"categories": category["name"]}
+            ]
+        })
         category["itemCount"] = product_count
     
     return [Category(**cat) for cat in categories]
