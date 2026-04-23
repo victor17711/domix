@@ -17,6 +17,7 @@ const ProductDetailPage = () => {
 
   const [product, setProduct] = useState(null);
   const [brand, setBrand] = useState(null);
+  const [categoryInfo, setCategoryInfo] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,6 +63,19 @@ const ProductDetailPage = () => {
           setBrand(brandRes.data);
         } catch (error) {
           console.error('Error fetching brand:', error);
+        }
+      }
+
+      // Fetch category translation (nameRu) by matching the product's category name
+      if (response.data.category) {
+        try {
+          const catRes = await axios.get(`${API}/categories`);
+          const match = (catRes.data || []).find(
+            (c) => c.name === response.data.category
+          );
+          if (match) setCategoryInfo(match);
+        } catch (error) {
+          console.error('Error fetching category info:', error);
         }
       }
 
@@ -223,7 +237,7 @@ const ProductDetailPage = () => {
             </Link>
             <ChevronRight className="w-4 h-4" />
             <Link to={`/category/${product.category}`} className="hover:text-teal-600">
-              {language === 'ru' && product.categoryRu ? product.categoryRu : product.category}
+              {language === 'ru' && categoryInfo?.nameRu ? categoryInfo.nameRu : product.category}
             </Link>
             <ChevronRight className="w-4 h-4" />
             <span className="text-gray-900 font-semibold">
