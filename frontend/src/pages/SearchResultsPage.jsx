@@ -23,7 +23,8 @@ const SearchResultsPage = () => {
     if (query) {
       searchProducts();
     }
-  }, [query, language]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query]);
 
   const searchProducts = async () => {
     setLoading(true);
