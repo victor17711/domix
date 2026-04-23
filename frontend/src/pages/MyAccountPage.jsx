@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { User, ChevronRight, Package, MapPin, Settings, LogOut, Edit, Save, X, Clock } from 'lucide-react';
+import { User, ChevronRight, Package, MapPin, Settings, LogOut, Edit, Save, X, Clock, Heart, Trash2 } from 'lucide-react';
 import { toast } from '../hooks/use-toast';
 import { useLanguage } from '../context/LanguageContext';
+import { useCart } from '../context/CartContext';
+import ProductCard from '../components/ProductCard';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const MyAccountPage = () => {
   const { t } = useLanguage();
+  const { wishlist, removeFromWishlist } = useCart();
   const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState([]);
+  const [favoriteProducts, setFavoriteProducts] = useState([]);
+  const [favoritesLoading, setFavoritesLoading] = useState(false);
   const [user, setUser] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [profileForm, setProfileForm] = useState({
@@ -28,6 +33,47 @@ const MyAccountPage = () => {
     fetchUserData();
     fetchOrders();
   }, []);
+
+  // Fetch product details for items in wishlist (wishlist stores product IDs)
+  useEffect(() => {
+    const fetchFavoriteProducts = async () => {
+      if (!wishlist || wishlist.length === 0) {
+        setFavoriteProducts([]);
+        return;
+      }
+      setFavoritesLoading(true);
+      try {
+        const ids = wishlist.map((item) => (typeof item === 'string' ? item : item.id));
+        const results = await Promise.all(
+          ids.map((id) =>
+            axios.get(`${API}/products/${id}`).then((r) => r.data).catch(() => null)
+          )
+        );
+        setFavoriteProducts(results.filter(Boolean));
+      } catch (error) {
+        console.error('Error fetching favorite products:', error);
+      } finally {
+        setFavoritesLoading(false);
+      }
+    };
+    fetchFavoriteProducts();
+  }, [wishlist]);
+
+  const handleRemoveFavorite = async (productId) => {
+    try {
+      await removeFromWishlist(productId);
+      toast({
+        title: t('myAccount.toast.successTitle'),
+        description: t('myAccount.favorites.removed')
+      });
+    } catch (error) {
+      toast({
+        title: t('myAccount.toast.errorTitle'),
+        description: error.response?.data?.detail || t('myAccount.toast.errorDesc'),
+        variant: 'destructive'
+      });
+    }
+  };
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('userToken');
@@ -234,6 +280,24 @@ const MyAccountPage = () => {
                   {orders.length > 0 && (
                     <span className="ml-auto bg-teal-600 text-white text-xs px-2 py-1 rounded-full">
                       {orders.length}
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => setActiveTab('favorites')}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-2 transition ${
+                    activeTab === 'favorites'
+                      ? 'bg-teal-50 text-teal-600 font-semibold'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                  data-testid="favorites-tab-btn"
+                >
+                  <Heart className="w-5 h-5" />
+                  {t('myAccount.tabs.favorites')}
+                  {favoriteProducts.length > 0 && (
+                    <span className="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                      {favoriteProducts.length}
                     </span>
                   )}
                 </button>
@@ -523,6 +587,60 @@ const MyAccountPage = () => {
                             </p>
                           </div>
                         )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Favorites Tab */}
+            {activeTab === 'favorites' && (
+              <div className="bg-white rounded-2xl shadow-lg p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                  <Heart className="w-7 h-7 text-red-500 fill-red-500" />
+                  {t('myAccount.favorites.title')}
+                  {favoriteProducts.length > 0 && (
+                    <span className="text-lg text-gray-500 font-normal">
+                      ({favoriteProducts.length})
+                    </span>
+                  )}
+                </h2>
+
+                {favoritesLoading ? (
+                  <div className="flex items-center justify-center py-16">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+                  </div>
+                ) : favoriteProducts.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Heart className="w-20 h-20 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                      {t('myAccount.favorites.emptyTitle')}
+                    </h3>
+                    <p className="text-gray-600 mb-6">
+                      {t('myAccount.favorites.emptyDesc')}
+                    </p>
+                    <Link
+                      to="/"
+                      className="inline-block bg-teal-600 text-white px-8 py-3 rounded-xl hover:bg-teal-700 transition font-semibold"
+                      data-testid="favorites-empty-start-shopping-btn"
+                    >
+                      {t('myAccount.favorites.startShopping')}
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    {favoriteProducts.map((product) => (
+                      <div key={product.id} className="relative group" data-testid="favorite-product-item">
+                        <ProductCard product={product} />
+                        <button
+                          onClick={() => handleRemoveFavorite(product.id)}
+                          className="absolute top-3 right-3 z-20 bg-white text-red-600 p-2 rounded-full shadow-md hover:bg-red-500 hover:text-white transition"
+                          title={t('myAccount.favorites.remove')}
+                          data-testid="favorite-remove-btn"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     ))}
                   </div>

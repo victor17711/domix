@@ -12,7 +12,7 @@ const API = `${BACKEND_URL}/api`;
 
 const ProductDetailPage = () => {
   const { id } = useParams();
-  const { addToCart, addToWishlist } = useCart();
+  const { addToCart, addToWishlist, removeFromWishlist, isInWishlist } = useCart();
   const { language, t } = useLanguage();
 
   const [product, setProduct] = useState(null);
@@ -170,11 +170,19 @@ const ProductDetailPage = () => {
     const productName =
       language === 'ru' && product.nameRu ? product.nameRu : product.name;
 
-    addToWishlist(product);
-    toast({
-      title: t('productCard.success'),
-      description: `${productName} ${t('productCard.addedToWishlist')}`
-    });
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+      toast({
+        title: t('productCard.success'),
+        description: `${productName} ${t('productCard.removedFromWishlist') || 'eliminat din favorite'}`
+      });
+    } else {
+      addToWishlist(product);
+      toast({
+        title: t('productCard.success'),
+        description: `${productName} ${t('productCard.addedToWishlist')}`
+      });
+    }
   };
 
   const openGallery = (index) => {
@@ -315,8 +323,13 @@ const ProductDetailPage = () => {
                       <button
                         onClick={handleAddToWishlist}
                         className="hidden md:flex bg-white border-2 border-red-500 rounded-xl p-3 md:p-4 hover:bg-red-50 transition group"
+                        data-testid="product-detail-wishlist-btn"
                       >
-                        <Heart className="w-6 h-6 md:w-7 md:h-7 text-red-500 group-hover:fill-red-500 transition" />
+                        <Heart
+                          className={`w-6 h-6 md:w-7 md:h-7 text-red-500 transition ${
+                            isInWishlist(product.id) ? 'fill-red-500' : 'group-hover:fill-red-500'
+                          }`}
+                        />
                       </button>
                     </div>
                   </div>

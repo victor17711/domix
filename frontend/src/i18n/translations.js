@@ -426,6 +426,7 @@ export const translations = {
       tabs: {
         profile: 'Profilul Meu',
         orders: 'Comenzile Mele',
+        favorites: 'Favorite',
         addresses: 'Adrese',
         settings: 'Setări',
         logout: 'Deconectare'
@@ -464,6 +465,15 @@ export const translations = {
         title: 'Adresele Mele',
         desc: 'Adresa ta principală este setată în profil.',
         viewProfile: 'Vezi Profilul'
+      },
+      favorites: {
+        title: 'Produsele Mele Favorite',
+        emptyTitle: 'Niciun produs favorit încă',
+        emptyDesc: 'Adaugă produse la favorite apăsând pictograma inimă de pe cartela produsului sau pagina produsului.',
+        startShopping: 'Descoperă Produse',
+        remove: 'Elimină din favorite',
+        view: 'Vezi Produsul',
+        removed: 'Produs eliminat din favorite'
       },
       settings: {
         title: 'Setări Cont',
@@ -562,6 +572,7 @@ export const translations = {
     productCard: {
       addedToCart: "Produs adăugat în coș!",
       addedToWishlist: "Produs adăugat la favorite!",
+      removedFromWishlist: "Produs eliminat din favorite!",
       buy: "Cumpără",
       success: "Succes"
     },
@@ -1127,6 +1138,7 @@ export const translations = {
       tabs: {
         profile: 'Мой профиль',
         orders: 'Мои заказы',
+        favorites: 'Избранное',
         addresses: 'Адреса',
         settings: 'Настройки',
         logout: 'Выйти'
@@ -1165,6 +1177,15 @@ export const translations = {
         title: 'Мои адреса',
         desc: 'Ваш основной адрес указан в профиле.',
         viewProfile: 'Посмотреть профиль'
+      },
+      favorites: {
+        title: 'Избранные товары',
+        emptyTitle: 'Пока нет избранных товаров',
+        emptyDesc: 'Добавляйте товары в избранное, нажимая на иконку сердца на карточке товара или странице товара.',
+        startShopping: 'Открыть товары',
+        remove: 'Удалить из избранного',
+        view: 'Посмотреть товар',
+        removed: 'Товар удалён из избранного'
       },
       settings: {
         title: 'Настройки аккаунта',
@@ -1263,6 +1284,7 @@ export const translations = {
     productCard: {
       addedToCart: "Товар добавлен в корзину!",
       addedToWishlist: "Товар добавлен в избранное!",
+      removedFromWishlist: "Товар удалён из избранного!",
       buy: "Купить",
       success: "Успешно"
     },

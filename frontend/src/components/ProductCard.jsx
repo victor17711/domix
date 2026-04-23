@@ -7,7 +7,7 @@ import { toast } from '../hooks/use-toast';
 import QuickViewModal from './QuickViewModal';
 
 const ProductCard = ({ product, showProgress = false }) => {
-  const { addToCart, addToWishlist, isInWishlist } = useCart();
+  const { addToCart, addToWishlist, removeFromWishlist, isInWishlist } = useCart();
   const { language, t } = useLanguage();
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const inWishlist = isInWishlist(product.id);
@@ -31,7 +31,10 @@ const ProductCard = ({ product, showProgress = false }) => {
   const handleAddToWishlist = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!inWishlist) {
+    if (inWishlist) {
+      removeFromWishlist(product.id);
+      toast({ title: t('productCard.success'), description: `${productName} ${t('productCard.removedFromWishlist') || 'eliminat din favorite'}` });
+    } else {
       addToWishlist(product);
       toast({ title: t('productCard.success'), description: `${productName} ${t('productCard.addedToWishlist')}` });
     }
