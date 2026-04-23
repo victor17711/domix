@@ -1,5 +1,5 @@
-from fastapi import FastAPI, APIRouter, HTTPException, status, Depends, Header, File, UploadFile
-from fastapi.responses import StreamingResponse
+from fastapi import FastAPI, APIRouter, HTTPException, status, Depends, Header, File, UploadFile, Request
+from fastapi.responses import StreamingResponse, Response
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
@@ -1616,6 +1616,125 @@ async def upload_file(
         "size": len(contents),
         "contentType": file.content_type
     }
+
+
+# ==================== SITEMAP ====================
+
+def _sitemap_url_entry(loc: str, lastmod: Optional[str] = None,
+                       changefreq: str = "weekly", priority: str = "0.7") -> str:
+    from xml.sax.saxutils import escape
+    parts = ["  <url>", f"    <loc>{escape(loc)}</loc>"]
+    if lastmod:
+        parts.append(f"    <lastmod>{escape(lastmod)}</lastmod>")
+    parts.append(f"    <changefreq>{changefreq}</changefreq>")
+    parts.append(f"    <priority>{priority}</priority>")
+    parts.append("  </url>")
+    return "\n".join(parts)
+
+
+def _brand_slug(name: str) -> str:
+    """Match the frontend BrandPage slug rule: lowercase + spaces→hyphens."""
+    return re.sub(r"\s+", "-", (name or "").lower()).strip("-")
+
+
+def _iso(dt) -> str:
+    try:
+        if isinstance(dt, datetime):
+            return dt.strftime("%Y-%m-%d")
+        if isinstance(dt, str):
+            return dt[:10]
+    except Exception:
+        pass
+    return datetime.utcnow().strftime("%Y-%m-%d")
+
+
+@api_router.get("/sitemap.xml")
+async def sitemap(request: Request):
+    """Dynamic XML sitemap for the store. Lists static pages, products,
+    categories, brands and CMS pages."""
+    # Prefer forwarded host/proto (set by the ingress / CDN) so URLs match the
+    # public domain that search engines see, not the internal one.
+    forwarded_host = request.headers.get("x-forwarded-host")
+    forwarded_proto = request.headers.get("x-forwarded-proto")
+    if forwarded_host:
+        scheme = forwarded_proto or "https"
+        base_url = f"{scheme}://{forwarded_host}"
+    else:
+        base_url = str(request.base_url).rstrip("/")
+    # Allow explicit override via env var (useful in production)
+    override = os.environ.get("PUBLIC_SITE_URL")
+    if override:
+        base_url = override.rstrip("/")
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+
+    # 1) Static pages – keep in sync with App.js routes
+    static_pages = [
+        ("/", "daily", "1.0"),
+        ("/catalog", "daily", "0.9"),
+        ("/brands", "weekly", "0.7"),
+        ("/servicii", "monthly", "0.6"),
+        ("/despre-noi", "monthly", "0.5"),
+        ("/intrebari-frecvente", "monthly", "0.5"),
+        ("/contact", "monthly", "0.5"),
+    ]
+
+    entries: List[str] = []
+    for path, cf, pr in static_pages:
+        entries.append(_sitemap_url_entry(f"{base_url}{path}", today, cf, pr))
+
+    # 2) Products
+    products = await db.products.find(
+        {}, {"_id": 0, "slug": 1, "id": 1, "updatedAt": 1, "createdAt": 1}
+    ).to_list(5000)
+    for p in products:
+        ident = p.get("slug") or p.get("id")
+        if not ident:
+            continue
+        lastmod = _iso(p.get("updatedAt") or p.get("createdAt"))
+        entries.append(
+            _sitemap_url_entry(f"{base_url}/product/{ident}", lastmod, "weekly", "0.8")
+        )
+
+    # 3) Categories
+    categories = await db.categories.find({}, {"_id": 0, "slug": 1, "name": 1}).to_list(500)
+    for c in categories:
+        slug = c.get("slug") or c.get("name")
+        if not slug:
+            continue
+        entries.append(
+            _sitemap_url_entry(f"{base_url}/category/{slug}", today, "weekly", "0.7")
+        )
+
+    # 4) Brands (slug rule matches BrandPage.jsx)
+    brands = await db.brands.find({}, {"_id": 0, "name": 1}).to_list(500)
+    for b in brands:
+        slug = _brand_slug(b.get("name", ""))
+        if not slug:
+            continue
+        entries.append(
+            _sitemap_url_entry(f"{base_url}/brand/{slug}", today, "weekly", "0.6")
+        )
+
+    # 5) CMS pages (published only)
+    cms_pages = await db.pages.find(
+        {"isPublished": True}, {"_id": 0, "slug": 1, "updatedAt": 1}
+    ).to_list(500)
+    for pg in cms_pages:
+        slug = pg.get("slug")
+        if not slug:
+            continue
+        lastmod = _iso(pg.get("updatedAt"))
+        entries.append(
+            _sitemap_url_entry(f"{base_url}/page/{slug}", lastmod, "monthly", "0.5")
+        )
+
+    xml_body = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        + "\n".join(entries)
+        + "\n</urlset>\n"
+    )
+    return Response(content=xml_body, media_type="application/xml")
 
 
 # Include the router in the main app
