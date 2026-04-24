@@ -399,64 +399,97 @@ async def delete_product(
 async def export_products(
     current_admin: dict = Depends(get_current_admin_user)
 ):
-    """Export all products to Excel file (admin only)"""
+    """Export all products to Excel file (admin only).
+
+    Exports every editable field from the Product model so the file can be
+    re-imported without data loss. `categories` and `images` arrays are stored
+    as comma-separated text; `specifications` as JSON.
+    """
+    import json as _json
     try:
-        # Fetch all products
-        products = await db.products.find({}, {"_id": 0}).to_list(None)
-        
-        # Create workbook
+        products = await db.products.find({}, {"_id": 0}).sort("createdAt", -1).to_list(None)
+
         wb = Workbook()
         ws = wb.active
         ws.title = "Products"
-        
-        # Headers
+
         headers = [
-            "ID", "Name RO", "Name RU", "Description RO", "Description RU", "Price", "Stock", "Category ID", 
-            "Brand ID", "SKU", "Is Active", "Images (comma-separated)", 
-            "Specifications (JSON)", "Badge RO", "Badge RU"
+            "ID",
+            "Name RO", "Name RU",
+            "Slug",
+            "Description RO", "Description RU",
+            "Price", "Original Price", "Discount",
+            "Category (primary)", "Categories (comma-separated)",
+            "Brand ID",
+            "Store Name RO", "Store Name RU",
+            "SKU",
+            "Badge RO", "Badge RU",
+            "Image (primary)",
+            "Images (comma-separated)",
+            "Colors (comma-separated)",
+            "Sizes (comma-separated)",
+            "Specifications (JSON)",
+            "Available",
+            "In Stock",
+            "Is Active",
+            "Rating", "Reviews", "Sold",
         ]
         ws.append(headers)
-        
-        # Add product data
-        for product in products:
-            # Convert images list to comma-separated string
-            images_str = ",".join(product.get("images", []))
-            
-            # Convert specifications to JSON string
-            specs = product.get("specifications", [])
-            specs_str = str(specs) if specs else ""
-            
+
+        def _csv(list_val):
+            return ",".join([str(v) for v in (list_val or [])])
+
+        for p in products:
+            specs = p.get("specifications") or []
+            # Serialize specs to JSON (safe, human-readable)
+            specs_json = _json.dumps(specs, ensure_ascii=False) if specs else ""
+
             row = [
-                product.get("id", ""),
-                product.get("name", ""),
-                product.get("nameRu", ""),
-                product.get("description", ""),
-                product.get("descriptionRu", ""),
-                product.get("price", 0),
-                product.get("stock", 0),
-                product.get("categoryId", ""),
-                product.get("brandId", ""),
-                product.get("sku", ""),
-                product.get("isActive", True),
-                images_str,
-                specs_str,
-                product.get("badge", ""),
-                product.get("badgeRu", "")
+                p.get("id", ""),
+                p.get("name", ""),
+                p.get("nameRu", ""),
+                p.get("slug", ""),
+                p.get("description", ""),
+                p.get("descriptionRu", ""),
+                p.get("price", 0),
+                p.get("originalPrice", ""),
+                p.get("discount", 0),
+                p.get("category", ""),
+                _csv(p.get("categories")),
+                p.get("brandId", "") or "",
+                p.get("storeName", ""),
+                p.get("storeNameRu", ""),
+                p.get("sku", ""),
+                p.get("badge", ""),
+                p.get("badgeRu", ""),
+                p.get("image", ""),
+                _csv(p.get("images")),
+                _csv(p.get("colors")),
+                _csv(p.get("sizes")),
+                specs_json,
+                p.get("available", 0),
+                bool(p.get("inStock", True)),
+                bool(p.get("isActive", True)),
+                p.get("rating", 0),
+                p.get("reviews", 0),
+                p.get("sold", 0),
             ]
             ws.append(row)
-        
-        # Save to BytesIO
+
+        # Widen columns a bit for readability
+        for col_idx, _ in enumerate(headers, start=1):
+            ws.column_dimensions[ws.cell(row=1, column=col_idx).column_letter].width = 22
+
         excel_file = BytesIO()
         wb.save(excel_file)
         excel_file.seek(0)
-        
-        # Return as downloadable file
+
         return StreamingResponse(
             excel_file,
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             headers={"Content-Disposition": "attachment; filename=products.xlsx"}
         )
-        
+
     except Exception as e:
         logger.error(f"Error exporting products: {e}")
         raise HTTPException(
@@ -470,92 +503,149 @@ async def import_products(
     file: UploadFile = File(...),
     current_admin: dict = Depends(get_current_admin_user)
 ):
-    """Import products from Excel file (admin only)"""
+    """Import products from Excel file (admin only).
+
+    Column order must match the export format. Rows with an empty ID are
+    treated as new products (UUID auto-generated); rows with an ID that
+    already exists in the DB are updated in place.
+    """
+    import json as _json
     try:
-        # Read uploaded file
         contents = await file.read()
-        excel_file = BytesIO(contents)
-        
-        # Load workbook
-        wb = load_workbook(excel_file)
+        wb = load_workbook(BytesIO(contents))
         ws = wb.active
-        
-        # Skip header row
+
         rows = list(ws.iter_rows(min_row=2, values_only=True))
-        
+
+        def _csv_to_list(val):
+            if val is None or val == "":
+                return []
+            return [v.strip() for v in str(val).split(",") if v.strip()]
+
+        def _to_float(val, default=None):
+            try:
+                if val in (None, ""):
+                    return default
+                return float(val)
+            except (TypeError, ValueError):
+                return default
+
+        def _to_int(val, default=0):
+            try:
+                if val in (None, ""):
+                    return default
+                return int(float(val))
+            except (TypeError, ValueError):
+                return default
+
+        def _to_bool(val, default=True):
+            if val is None or val == "":
+                return default
+            s = str(val).strip().lower()
+            return s in ("true", "1", "yes", "y", "da", "t")
+
+        def _col(row, idx, default=""):
+            return row[idx] if len(row) > idx and row[idx] is not None else default
+
         imported_count = 0
         updated_count = 0
         errors = []
-        
+
         for idx, row in enumerate(rows, start=2):
             try:
-                if not row[0]:  # Skip empty rows
+                # Skip fully-empty rows
+                if all(c is None or c == "" for c in row):
                     continue
-                    
-                product_id = row[0]
-                
-                # Parse images (comma-separated) - now at column 11
-                images = []
-                if len(row) > 11 and row[11]:
-                    images = [img.strip() for img in str(row[11]).split(",") if img.strip()]
-                
-                # Parse specifications - now at column 12
+                # Require at minimum a Name RO
+                name = str(_col(row, 1, "")).strip()
+                if not name:
+                    errors.append(f"Rând {idx}: lipsește Name RO")
+                    continue
+
+                raw_id = _col(row, 0, "")
+                product_id = str(raw_id).strip() if raw_id else ""
+
+                # Parse specifications (expect JSON; fall back to Python literal
+                # for legacy exports)
+                specs_raw = _col(row, 21, "")
                 specifications = []
-                if len(row) > 12 and row[12]:
+                if specs_raw:
                     try:
-                        import ast
-                        specifications = ast.literal_eval(str(row[12]))
-                    except:
-                        specifications = []
-                
-                # Create product dict
+                        specifications = _json.loads(str(specs_raw))
+                    except Exception:
+                        try:
+                            import ast
+                            specifications = ast.literal_eval(str(specs_raw))
+                        except Exception:
+                            specifications = []
+                if not isinstance(specifications, list):
+                    specifications = []
+
+                now = datetime.now(timezone.utc)
                 product_data = {
-                    "id": str(product_id),
-                    "name": str(row[1]) if row[1] else "",
-                    "nameRu": str(row[2]) if len(row) > 2 and row[2] else "",
-                    "description": str(row[3]) if len(row) > 3 and row[3] else "",
-                    "descriptionRu": str(row[4]) if len(row) > 4 and row[4] else "",
-                    "price": float(row[5]) if len(row) > 5 and row[5] else 0,
-                    "stock": int(row[6]) if len(row) > 6 and row[6] else 0,
-                    "categoryId": str(row[7]) if len(row) > 7 and row[7] else "",
-                    "brandId": str(row[8]) if len(row) > 8 and row[8] else "",
-                    "sku": str(row[9]) if len(row) > 9 and row[9] else "",
-                    "isActive": bool(row[10]) if len(row) > 10 and row[10] is not None else True,
-                    "images": images,
+                    "name": name,
+                    "nameRu": str(_col(row, 2, "") or ""),
+                    "slug": str(_col(row, 3, "") or ""),
+                    "description": str(_col(row, 4, "") or ""),
+                    "descriptionRu": str(_col(row, 5, "") or ""),
+                    "price": _to_float(_col(row, 6), 0.0) or 0.0,
+                    "originalPrice": _to_float(_col(row, 7), None),
+                    "discount": _to_int(_col(row, 8), 0),
+                    "category": str(_col(row, 9, "") or ""),
+                    "categories": _csv_to_list(_col(row, 10)),
+                    "brandId": (str(_col(row, 11, "")).strip() or None),
+                    "storeName": str(_col(row, 12, "") or ""),
+                    "storeNameRu": str(_col(row, 13, "") or ""),
+                    "sku": str(_col(row, 14, "") or ""),
+                    "badge": str(_col(row, 15, "") or ""),
+                    "badgeRu": str(_col(row, 16, "") or ""),
+                    "image": str(_col(row, 17, "") or ""),
+                    "images": _csv_to_list(_col(row, 18)),
+                    "colors": _csv_to_list(_col(row, 19)),
+                    "sizes": _csv_to_list(_col(row, 20)),
                     "specifications": specifications,
-                    "badge": str(row[13]) if len(row) > 13 and row[13] else "",
-                    "badgeRu": str(row[14]) if len(row) > 14 and row[14] else "",
-                    "createdAt": datetime.now(timezone.utc).isoformat()
+                    "available": _to_int(_col(row, 22), 0),
+                    "inStock": _to_bool(_col(row, 23), True),
+                    "isActive": _to_bool(_col(row, 24), True),
+                    "rating": _to_float(_col(row, 25), 0.0) or 0.0,
+                    "reviews": _to_int(_col(row, 26), 0),
+                    "sold": _to_int(_col(row, 27), 0),
+                    "updatedAt": now,
                 }
-                
-                # Check if product exists
-                existing = await db.products.find_one({"id": product_id})
-                
+
+                if product_id:
+                    existing = await db.products.find_one({"id": product_id})
+                else:
+                    existing = None
+
                 if existing:
-                    # Update existing product
                     await db.products.update_one(
                         {"id": product_id},
                         {"$set": product_data}
                     )
                     updated_count += 1
                 else:
-                    # Insert new product
+                    # New product: generate UUID if missing and set createdAt
+                    product_data["id"] = product_id or str(uuid.uuid4())
+                    product_data["createdAt"] = now
                     await db.products.insert_one(product_data)
                     imported_count += 1
-                    
+
             except Exception as e:
-                errors.append(f"Row {idx}: {str(e)}")
+                errors.append(f"Rând {idx}: {str(e)}")
                 continue
-        
-        result = {
-            "message": f"Import finalizat! {imported_count} produse noi, {updated_count} actualizate",
+
+        return {
+            "message": (
+                f"Import finalizat! {imported_count} produse noi, "
+                f"{updated_count} actualizate"
+                + (f", {len(errors)} erori" if errors else "")
+            ),
             "imported": imported_count,
             "updated": updated_count,
-            "errors": errors[:10] if errors else []  # Return first 10 errors
+            "errors": errors[:20],
         }
-        
-        return result
-        
+
     except Exception as e:
         logger.error(f"Error importing products: {e}")
         raise HTTPException(
