@@ -1356,29 +1356,17 @@ const ContentManagement = () => {
                 <label className="block text-sm font-bold text-gray-900 mb-2">
                   Poze Galerie
                 </label>
-                
-                <div className="flex gap-2 mb-3">
-                  <input
-                    type="url"
-                    value={tempGalleryUrl}
-                    onChange={(e) => setTempGalleryUrl(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        addGalleryImage();
-                      }
-                    }}
-                    className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    placeholder="Adaugă URL imagine galerie"
-                  />
-                  <button
-                    type="button"
-                    onClick={addGalleryImage}
-                    className="px-5 py-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition font-semibold"
-                  >
-                    <Plus className="w-5 h-5" />
-                  </button>
-                </div>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleUploadGalleryImages}
+                  disabled={uploadingGallery || albumForm.galleryImages.length >= 10}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50"
+                  data-testid="album-gallery-upload"
+                />
+                {uploadingGallery && <p className="text-sm text-teal-600 mt-2">⏳ Se încarcă...</p>}
 
                 {albumForm.galleryImages.length > 0 && (
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
@@ -1402,7 +1390,7 @@ const ContentManagement = () => {
                 )}
 
                 <p className="text-xs text-gray-500 mt-2">
-                  Adaugă URL-uri pentru imaginile din galerie. {albumForm.galleryImages.length} imagini adăugate.
+                  Încarcă imagini de pe calculator (max 10, fiecare max 5MB). {albumForm.galleryImages.length}/10 adăugate.
                 </p>
               </div>
 

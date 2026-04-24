@@ -146,11 +146,11 @@ const GiftConditionsManagement = () => {
 
   return (
     <div className="p-8">
-      <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+      {/* <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
         <Link to="/admin/dashboard" className="hover:text-teal-600">Panou de control</Link>
         <ChevronRight className="w-4 h-4" />
         <span className="text-gray-900 font-semibold">Adauga conditie</span>
-      </div>
+      </div> */}
 
       <div className="flex items-center justify-between mb-6">
         <div>
