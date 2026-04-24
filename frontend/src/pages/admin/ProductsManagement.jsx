@@ -6,11 +6,12 @@ import { toast } from '../../hooks/use-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 20;
 
 const ProductsManagement = () => {
   const { getAuthHeaders } = useAdmin();
   const [products, setProducts] = useState([]);
+  const [totalProducts, setTotalProducts] = useState(0);
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,15 +43,36 @@ const ProductsManagement = () => {
   });
 
   useEffect(() => {
-    fetchProducts();
     fetchCategories();
     fetchBrands();
   }, []);
 
+  // Refetch products whenever page or search term changes (server-side pagination)
+  useEffect(() => {
+    fetchProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, searchTerm]);
+
+  // Debounce search – reset to page 1 when user types
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${API}/products`);
-      setProducts(response.data);
+      setLoading(true);
+      const params = new URLSearchParams({
+        page: currentPage,
+        pageSize: ITEMS_PER_PAGE
+      });
+      if (searchTerm) params.append('search', searchTerm);
+      const response = await axios.get(
+        `${API}/admin/products?${params.toString()}`,
+        getAuthHeaders()
+      );
+      setProducts(response.data.items || []);
+      setTotalProducts(response.data.total || 0);
     } catch (error) {
       toast({ title: 'Eroare', description: 'Nu s-au putut încărca produsele', variant: 'destructive' });
     } finally {
@@ -230,16 +252,21 @@ const ProductsManagement = () => {
     setSpecifications(specifications.filter((_, i) => i !== index));
   };
 
-  const filteredProducts = products.filter(product => 
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Pagination
-  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  // Server-side pagination: backend returns already-paginated items + total count
+  const totalPages = Math.max(1, Math.ceil(totalProducts / ITEMS_PER_PAGE));
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentProducts = filteredProducts.slice(startIndex, endIndex);
+  const endIndex = startIndex + products.length;
+  const currentProducts = products;
+
+  const PAGE_GROUP_SIZE = 5;
+const currentGroup = Math.floor((currentPage - 1) / PAGE_GROUP_SIZE);
+const groupStart = currentGroup * PAGE_GROUP_SIZE + 1;
+const groupEnd = Math.min(groupStart + PAGE_GROUP_SIZE - 1, totalPages);
+
+const visiblePages = [];
+for (let page = groupStart; page <= groupEnd; page++) {
+  visiblePages.push(page);
+}
 
   if (loading) {
     return (
@@ -256,7 +283,7 @@ const ProductsManagement = () => {
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-3xl font-bold mb-2">Gestionare Produse</h2>
-            <p className="text-teal-100">Total: {filteredProducts.length} produse</p>
+            <p className="text-teal-100">Total: {totalProducts} produse</p>
           </div>
           <button
             onClick={() => { setShowModal(true); setEditingProduct(null); resetForm(); }}
@@ -276,7 +303,7 @@ const ProductsManagement = () => {
             type="text"
             placeholder="Caută produse..."
             value={searchTerm}
-            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
         </div>
@@ -345,44 +372,54 @@ const ProductsManagement = () => {
         </div>
 
         {/* Pagination */}
-        <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t">
-          <div className="text-sm text-gray-700">
-            Afișare <span className="font-semibold">{startIndex + 1}</span> - <span className="font-semibold">{Math.min(endIndex, filteredProducts.length)}</span> din <span className="font-semibold">{filteredProducts.length}</span>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Anterior
-            </button>
-            <div className="flex gap-1">
-              {[...Array(totalPages)].map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`px-4 py-2 rounded-lg ${
-                    currentPage === i + 1
-                      ? 'bg-teal-600 text-white'
-                      : 'border border-gray-300 hover:bg-gray-100'
-                  }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-            </div>
-            <button
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              Următor
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+<div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t">
+  <div className="text-sm text-gray-700">
+    Afișare{' '}
+    <span className="font-semibold">{totalProducts === 0 ? 0 : startIndex + 1}</span>
+    {' '} - {' '}
+    <span className="font-semibold">{Math.min(endIndex, totalProducts)}</span>
+    {' '} din {' '}
+    <span className="font-semibold">{totalProducts}</span>
+  </div>
+
+  {totalPages > 1 && (
+    <div className="flex gap-2">
+      <button
+        onClick={() => setCurrentPage(Math.max(1, groupStart - PAGE_GROUP_SIZE))}
+        disabled={groupStart === 1}
+        className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+      >
+        <ChevronLeft className="w-4 h-4" />
+        Anterior
+      </button>
+
+      <div className="flex gap-1">
+        {visiblePages.map((page) => (
+          <button
+            key={page}
+            onClick={() => setCurrentPage(page)}
+            className={`px-4 py-2 rounded-lg ${
+              currentPage === page
+                ? 'bg-teal-600 text-white'
+                : 'border border-gray-300 hover:bg-gray-100'
+            }`}
+          >
+            {page}
+          </button>
+        ))}
+      </div>
+
+      <button
+        onClick={() => setCurrentPage(Math.min(totalPages, groupEnd + 1))}
+        disabled={groupEnd >= totalPages}
+        className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+      >
+        Următor
+        <ChevronRight className="w-4 h-4" />
+      </button>
+    </div>
+  )}
+</div>
       </div>
 
       {/* Modal - Same as before */}

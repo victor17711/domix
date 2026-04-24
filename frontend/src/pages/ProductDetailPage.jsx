@@ -232,8 +232,8 @@ const ProductDetailPage = () => {
     product.images && product.images.length > 0
       ? product.images
       : product.image
-      ? [product.image]
-      : ['https://via.placeholder.com/600x600?text=No+Image'];
+        ? [product.image]
+        : ['https://via.placeholder.com/600x600?text=No+Image'];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -268,7 +268,7 @@ const ProductDetailPage = () => {
               <img
                 src={images[selectedImage]}
                 alt={product.name}
-                className="w-full h-[300px] md:h-[600px] object-cover"
+                className="w-full h-[300px] md:h-[600px] object-contain"
               />
             </div>
 
@@ -278,11 +278,10 @@ const ProductDetailPage = () => {
                   <button
                     key={idx}
                     onClick={() => setSelectedImage(idx)}
-                    className={`bg-white rounded-lg overflow-hidden border-2 transition cursor-pointer hover:border-teal-400 ${
-                      selectedImage === idx ? 'border-teal-600' : 'border-gray-200'
-                    }`}
+                    className={`bg-white rounded-lg overflow-hidden border-2 transition cursor-pointer hover:border-teal-400 ${selectedImage === idx ? 'border-teal-600' : 'border-gray-200'
+                      }`}
                   >
-                    <img src={img} alt="" className="w-full h-[60px] md:h-[100px] object-cover" />
+                    <img src={img} alt="" className="w-full h-[60px] md:h-[140px] object-cover" />
                   </button>
                 ))}
               </div>
@@ -305,18 +304,18 @@ const ProductDetailPage = () => {
                     </span>
                   )}
 
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 flex-1 min-w-0 break-words">
                       {productName}
                     </h1>
 
-                    <div className="flex items-center gap-3">
+                    <div className="hidden md:flex items-center gap-3 flex-shrink-0">
                       {brand && brand.logo && (
-                        <div className="hidden md:flex bg-white border-2 border-teal-500 rounded-xl px-5 md:px-12 py-3 md:py-4 flex items-center justify-center">
+                        <div className="bg-white border-2 border-teal-500 rounded-xl w-[160px] h-[64px] flex-shrink-0 flex items-center justify-center px-4">
                           <img
                             src={brand.logo}
                             alt={brand.name}
-                            className="h-6 md:h-7 max-h-full object-contain"
+                            className="max-w-full max-h-[34px] object-contain"
                           />
                         </div>
                       )}
@@ -327,9 +326,8 @@ const ProductDetailPage = () => {
                         data-testid="product-detail-wishlist-btn"
                       >
                         <Heart
-                          className={`w-6 h-6 md:w-7 md:h-7 text-red-500 transition ${
-                            isInWishlist(product.id) ? 'fill-red-500' : 'group-hover:fill-red-500'
-                          }`}
+                          className={`w-6 h-6 md:w-7 md:h-7 text-red-500 transition ${isInWishlist(product.id) ? 'fill-red-500' : 'group-hover:fill-red-500'
+                            }`}
                         />
                       </button>
                     </div>
@@ -349,11 +347,10 @@ const ProductDetailPage = () => {
                           {[...Array(5)].map((_, i) => (
                             <Star
                               key={i}
-                              className={`w-5 h-5 ${
-                                i < Math.floor(product.rating || 0)
+                              className={`w-5 h-5 ${i < Math.floor(product.rating || 0)
                                   ? 'text-yellow-400 fill-yellow-400'
                                   : 'text-gray-300'
-                              }`}
+                                }`}
                             />
                           ))}
                         </div>
@@ -384,7 +381,7 @@ const ProductDetailPage = () => {
                             -
                             {Math.round(
                               ((product.originalPrice - product.price) / product.originalPrice) *
-                                100
+                              100
                             )}
                             %
                           </span>
@@ -557,11 +554,10 @@ const ProductDetailPage = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`pb-4 font-semibold transition border-b-2 ${
-                  activeTab === tab
+                className={`pb-4 font-semibold transition border-b-2 ${activeTab === tab
                     ? 'border-teal-600 text-teal-600'
                     : 'border-transparent text-gray-600 hover:text-gray-900'
-                }`}
+                  }`}
               >
                 {tab === 'description' && t('productDetail.tabs.description')}
                 {tab === 'specifications' && t('productDetail.tabs.specifications')}
@@ -573,11 +569,11 @@ const ProductDetailPage = () => {
           <div className="prose max-w-none">
             {activeTab === 'description' && (
               <div>
-                <p className="text-gray-700 leading-relaxed">
-                  {language === 'ru' && product.descriptionRu
-                    ? product.descriptionRu
-                    : product.description || t('productDetail.noDescription')}
-                </p>
+                <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+  {language === 'ru' && product.descriptionRu
+    ? product.descriptionRu
+    : product.description || t('productDetail.noDescription')}
+</p>
               </div>
             )}
 
@@ -661,11 +657,10 @@ const ProductDetailPage = () => {
                             className="focus:outline-none"
                           >
                             <Star
-                              className={`w-8 h-8 ${
-                                star <= reviewForm.rating
+                              className={`w-8 h-8 ${star <= reviewForm.rating
                                   ? 'text-yellow-400 fill-yellow-400'
                                   : 'text-gray-300'
-                              }`}
+                                }`}
                             />
                           </button>
                         ))}
@@ -720,11 +715,10 @@ const ProductDetailPage = () => {
                                   {[...Array(5)].map((_, i) => (
                                     <Star
                                       key={i}
-                                      className={`w-4 h-4 ${
-                                        i < review.rating
+                                      className={`w-4 h-4 ${i < review.rating
                                           ? 'text-yellow-400 fill-yellow-400'
                                           : 'text-gray-300'
-                                      }`}
+                                        }`}
                                     />
                                   ))}
                                 </div>
@@ -1054,11 +1048,10 @@ const ProductDetailPage = () => {
                 <button
                   key={idx}
                   onClick={() => setGalleryIndex(idx)}
-                  className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition ${
-                    galleryIndex === idx
+                  className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition ${galleryIndex === idx
                       ? 'border-teal-500'
                       : 'border-white border-opacity-30 hover:border-opacity-60'
-                  }`}
+                    }`}
                 >
                   <img src={img} alt="" className="w-full h-full object-cover" />
                 </button>

@@ -33,7 +33,18 @@ export const LanguageProvider = ({ children }) => {
   // Sync URL with language
   useEffect(() => {
     const currentPath = location.pathname;
-    
+
+    // Admin panel is always accessible without /ru prefix — skip sync for these routes
+    if (currentPath.startsWith('/admin')) {
+      return;
+    }
+
+    // If someone lands on /ru/admin, strip the /ru prefix
+    if (currentPath.startsWith('/ru/admin')) {
+      navigate(currentPath.replace(/^\/ru/, ''), { replace: true });
+      return;
+    }
+
     if (language === 'ru' && !currentPath.startsWith('/ru')) {
       // Switch to Russian - add /ru prefix
       navigate('/ru' + currentPath, { replace: true });

@@ -174,7 +174,7 @@ async def get_products(
     maxPrice: Optional[float] = None,
     brandId: Optional[str] = None,
     skip: int = 0,
-    limit: int = 50
+    limit: int = 2000
 ):
     """Get all products with optional filtering"""
     query = {}
@@ -226,6 +226,37 @@ async def get_products(
                 p["rating"] = 0.0
 
     return [Product(**product) for product in products]
+
+
+@api_router.get("/admin/products")
+async def admin_get_products(
+    search: Optional[str] = None,
+    page: int = 1,
+    pageSize: int = 20,
+    authorization: Optional[str] = Header(None)
+):
+    """Admin paginated products listing — returns {items, total, page, pageSize}."""
+    current_user = await get_current_user(authorization)
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    page = max(1, int(page))
+    pageSize = max(1, min(int(pageSize), 200))
+
+    query = {}
+    if search:
+        query["name"] = {"$regex": search, "$options": "i"}
+
+    total = await db.products.count_documents(query)
+    skip = (page - 1) * pageSize
+    cursor = db.products.find(query, {"_id": 0}).sort("createdAt", -1).skip(skip).limit(pageSize)
+    items = await cursor.to_list(pageSize)
+    return {
+        "items": [Product(**p).dict() for p in items],
+        "total": total,
+        "page": page,
+        "pageSize": pageSize,
+    }
 
 
 @api_router.get("/products/{product_identifier}", response_model=Product)

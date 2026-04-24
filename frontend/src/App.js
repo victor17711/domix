@@ -8,6 +8,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import AdminLayout from './components/AdminLayout';
 import Preloader from './components/Preloader';
+import JivoChat from './components/JivoChat';
 import ScrollToTop from './components/ScrollToTop';
 import HomePage from './pages/HomePage';
 import DynamicPage from './pages/DynamicPage';
@@ -113,6 +114,7 @@ function App() {
               <div className="App">
                 <ScrollToTop />
                 <RouteChangeHandler>
+                  <JivoChat />
                 <Routes>
                   {/* Public Routes - with RO and RU versions */}
                   {createDualRoutes("/", (
