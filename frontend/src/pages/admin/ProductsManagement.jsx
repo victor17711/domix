@@ -12,6 +12,8 @@ const ProductsManagement = () => {
   const { getAuthHeaders } = useAdmin();
   const [products, setProducts] = useState([]);
   const [totalProducts, setTotalProducts] = useState(0);
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -57,6 +59,65 @@ const ProductsManagement = () => {
   const handleSearchChange = (value) => {
     setSearchTerm(value);
     setCurrentPage(1);
+  };
+
+  // Clear selection whenever the page changes or the list refreshes
+  const toggleSelect = (id) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const allOnPageSelected =
+    products.length > 0 && products.every((p) => selectedIds.has(p.id));
+
+  const toggleSelectAllOnPage = () => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allOnPageSelected) {
+        products.forEach((p) => next.delete(p.id));
+      } else {
+        products.forEach((p) => next.add(p.id));
+      }
+      return next;
+    });
+  };
+
+  const clearSelection = () => setSelectedIds(new Set());
+
+  const handleBulkDelete = async () => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+    if (!window.confirm(`Sigur doriți să ștergeți ${ids.length} produse selectate?`)) return;
+    try {
+      setBulkDeleting(true);
+      const res = await axios.post(
+        `${API}/admin/products/bulk-delete`,
+        { ids },
+        getAuthHeaders()
+      );
+      toast({ title: 'Succes', description: res.data.message || `${ids.length} produse șterse` });
+      clearSelection();
+      // If we're on a page that no longer exists after deletion, go back one
+      const newTotal = Math.max(totalProducts - ids.length, 0);
+      const newLastPage = Math.max(1, Math.ceil(newTotal / ITEMS_PER_PAGE));
+      if (currentPage > newLastPage) {
+        setCurrentPage(newLastPage);
+      } else {
+        fetchProducts();
+      }
+    } catch (err) {
+      toast({
+        title: 'Eroare',
+        description: err.response?.data?.detail || 'Nu s-au putut șterge produsele',
+        variant: 'destructive'
+      });
+    } finally {
+      setBulkDeleting(false);
+    }
   };
 
   const fetchProducts = async () => {
@@ -295,8 +356,8 @@ for (let page = groupStart; page <= groupEnd; page++) {
         </div>
       </div>
 
-      {/* Search */}
-      <div className="bg-white rounded-2xl p-4">
+      {/* Search + bulk actions */}
+      <div className="bg-white rounded-2xl p-4 space-y-3">
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input
@@ -307,6 +368,32 @@ for (let page = groupStart; page <= groupEnd; page++) {
             className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
         </div>
+
+        {selectedIds.size > 0 && (
+          <div className="flex items-center justify-between gap-3 bg-teal-50 border-2 border-teal-200 rounded-xl p-3">
+            <span className="text-sm font-semibold text-teal-900">
+              {selectedIds.size} produs{selectedIds.size === 1 ? '' : 'e'} selectat{selectedIds.size === 1 ? '' : 'e'}
+            </span>
+            <div className="flex gap-2">
+              <button
+                onClick={clearSelection}
+                className="px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition font-semibold"
+                data-testid="bulk-clear-selection-btn"
+              >
+                Anulează selecție
+              </button>
+              <button
+                onClick={handleBulkDelete}
+                disabled={bulkDeleting}
+                className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-semibold flex items-center gap-2 disabled:opacity-50"
+                data-testid="bulk-delete-btn"
+              >
+                <Trash2 className="w-4 h-4" />
+                {bulkDeleting ? 'Se șterge...' : `Șterge ${selectedIds.size}`}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Table */}
@@ -315,6 +402,16 @@ for (let page = groupStart; page <= groupEnd; page++) {
           <table className="w-full">
             <thead className="bg-gradient-to-r from-teal-600 to-teal-700 text-white">
               <tr>
+                <th className="px-4 py-4 text-left font-semibold w-10">
+                  <input
+                    type="checkbox"
+                    checked={allOnPageSelected}
+                    onChange={toggleSelectAllOnPage}
+                    className="w-5 h-5 accent-teal-400 cursor-pointer"
+                    data-testid="select-all-page-checkbox"
+                    title={allOnPageSelected ? 'Deselectează pagina' : 'Selectează toată pagina'}
+                  />
+                </th>
                 <th className="px-6 py-4 text-left font-semibold">Imagine</th>
                 <th className="px-6 py-4 text-left font-semibold">Nume Produs</th>
                 <th className="px-6 py-4 text-left font-semibold">Categorie</th>
@@ -325,7 +422,16 @@ for (let page = groupStart; page <= groupEnd; page++) {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {currentProducts.map((product, index) => (
-                <tr key={product.id} className={`hover:bg-teal-50 transition ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                <tr key={product.id} className={`hover:bg-teal-50 transition ${selectedIds.has(product.id) ? 'bg-teal-50' : index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                  <td className="px-4 py-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(product.id)}
+                      onChange={() => toggleSelect(product.id)}
+                      className="w-5 h-5 accent-teal-600 cursor-pointer"
+                      data-testid={`select-product-${product.id}`}
+                    />
+                  </td>
                   <td className="px-6 py-4">
                     <img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded-lg" />
                   </td>

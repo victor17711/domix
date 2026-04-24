@@ -17,6 +17,7 @@ from io import BytesIO
 import re
 import unicodedata
 import shutil
+from pydantic import BaseModel as PydanticBaseModel
 
 from models import (
     UserCreate, User, UserLogin, UserResponse,
@@ -675,6 +676,27 @@ async def delete_product(
     )
     
     return {"message": "Product deleted successfully"}
+
+
+class BulkDeleteRequest(PydanticBaseModel):
+    ids: List[str]
+
+
+@api_router.post("/admin/products/bulk-delete")
+async def bulk_delete_products(
+    payload: BulkDeleteRequest,
+    current_admin: dict = Depends(get_current_admin_user)
+):
+    """Delete multiple products at once (admin only)."""
+    ids = [i for i in (payload.ids or []) if i]
+    if not ids:
+        return {"deleted": 0, "message": "Nicio selecție"}
+
+    result = await db.products.delete_many({"id": {"$in": ids}})
+    return {
+        "deleted": int(result.deleted_count),
+        "message": f"{result.deleted_count} produse șterse"
+    }
 
 
 # ==================== REVIEWS ENDPOINTS ====================
