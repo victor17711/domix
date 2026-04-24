@@ -38,6 +38,8 @@ import OrdersManagement from './pages/admin/OrdersManagement';
 import RequestsManagement from './pages/admin/RequestsManagement';
 import Settings from './pages/admin/Settings';
 import Pages from './pages/admin/Pages';
+import GiftsManagement from './pages/admin/GiftsManagement';
+import GiftConditionsManagement from './pages/admin/GiftConditionsManagement';
 import { Toaster } from './components/ui/toaster';
 import './App.css';
 
@@ -334,6 +336,18 @@ function App() {
                 <Route path="/admin/pages" element={
                   <AdminProtectedRoute>
                     <Pages />
+                  </AdminProtectedRoute>
+                } />
+
+                <Route path="/admin/gifts" element={
+                  <AdminProtectedRoute>
+                    <GiftsManagement />
+                  </AdminProtectedRoute>
+                } />
+
+                <Route path="/admin/gift-conditions" element={
+                  <AdminProtectedRoute>
+                    <GiftConditionsManagement />
                   </AdminProtectedRoute>
                 } />
 

@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
 import { toast } from '../hooks/use-toast';
 import ProductCard from '../components/ProductCard';
+import GiftPopup from '../components/GiftPopup';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -1066,6 +1067,9 @@ const ProductDetailPage = () => {
           )}
         </div>
       )}
+
+      {/* Gift popup – appears if the product matches any active gift condition */}
+      <GiftPopup product={product} />
     </div>
   );
 };

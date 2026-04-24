@@ -32,7 +32,8 @@ from models import (
     PageCreate, Page,
     ContactRequestCreate, ContactRequest,
     NewsletterSubscriptionCreate, NewsletterSubscription,
-    InstallmentRequestCreate, InstallmentRequest
+    InstallmentRequestCreate, InstallmentRequest,
+    GiftCreate, Gift, GiftConditionCreate, GiftCondition, GiftLeadCreate, GiftLead
 )
 from auth_utils import verify_password, get_password_hash, create_access_token
 from dependencies import get_current_user, get_current_admin_user
@@ -1616,6 +1617,129 @@ async def upload_file(
         "size": len(contents),
         "contentType": file.content_type
     }
+
+
+# ==================== GIFT SYSTEM ENDPOINTS ====================
+
+@api_router.get("/gifts", response_model=List[Gift])
+async def get_gifts():
+    """Get all gifts (public)"""
+    gifts = await db.gifts.find({}, {"_id": 0}).sort("createdAt", -1).to_list(500)
+    return [Gift(**g) for g in gifts]
+
+
+@api_router.post("/gifts", response_model=Gift)
+async def create_gift(gift: GiftCreate, authorization: Optional[str] = Header(None)):
+    current_user = await get_current_user(authorization)
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    new_gift = Gift(**gift.dict())
+    await db.gifts.insert_one(new_gift.dict())
+    return new_gift
+
+
+@api_router.put("/gifts/{gift_id}", response_model=Gift)
+async def update_gift(gift_id: str, gift: GiftCreate, authorization: Optional[str] = Header(None)):
+    current_user = await get_current_user(authorization)
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    existing = await db.gifts.find_one({"id": gift_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Gift not found")
+    await db.gifts.update_one({"id": gift_id}, {"$set": gift.dict()})
+    updated = await db.gifts.find_one({"id": gift_id}, {"_id": 0})
+    return Gift(**updated)
+
+
+@api_router.delete("/gifts/{gift_id}")
+async def delete_gift(gift_id: str, authorization: Optional[str] = Header(None)):
+    current_user = await get_current_user(authorization)
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    await db.gifts.delete_one({"id": gift_id})
+    return {"message": "Gift deleted"}
+
+
+@api_router.get("/gift-conditions", response_model=List[GiftCondition])
+async def get_gift_conditions():
+    """Get all gift conditions (public – used by frontend popup matcher)"""
+    conds = await db.gift_conditions.find({}, {"_id": 0}).sort("createdAt", -1).to_list(500)
+    return [GiftCondition(**c) for c in conds]
+
+
+@api_router.post("/gift-conditions", response_model=GiftCondition)
+async def create_gift_condition(
+    cond: GiftConditionCreate,
+    authorization: Optional[str] = Header(None)
+):
+    current_user = await get_current_user(authorization)
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    new_cond = GiftCondition(**cond.dict())
+    await db.gift_conditions.insert_one(new_cond.dict())
+    return new_cond
+
+
+@api_router.put("/gift-conditions/{cond_id}", response_model=GiftCondition)
+async def update_gift_condition(
+    cond_id: str,
+    cond: GiftConditionCreate,
+    authorization: Optional[str] = Header(None)
+):
+    current_user = await get_current_user(authorization)
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    existing = await db.gift_conditions.find_one({"id": cond_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Condition not found")
+    await db.gift_conditions.update_one({"id": cond_id}, {"$set": cond.dict()})
+    updated = await db.gift_conditions.find_one({"id": cond_id}, {"_id": 0})
+    return GiftCondition(**updated)
+
+
+@api_router.delete("/gift-conditions/{cond_id}")
+async def delete_gift_condition(cond_id: str, authorization: Optional[str] = Header(None)):
+    current_user = await get_current_user(authorization)
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    await db.gift_conditions.delete_one({"id": cond_id})
+    return {"message": "Condition deleted"}
+
+
+@api_router.post("/gift-leads", response_model=GiftLead)
+async def create_gift_lead(lead: GiftLeadCreate):
+    """Public: capture lead from the gift popup (name + phone)."""
+    new_lead = GiftLead(**lead.dict())
+    await db.gift_leads.insert_one(new_lead.dict())
+
+    # Notify via Telegram (non-blocking)
+    try:
+        gift_names = []
+        if lead.giftIds:
+            gifts = await db.gifts.find({"id": {"$in": lead.giftIds}}, {"_id": 0, "name": 1}).to_list(50)
+            gift_names = [g.get("name", "") for g in gifts]
+        msg = (
+            "🎁 <b>Lead cadou nou</b>\n"
+            "━━━━━━━━━━━━━━━━━\n"
+            f"👤 <b>Nume:</b> {lead.customerName}\n"
+            f"📞 <b>Telefon:</b> {lead.customerPhone}\n"
+            f"🛍 <b>Produs:</b> {lead.productName or lead.productId}\n"
+            f"🎁 <b>Cadouri:</b> {', '.join(gift_names) if gift_names else '—'}"
+        )
+        asyncio.create_task(send_telegram_message(msg))
+    except Exception as exc:
+        logging.warning("Could not send gift lead to Telegram: %s", exc)
+
+    return new_lead
+
+
+@api_router.get("/gift-leads", response_model=List[GiftLead])
+async def get_gift_leads(authorization: Optional[str] = Header(None)):
+    current_user = await get_current_user(authorization)
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    leads = await db.gift_leads.find({}, {"_id": 0}).sort("createdAt", -1).to_list(500)
+    return [GiftLead(**l) for l in leads]
 
 
 # ==================== SITEMAP ====================

@@ -630,7 +630,7 @@ const ProductsManagement = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Magazin — Rusă 🇷🇺</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Magazin (RU) 🇷🇺</label>
                   <input
                     type="text"
                     value={formData.storeNameRu}

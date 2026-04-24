@@ -15,7 +15,9 @@ import {
   FileText,
   Tag,
   Image,
-  MessageSquare
+  MessageSquare,
+  Gift,
+  Target
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -38,6 +40,8 @@ const AdminLayout = ({ children }) => {
     { path: '/admin/orders', label: 'Comenzi', icon: ShoppingCart, roles: ['admin', 'manager'] },
     { path: '/admin/users', label: 'Utilizatori', icon: Users, roles: ['admin'] },
     { path: '/admin/content', label: 'Conținut', icon: Image, roles: ['admin'] },
+    { path: '/admin/gifts', label: 'Cadouri', icon: Gift, roles: ['admin'] },
+    { path: '/admin/gift-conditions', label: 'Condiții cadouri', icon: Target, roles: ['admin'] },
     { path: '/admin/pages', label: 'Pagini', icon: FileText, roles: ['admin'] },
     { path: '/admin/requests', label: 'Solicitări', icon: MessageSquare, roles: ['admin'] },
     { path: '/admin/settings', label: 'Setări', icon: Settings, roles: ['admin'] },

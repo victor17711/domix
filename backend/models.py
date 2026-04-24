@@ -316,5 +316,45 @@ class InstallmentRequest(InstallmentRequestCreate):
     createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     status: str = "new"  # new, contacted, approved, rejected
 
+# Gift System Models
+class GiftCreate(BaseModel):
+    name: str
+    nameRu: Optional[str] = ""
+    description: Optional[str] = ""
+    descriptionRu: Optional[str] = ""
+    image: Optional[str] = ""
+    isActive: Optional[bool] = True
+
+class Gift(GiftCreate):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class GiftConditionCreate(BaseModel):
+    name: str
+    categoryId: Optional[str] = ""   # empty = no category filter
+    brandId: Optional[str] = ""      # empty = no brand filter
+    productIds: Optional[List[str]] = []  # specific products to match (empty = any match via category/brand)
+    giftIds: List[str] = []          # which gifts to display
+    minTime: Optional[int] = 8       # min seconds before popup shows
+    maxTime: Optional[int] = 12      # max seconds before popup shows
+    isActive: Optional[bool] = True
+
+class GiftCondition(GiftConditionCreate):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class GiftLeadCreate(BaseModel):
+    productId: str
+    productName: Optional[str] = ""
+    giftConditionId: Optional[str] = ""
+    giftIds: Optional[List[str]] = []
+    customerName: str
+    customerPhone: str
+
+class GiftLead(GiftLeadCreate):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    status: str = "new"  # new, contacted
+
 # Rebuild MenuItem model to resolve forward references for recursive children
 MenuItem.model_rebuild()
