@@ -51,6 +51,15 @@ def _escape_html(text: str) -> str:
     )
 
 
+def _payment_method_label(code: str) -> str:
+    """Translate internal payment code to a human-readable Romanian label."""
+    return {
+        "cash_on_delivery": "Cash la curier",
+        "card_on_delivery": "Card la curier",
+        "bank_transfer": "Transfer bancar",
+    }.get((code or "").lower(), code or "—")
+
+
 def format_order_message(order) -> str:
     """Format an Order object (or dict) as a nice HTML Telegram message in Romanian."""
     if hasattr(order, "dict"):
@@ -63,7 +72,7 @@ def format_order_message(order) -> str:
     phone = _escape_html(o.get("customerPhone", ""))
     email = _escape_html(o.get("customerEmail", ""))
     total = o.get("totalAmount", 0)
-    payment = _escape_html(o.get("paymentMethod", "cash_on_delivery"))
+    payment = _escape_html(_payment_method_label(o.get("paymentMethod", "")))
 
     addr = o.get("shippingAddress") or {}
     addr_line = ", ".join(

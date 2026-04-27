@@ -46,27 +46,27 @@ import './App.css';
 
 // Wrapper component to handle route changes and preloader (ONLY for public pages)
 const RouteChangeHandler = ({ children }) => {
-  const location = useLocation();
-  const [loading, setLoading] = useState(false);
+  // const location = useLocation();
+  // const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    // Skip preloader for admin routes
-    if (location.pathname.startsWith('/admin')) {
-      setLoading(false);
-      return;
-    }
+  // useEffect(() => {
+  //   // Skip preloader for admin routes
+  //   if (location.pathname.startsWith('/admin')) {
+  //     setLoading(false);
+  //     return;
+  //   }
 
-    setLoading(true);
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000); // 1 seconds preloader
+  //   setLoading(true);
+  //   const timer = setTimeout(() => {
+  //     setLoading(false);
+  //   }, 1000); // 1 seconds preloader
 
-    return () => clearTimeout(timer);
-  }, [location.pathname]);
+  //   return () => clearTimeout(timer);
+  // }, [location.pathname]);
 
-  if (loading) {
-    return <Preloader />;
-  }
+  // if (loading) {
+  //   return <Preloader />;
+  // }
 
   return children;
 };

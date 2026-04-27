@@ -115,7 +115,7 @@ export const translations = {
       newsletterText: 'Adresa de email',
       subscribe: 'Abonează-te',
       allRightsReserved: 'Powered by',
-      address: 'or. Durleşti, str. Tudor Vladimirescu 67C',
+      address: 'or. Durleşti, str. Tudor Vladimirescu 70B',
       links: {
         about: 'Despre Noi',
         catalog: 'Catalog',
@@ -407,7 +407,11 @@ export const translations = {
       max: 'Max',
       apply: 'Aplică',
       brand: 'Brand',
-      empty: 'Nu există produse în această categorie'
+      empty: 'Nu există produse în această categorie',
+      prev: 'Înapoi',
+      next: 'Înainte',
+      showing: 'Se afișează',
+      from: 'din'
     },
 
     // Contul meu
@@ -552,6 +556,10 @@ export const translations = {
       placeholderNotes: 'Instrucțiuni speciale pentru livrare...',
       cashOnDelivery: 'Cash la curier',
       cashOnDeliveryDesc: 'Plătește când primești comanda',
+      cardOnDelivery: 'Card la curier',
+      cardOnDeliveryDesc: 'Plătește cu cardul direct curierului la livrare',
+      bankTransfer: 'Transfer bancar',
+      bankTransferDesc: 'Achiți prin transfer bancar înainte de expediere; te contactăm cu datele facturii',
       size: 'Mărime',
       subtotal: 'Subtotal',
       shipping: 'Livrare',
@@ -711,13 +719,13 @@ export const translations = {
 
     // Brand Category Page
     brandPage: {
-  home: 'Acasă',
-  brands: 'Branduri',
-  brandNotFound: 'Brand-ul nu a fost găsit',
-  loadError: 'Eroare la încărcarea datelor',
-  backToBrands: 'Înapoi la Branduri',
-  noProducts: 'Nu există produse disponibile pentru acest brand'
-},
+      home: 'Acasă',
+      brands: 'Branduri',
+      brandNotFound: 'Brand-ul nu a fost găsit',
+      loadError: 'Eroare la încărcarea datelor',
+      backToBrands: 'Înapoi la Branduri',
+      noProducts: 'Nu există produse disponibile pentru acest brand'
+    },
 
     // Produse cu reducere
     discountProducts: "Produse cu reducere",
@@ -838,7 +846,7 @@ export const translations = {
       newsletterText: 'Адрес электронной почты',
       subscribe: 'Подписаться',
       allRightsReserved: 'Создано',
-      address: 'г. Дурлешты, ул. Тудор Владимиреску 67C',
+      address: 'г. Дурлешты, ул. Тудор Владимиреску 70Б',
       links: {
         about: 'О нас',
         catalog: 'Каталог',
@@ -1130,7 +1138,11 @@ export const translations = {
       max: 'Макс',
       apply: 'Применить',
       brand: 'Бренд',
-      empty: 'В этой категории нет товаров'
+      empty: 'В этой категории нет товаров',
+      prev: 'Назад',
+      next: 'Вперёд',
+      showing: 'Показано',
+      from: 'из'
     },
 
     // Contul meu
@@ -1275,6 +1287,10 @@ export const translations = {
       placeholderNotes: 'Особые инструкции для доставки...',
       cashOnDelivery: 'Наличными курьеру',
       cashOnDeliveryDesc: 'Оплатите при получении заказа',
+      cardOnDelivery: 'Картой курьеру',
+      cardOnDeliveryDesc: 'Оплатите картой курьеру при получении',
+      bankTransfer: 'Банковский перевод',
+      bankTransferDesc: 'Оплата банковским переводом до отправки; свяжемся с реквизитами',
       size: 'Размер',
       subtotal: 'Промежуточный итог',
       shipping: 'Доставка',
@@ -1434,13 +1450,13 @@ export const translations = {
 
     // Brand Category Page
     brandPage: {
-  home: 'Главная',
-  brands: 'Бренды',
-  brandNotFound: 'Бренд не найден',
-  loadError: 'Ошибка при загрузке данных',
-  backToBrands: 'Назад к брендам',
-  noProducts: 'Для этого бренда нет доступных товаров'
-},
+      home: 'Главная',
+      brands: 'Бренды',
+      brandNotFound: 'Бренд не найден',
+      loadError: 'Ошибка при загрузке данных',
+      backToBrands: 'Назад к брендам',
+      noProducts: 'Для этого бренда нет доступных товаров'
+    },
 
     // Produse cu reducere
     discountProducts: "Товары со скидкой"

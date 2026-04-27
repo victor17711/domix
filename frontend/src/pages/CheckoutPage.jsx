@@ -16,6 +16,7 @@ const CheckoutPage = () => {
   const { user } = useAuth();
   const { language, t } = useLanguage();
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('cash_on_delivery');
 
   const [formData, setFormData] = useState({
     fullName: user?.name || '',
@@ -68,7 +69,7 @@ const CheckoutPage = () => {
         },
         totalAmount: getCartTotal(),
         status: 'pending',
-        paymentMethod: 'cash_on_delivery'
+        paymentMethod: paymentMethod
       };
 
       await axios.post(`${API}/orders`, orderData);
@@ -258,23 +259,50 @@ const CheckoutPage = () => {
                   </div>
 
                   <div className="space-y-3">
-                    <label className="flex items-center gap-4 p-4 border-2 border-teal-600 rounded-xl bg-teal-50 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="payment"
-                        defaultChecked
-                        className="w-5 h-5 text-teal-600"
-                      />
-                      <div className="flex-1">
-                        <div className="font-semibold text-gray-900">
-                          {t('checkout.cashOnDelivery')}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          {t('checkout.cashOnDeliveryDesc')}
-                        </div>
-                      </div>
-                      <Check className="w-6 h-6 text-teal-600" />
-                    </label>
+                    {[
+                      {
+                        id: 'cash_on_delivery',
+                        label: t('checkout.cashOnDelivery'),
+                        desc: t('checkout.cashOnDeliveryDesc')
+                      },
+                      {
+                        id: 'card_on_delivery',
+                        label: t('checkout.cardOnDelivery'),
+                        desc: t('checkout.cardOnDeliveryDesc')
+                      },
+                      {
+                        id: 'bank_transfer',
+                        label: t('checkout.bankTransfer'),
+                        desc: t('checkout.bankTransferDesc')
+                      }
+                    ].map((opt) => {
+                      const checked = paymentMethod === opt.id;
+                      return (
+                        <label
+                          key={opt.id}
+                          className={`flex items-center gap-4 p-4 border-2 rounded-xl cursor-pointer transition ${
+                            checked
+                              ? 'border-teal-600 bg-teal-50'
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                          data-testid={`payment-option-${opt.id}`}
+                        >
+                          <input
+                            type="radio"
+                            name="payment"
+                            value={opt.id}
+                            checked={checked}
+                            onChange={() => setPaymentMethod(opt.id)}
+                            className="w-5 h-5 text-teal-600"
+                          />
+                          <div className="flex-1">
+                            <div className="font-semibold text-gray-900">{opt.label}</div>
+                            <div className="text-sm text-gray-600">{opt.desc}</div>
+                          </div>
+                          {checked && <Check className="w-6 h-6 text-teal-600" />}
+                        </label>
+                      );
+                    })}
                   </div>
                 </div>
               </div>

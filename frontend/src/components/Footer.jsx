@@ -251,9 +251,9 @@ const Footer = () => {
               >
                 {[
                   { to: '/toate-produsele', label: t('footer.links.allProducts') },
-                  { to: '/produse-cu-reducere', label: t('footer.links.saleProducts') },
-                  { to: '/cele-mai-vandute', label: t('footer.links.bestProducts') },
-                  { to: '/produse-noi', label: t('footer.links.newProducts') },
+                  { to: '/category/reduceri', label: t('footer.links.saleProducts') },
+                  { to: '/category/cele-mai-vandute', label: t('footer.links.bestProducts') },
+                  { to: '/category/produse-noi', label: t('footer.links.newProducts') },
                 ].map((item) => (
                   <li key={item.label} className="py-1.5 flex items-center gap-x-2">
                     <span className="inline-flex items-center">
@@ -291,7 +291,7 @@ const Footer = () => {
                     <Phone className="w-5 h-5 text-[#D8ECE6]" />
                   </span>
                   <p className="text-[#D8ECE6] font-semibold">
-                    {t('footer.call')} (373) 697 11 967
+                    {t('footer.call')} (373) 691 19 991
                   </p>
                 </li>
 
