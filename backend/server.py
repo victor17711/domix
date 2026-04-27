@@ -175,7 +175,7 @@ async def get_products(
     maxPrice: Optional[float] = None,
     brandId: Optional[str] = None,
     skip: int = 0,
-    limit: int = 2000
+    limit: int = 100
 ):
     """Get all products with optional filtering"""
     query = {}
@@ -200,6 +200,9 @@ async def get_products(
     if brandId:
         query["brandId"] = brandId
     
+    # Cap limit defensively to avoid OOM in production
+    limit = max(1, min(int(limit), 200))
+
     # Sort by createdAt descending (newest first)
     products = await db.products.find(query, {"_id": 0}).sort("createdAt", -1).skip(skip).limit(limit).to_list(limit)
 
@@ -495,7 +498,9 @@ async def export_products(
     """
     import json as _json
     try:
-        products = await db.products.find({}, {"_id": 0}).sort("createdAt", -1).to_list(None)
+        # Hard cap to prevent OOM in production. If catalog grows beyond this,
+        # paginate the export instead.
+        products = await db.products.find({}, {"_id": 0}).sort("createdAt", -1).limit(10000).to_list(10000)
 
         wb = Workbook()
         ws = wb.active
@@ -836,21 +841,31 @@ async def get_product_reviews(product_id: str):
 
 @api_router.get("/categories", response_model=List[Category])
 async def get_categories():
-    """Get all categories with product count"""
-    categories = await db.categories.find().to_list(100)
-    
-    # Count products for each category
+    """Get all categories with product count (single aggregation query)."""
+    categories = await db.categories.find({}, {"_id": 0}).to_list(500)
+
+    # Single aggregation: count products per category, taking into account
+    # both the legacy `category` field and the new `categories` array.
+    pipeline = [
+        {
+            "$project": {
+                "names": {
+                    "$concatArrays": [
+                        [{"$ifNull": ["$category", ""]}],
+                        {"$ifNull": ["$categories", []]},
+                    ]
+                }
+            }
+        },
+        {"$unwind": "$names"},
+        {"$match": {"names": {"$ne": ""}}},
+        {"$group": {"_id": "$names", "count": {"$sum": 1}}},
+    ]
+    counts = {c["_id"]: c["count"] async for c in db.products.aggregate(pipeline)}
+
     for category in categories:
-        # Count products where the category name matches either the legacy `category`
-        # field or exists inside the new `categories` array
-        product_count = await db.products.count_documents({
-            "$or": [
-                {"category": category["name"]},
-                {"categories": category["name"]}
-            ]
-        })
-        category["itemCount"] = product_count
-    
+        category["itemCount"] = counts.get(category.get("name", ""), 0)
+
     return [Category(**cat) for cat in categories]
 
 
@@ -1313,12 +1328,12 @@ async def create_order(order_data: OrderCreate):
 
 @api_router.get("/admin/orders", response_model=List[Order])
 async def get_all_orders(authorization: Optional[str] = Header(None)):
-    """Get all orders (admin only)"""
+    """Get the most recent orders (admin only). Cap at 200 newest by default."""
     current_user = await get_current_user(authorization)
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
-    
-    orders = await db.orders.find({}, {"_id": 0}).to_list(1000)
+
+    orders = await db.orders.find({}, {"_id": 0}).sort("createdAt", -1).limit(200).to_list(200)
     return [Order(**order) for order in orders]
 
 
@@ -1409,10 +1424,16 @@ async def get_dashboard_stats(authorization: Optional[str] = Header(None)):
     pending_orders = await db.orders.count_documents({"status": "pending"})
     low_stock_products = await db.products.count_documents({"available": {"$lt": 10}})
     
-    # Calculate total revenue
-    orders = await db.orders.find().to_list(10000)
-    total_revenue = sum(order.get("total", 0) for order in orders)
-    
+    # Calculate total revenue via MongoDB aggregation (no in-memory load)
+    revenue_pipeline = [
+        {"$group": {
+            "_id": None,
+            "total": {"$sum": {"$ifNull": ["$totalAmount", "$total"]}}
+        }}
+    ]
+    revenue_result = await db.orders.aggregate(revenue_pipeline).to_list(1)
+    total_revenue = float(revenue_result[0]["total"]) if revenue_result else 0.0
+
     return DashboardStats(
         totalUsers=total_users,
         totalProducts=total_products,

@@ -50,7 +50,9 @@ const HomePage = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${API}/products`);
+      // Fetch only the latest 100 products for homepage display.
+      // Section components (BestSellers, FreshFinds, etc.) only need a subset.
+      const response = await axios.get(`${API}/products?limit=100`);
       setProducts(response.data);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -66,7 +68,7 @@ const HomePage = () => {
       const category = categoryRes.data.find(cat => cat.id === settings.featuredCategoryId);
 
       if (category) {
-        const response = await axios.get(`${API}/products?category=${encodeURIComponent(category.name)}`);
+        const response = await axios.get(`${API}/products?category=${encodeURIComponent(category.name)}&limit=20`);
         setFeaturedProducts(response.data);
       }
     } catch (error) {
