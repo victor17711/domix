@@ -229,6 +229,93 @@ async def get_products(
     return [Product(**product) for product in products]
 
 
+@api_router.get("/products/list/paginated")
+async def get_products_paginated(
+    category: Optional[str] = None,
+    search: Optional[str] = None,
+    minPrice: Optional[float] = None,
+    maxPrice: Optional[float] = None,
+    brandId: Optional[str] = None,
+    brandIds: Optional[str] = None,  # comma-separated list of brand IDs
+    page: int = 1,
+    pageSize: int = 12,
+):
+    """Public paginated products endpoint: returns {items, total, page, pageSize, maxPrice}.
+
+    Used by category/brand listing pages that need page-based navigation.
+    """
+    page = max(1, int(page))
+    pageSize = max(1, min(int(pageSize), 100))
+
+    query = {}
+    if category:
+        query["$or"] = [
+            {"category": category},
+            {"categories": category},
+        ]
+    if search:
+        query["name"] = {"$regex": search, "$options": "i"}
+    if minPrice is not None or maxPrice is not None:
+        price_q = {}
+        if minPrice is not None:
+            price_q["$gte"] = minPrice
+        if maxPrice is not None:
+            price_q["$lte"] = maxPrice
+        query["price"] = price_q
+    if brandIds:
+        ids = [b.strip() for b in brandIds.split(",") if b.strip()]
+        if ids:
+            query["brandId"] = {"$in": ids}
+    elif brandId:
+        query["brandId"] = brandId
+
+    # Compute the highest price within the unfiltered category scope (without
+    # the price range filter) so the UI can show a usable range slider.
+    scope_query = {}
+    if category:
+        scope_query["$or"] = [
+            {"category": category},
+            {"categories": category},
+        ]
+    max_doc = await db.products.find(scope_query, {"_id": 0, "price": 1}).sort("price", -1).limit(1).to_list(1)
+    scope_max_price = float(max_doc[0]["price"]) if max_doc else 0
+
+    total = await db.products.count_documents(query)
+    skip = (page - 1) * pageSize
+    cursor = (
+        db.products.find(query, {"_id": 0})
+        .sort("createdAt", -1)
+        .skip(skip)
+        .limit(pageSize)
+    )
+    items = await cursor.to_list(pageSize)
+
+    # Recompute review counts (same as get_products)
+    product_ids = [p.get("id") for p in items if p.get("id")]
+    if product_ids:
+        pipeline = [
+            {"$match": {"productId": {"$in": product_ids}}},
+            {"$group": {
+                "_id": "$productId",
+                "count": {"$sum": 1},
+                "avgRating": {"$avg": "$rating"},
+            }},
+        ]
+        stats = {s["_id"]: s async for s in db.reviews.aggregate(pipeline)}
+        for p in items:
+            s = stats.get(p.get("id"))
+            p["reviews"] = s["count"] if s else 0
+            p["rating"] = round(s["avgRating"], 1) if s else 0.0
+
+    return {
+        "items": [Product(**p).dict() for p in items],
+        "total": total,
+        "page": page,
+        "pageSize": pageSize,
+        "maxPrice": scope_max_price,
+    }
+
+
 @api_router.get("/admin/products")
 async def admin_get_products(
     search: Optional[str] = None,

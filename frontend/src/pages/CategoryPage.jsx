@@ -1,108 +1,122 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { ChevronRight, SlidersHorizontal, X } from 'lucide-react';
+import { ChevronRight, ChevronLeft, SlidersHorizontal, X } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import { useLanguage } from '../context/LanguageContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+const PAGE_SIZE = 12;
 
 const CategoryPage = () => {
   const { language, t } = useLanguage();
   const { slug } = useParams();
   const [category, setCategory] = useState(null);
   const [products, setProducts] = useState([]);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filterOpen, setFilterOpen] = useState(false);
-  
-  // Filter states
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 });
-  const [selectedBrands, setSelectedBrands] = useState([]);
-  const [tempPriceRange, setTempPriceRange] = useState({ min: 0, max: 10000 });
 
+// Filter states
+const [maxCategoryPrice, setMaxCategoryPrice] = useState(0);
+const [priceRange, setPriceRange] = useState({ min: 0, max: 0 });
+const [selectedBrands, setSelectedBrands] = useState([]);
+const [tempPriceRange, setTempPriceRange] = useState({ min: 0, max: 0 });
+
+  // Reset to page 1 when slug or filters change
   useEffect(() => {
-    fetchCategoryAndProducts();
-    fetchBrands();
+    setCurrentPage(1);
+  }, [slug, priceRange.min, priceRange.max, selectedBrands.join(',')]);
+
+  // Load category meta + brands once per slug
+  useEffect(() => {
+    fetchCategoryAndBrands();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
+  // Fetch products whenever category, page or filters change
   useEffect(() => {
     if (category) {
-      applyFilters();
+      fetchProducts();
     }
-  }, [priceRange, selectedBrands, category]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category, currentPage, priceRange.min, priceRange.max, selectedBrands.join(',')]);
 
-  const fetchCategoryAndProducts = async () => {
+  const fetchCategoryAndBrands = async () => {
     try {
-      const categoriesRes = await axios.get(`${API}/categories`);
-      const foundCategory = categoriesRes.data.find(cat => cat.slug === slug);
-      
+      setLoading(true);
+      const [catRes, brRes] = await Promise.all([
+        axios.get(`${API}/categories`),
+        axios.get(`${API}/brands`)
+      ]);
+      const foundCategory = catRes.data.find((c) => c.slug === slug);
       if (!foundCategory) {
         setError('Categoria nu a fost găsită');
-        setLoading(false);
         return;
       }
-
       setCategory(foundCategory);
+      setBrands(brRes.data);
       setError(null);
-    } catch (error) {
-      console.error('Error fetching category:', error);
+    } catch (err) {
+      console.error('Error loading category:', err);
       setError('Categoria nu a fost găsită');
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchBrands = async () => {
-    try {
-      const response = await axios.get(`${API}/brands`);
-      setBrands(response.data);
-    } catch (error) {
-      console.error('Error fetching brands:', error);
-    }
-  };
-
-  const applyFilters = async () => {
+  const fetchProducts = async () => {
     if (!category) return;
-    
     try {
-      let url = `${API}/products?category=${encodeURIComponent(category.name)}&minPrice=${priceRange.min}&maxPrice=${priceRange.max}`;
-
-      // For multiple brands, we'll fetch all and filter client-side
-      const response = await axios.get(url);
-      let filteredProducts = response.data;
-
-      // Client-side brand filtering if brands are selected
+      const params = new URLSearchParams({
+        category: category.name,
+        page: String(currentPage),
+        pageSize: String(PAGE_SIZE)
+      });
+      if (priceRange.min > 0) params.append('minPrice', String(priceRange.min));
+      if (priceRange.max > 0 && priceRange.max < maxCategoryPrice) {
+        params.append('maxPrice', String(priceRange.max));
+      } else if (priceRange.max > 0 && maxCategoryPrice === 0) {
+        params.append('maxPrice', String(priceRange.max));
+      }
       if (selectedBrands.length > 0) {
-        filteredProducts = filteredProducts.filter(product => 
-          selectedBrands.includes(product.brandId)
-        );
+        params.append('brandIds', selectedBrands.join(','));
       }
 
-      setProducts(filteredProducts);
-    } catch (error) {
-      console.error('Error fetching filtered products:', error);
-    }
-  };
+      const res = await axios.get(`${API}/products/list/paginated?${params.toString()}`);
+      setProducts(res.data.items || []);
+      setTotalProducts(res.data.total || 0);
 
-  const handleBrandToggle = (brandId) => {
-    setSelectedBrands(prev => 
-      prev.includes(brandId) 
-        ? prev.filter(id => id !== brandId)
-        : [...prev, brandId]
-    );
+      // Initialize the price range only on the very first load of the category
+      if (maxCategoryPrice === 0 && res.data.maxPrice > 0) {
+        setMaxCategoryPrice(res.data.maxPrice);
+        setPriceRange({ min: 0, max: res.data.maxPrice });
+        setTempPriceRange({ min: 0, max: res.data.maxPrice });
+      }
+    } catch (err) {
+      console.error('Error fetching products:', err);
+    }
   };
 
   const handlePriceRangeApply = () => {
     setPriceRange(tempPriceRange);
   };
 
-  const resetFilters = () => {
-    setPriceRange({ min: 0, max: 10000 });
-    setTempPriceRange({ min: 0, max: 10000 });
-    setSelectedBrands([]);
+const resetFilters = () => {
+  setPriceRange({ min: 0, max: maxCategoryPrice });
+  setTempPriceRange({ min: 0, max: maxCategoryPrice });
+  setSelectedBrands([]);
+  setCurrentPage(1);
+};
+
+  const handleBrandToggle = (brandId) => {
+    setSelectedBrands((prev) =>
+      prev.includes(brandId) ? prev.filter((b) => b !== brandId) : [...prev, brandId]
+    );
   };
 
   if (loading) {
@@ -351,11 +365,77 @@ const CategoryPage = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {products.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {(() => {
+                  const totalPages = Math.max(1, Math.ceil(totalProducts / PAGE_SIZE));
+                  if (totalPages <= 1) return null;
+                  const PAGE_GROUP_SIZE = 5;
+                  const currentGroup = Math.floor((currentPage - 1) / PAGE_GROUP_SIZE);
+                  const groupStart = currentGroup * PAGE_GROUP_SIZE + 1;
+                  const groupEnd = Math.min(groupStart + PAGE_GROUP_SIZE - 1, totalPages);
+                  const visiblePages = [];
+                  for (let p = groupStart; p <= groupEnd; p++) visiblePages.push(p);
+                  const goTo = (n) => {
+                    setCurrentPage(n);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  };
+                  return (
+                    <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                      <div className="text-sm text-gray-600">
+                        {t('categoryPage.showing') || 'Afișare'}{' '}
+                        <span className="font-semibold">{(currentPage - 1) * PAGE_SIZE + 1}</span>
+                        {' '}-{' '}
+                        <span className="font-semibold">{Math.min(currentPage * PAGE_SIZE, totalProducts)}</span>
+                        {' '}{t('categoryPage.from') || 'din'}{' '}
+                        <span className="font-semibold">{totalProducts}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => goTo(Math.max(1, groupStart - PAGE_GROUP_SIZE))}
+                          disabled={groupStart === 1}
+                          className="px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
+                          data-testid="category-prev-page-btn"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                          {t('categoryPage.prev') || 'Anterior'}
+                        </button>
+                        <div className="flex gap-1">
+                          {visiblePages.map((p) => (
+                            <button
+                              key={p}
+                              onClick={() => goTo(p)}
+                              className={`w-10 h-10 rounded-lg font-semibold transition ${
+                                currentPage === p
+                                  ? 'bg-teal-600 text-white'
+                                  : 'border border-gray-300 hover:bg-gray-100'
+                              }`}
+                              data-testid={`category-page-${p}`}
+                            >
+                              {p}
+                            </button>
+                          ))}
+                        </div>
+                        <button
+                          onClick={() => goTo(Math.min(totalPages, groupEnd + 1))}
+                          disabled={groupEnd >= totalPages}
+                          className="px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
+                          data-testid="category-next-page-btn"
+                        >
+                          {t('categoryPage.next') || 'Următor'}
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </>
             )}
           </div>
         </div>

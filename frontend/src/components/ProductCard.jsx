@@ -130,16 +130,26 @@ const ProductCard = ({ product, showProgress = false }) => {
               </div>
             )} */}
 
-            {/* Price */}
-            <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 mb-3">
-              <span className="text-lg font-bold text-gray-900">{product.price} MDL</span>
-              {product.originalPrice && (
-                <>
-                  <span className="text-sm text-gray-400 line-through">{product.originalPrice} MDL</span>
-                  {/* <span className="text-xs font-semibold text-green-600">{discountPercent}% OFF</span> */}
-                </>
-              )}
-            </div>
+{/* Price */}
+<div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2 mb-3">
+  <span
+    className={`text-lg font-bold ${
+      product.originalPrice && Number(product.originalPrice) > Number(product.price)
+        ? 'text-red-500'
+        : 'text-gray-900'
+    }`}
+  >
+    {product.price} MDL
+  </span>
+
+  {product.originalPrice && Number(product.originalPrice) > Number(product.price) && (
+    <>
+      <span className="text-sm text-gray-400 line-through">
+        {product.originalPrice} MDL
+      </span>
+    </>
+  )}
+</div>
 
             {/* Progress Bar (if enabled) */}
             {/* {showProgress && product.sold !== undefined && (

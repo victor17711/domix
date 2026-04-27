@@ -144,9 +144,9 @@ const CatalogCategoryPage = () => {
                     {childName}
                   </h3>
 
-                  <p className="mt-2 text-sm text-gray-500">
+                  {/* <p className="mt-2 text-sm text-gray-500">
                     {child.productCount ?? 0} {t('catalogCategory.products')}
-                  </p>
+                  </p> */}
                 </Link>
               );
             })}
