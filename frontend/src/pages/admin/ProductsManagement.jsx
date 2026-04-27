@@ -197,11 +197,17 @@ const ProductsManagement = () => {
     e.preventDefault();
     
     try {
+      const hasOriginalPrice = formData.originalPrice !== '' && formData.originalPrice !== null && formData.originalPrice !== undefined;
+      const originalPriceNum = hasOriginalPrice ? parseFloat(formData.originalPrice) : null;
+      const priceNum = parseFloat(formData.price);
+
       const productData = {
         ...formData,
-        price: parseFloat(formData.price),
-        originalPrice: parseFloat(formData.originalPrice || formData.price),
-        discount: formData.originalPrice ? Math.round(((formData.originalPrice - formData.price) / formData.originalPrice) * 100) : 0,
+        price: priceNum,
+        originalPrice: originalPriceNum,
+        discount: originalPriceNum && originalPriceNum > priceNum
+          ? Math.round(((originalPriceNum - priceNum) / originalPriceNum) * 100)
+          : 0,
         colors: ["#9b59b6", "#3498db", "#e74c3c", "#f1c40f"],
         sizes: ["S", "M", "L", "XL", "XXL"],
         specifications: specifications.filter(spec => spec.title && spec.value),
@@ -251,7 +257,7 @@ const ProductsManagement = () => {
       description: product.description || '',
       descriptionRu: product.descriptionRu || '',
       price: product.price,
-      originalPrice: product.originalPrice,
+      originalPrice: product.originalPrice ?? '',
       category: product.category,
       categories: product.categories || [],
       brandId: product.brandId || '',
@@ -442,7 +448,7 @@ for (let page = groupStart; page <= groupEnd; page++) {
                   <td className="px-6 py-4 text-gray-700">{product.category}</td>
                   <td className="px-6 py-4">
                     <div className="font-bold text-teal-600">{product.price} MDL</div>
-                    {product.originalPrice && (
+                    {product.originalPrice && Number(product.originalPrice) > Number(product.price) && (
                       <div className="text-sm text-gray-400 line-through">{product.originalPrice} MDL</div>
                     )}
                   </td>
@@ -647,46 +653,89 @@ for (let page = groupStart; page <= groupEnd; page++) {
                   <select
                     required
                     value={formData.category}
-                    onChange={(e) => setFormData({...formData, category: e.target.value})}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      category: e.target.value,
+                      // Reset additional categories when parent changes
+                      categories: []
+                    })}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                   >
                     <option value="">Selectează</option>
-                    {categories.map(cat => (
-                      <option key={cat.id} value={cat.name}>{cat.name}</option>
-                    ))}
+                    {categories
+                      .filter((cat) => !cat.parentId)
+                      .map((cat) => (
+                        <option key={cat.id} value={cat.name}>{cat.name}</option>
+                      ))}
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Categorii Adiționale</label>
-                  <div className="border-2 border-gray-200 rounded-xl p-3 max-h-48 overflow-y-auto bg-gray-50">
-                    {categories.map((cat) => (
-                      <label key={cat.id} className="flex items-center gap-2 py-1.5 cursor-pointer hover:bg-white px-2 rounded">
-                        <input
-                          type="checkbox"
-                          checked={formData.categories?.includes(cat.name) || false}
-                          onChange={(e) => {
-                            const currentCategories = formData.categories || [];
-                            if (e.target.checked) {
-                              setFormData({
-                                ...formData,
-                                categories: [...currentCategories, cat.name]
-                              });
-                            } else {
-                              setFormData({
-                                ...formData,
-                                categories: currentCategories.filter(c => c !== cat.name)
-                              });
-                            }
-                          }}
-                          className="w-4 h-4 text-teal-600 rounded focus:ring-teal-500"
-                        />
-                        <span className="text-sm text-gray-700">{cat.name}</span>
+                {(() => {
+                  // Find selected parent and its subcategories
+                  const parent = categories.find((c) => c.name === formData.category && !c.parentId);
+                  const subcategories = parent
+                    ? categories.filter((c) => c.parentId === parent.id)
+                    : [];
+
+                  if (!formData.category) {
+                    return (
+                      <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">Categorii Adiționale (Sub-categorii)</label>
+                        <div className="border-2 border-gray-200 rounded-xl p-4 bg-gray-50 text-sm text-gray-500 italic">
+                          Selectează mai întâi o Categorie Principală pentru a vedea sub-categoriile disponibile.
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  if (subcategories.length === 0) {
+                    return (
+                      <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">Categorii Adiționale (Sub-categorii)</label>
+                        <div className="border-2 border-gray-200 rounded-xl p-4 bg-gray-50 text-sm text-gray-500 italic">
+                          Categoria „{formData.category}" nu are sub-categorii definite.
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">
+                        Categorii Adiționale (Sub-categorii din „{formData.category}")
                       </label>
-                    ))}
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">Produsul va apărea în toate categoriile selectate</p>
-                </div>
+                      <div className="border-2 border-gray-200 rounded-xl p-3 max-h-48 overflow-y-auto bg-gray-50">
+                        {subcategories.map((cat) => (
+                          <label key={cat.id} className="flex items-center gap-2 py-1.5 cursor-pointer hover:bg-white px-2 rounded">
+                            <input
+                              type="checkbox"
+                              checked={formData.categories?.includes(cat.name) || false}
+                              onChange={(e) => {
+                                const currentCategories = formData.categories || [];
+                                if (e.target.checked) {
+                                  setFormData({
+                                    ...formData,
+                                    categories: [...currentCategories, cat.name]
+                                  });
+                                } else {
+                                  setFormData({
+                                    ...formData,
+                                    categories: currentCategories.filter((c) => c !== cat.name)
+                                  });
+                                }
+                              }}
+                              className="w-4 h-4 text-teal-600 rounded focus:ring-teal-500"
+                            />
+                            <span className="text-sm text-gray-700">{cat.name}</span>
+                          </label>
+                        ))}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Produsul va apărea în categoria principală + toate sub-categoriile selectate
+                      </p>
+                    </div>
+                  );
+                })()}
 
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2">Brand</label>
