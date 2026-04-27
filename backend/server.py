@@ -232,6 +232,21 @@ async def get_products(
     return [Product(**product) for product in products]
 
 
+async def _distinct_brands_in_scope(scope_query: dict) -> list:
+    """Return the list of distinct, non-empty brandId values for products
+    matching the given scope query (typically a category filter)."""
+    pipeline = [
+        {"$match": scope_query} if scope_query else {"$match": {}},
+        {"$group": {"_id": "$brandId"}},
+    ]
+    ids = []
+    async for doc in db.products.aggregate(pipeline):
+        bid = doc.get("_id")
+        if bid:
+            ids.append(bid)
+    return ids
+
+
 @api_router.get("/products/list/paginated")
 async def get_products_paginated(
     category: Optional[str] = None,
@@ -316,6 +331,7 @@ async def get_products_paginated(
         "page": page,
         "pageSize": pageSize,
         "maxPrice": scope_max_price,
+        "availableBrandIds": await _distinct_brands_in_scope(scope_query),
     }
 
 

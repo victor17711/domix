@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ProductCard from './ProductCard';
 import { useLanguage } from '../context/LanguageContext';
@@ -6,10 +6,11 @@ import { useLanguage } from '../context/LanguageContext';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const FreshFindsSection = ({ products = [] }) => {
+const FreshFindsSection = () => {
   const { language } = useLanguage();
   const [tabs, setTabs] = useState([]);
   const [activeTabId, setActiveTabId] = useState(null);
+  const [tabProducts, setTabProducts] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
@@ -55,19 +56,29 @@ const FreshFindsSection = ({ products = [] }) => {
     fetchTabs();
   }, []);
 
-  const filteredProducts = useMemo(() => {
-    if (!activeTabId || tabs.length === 0) return [];
+  // Fetch products whenever active tab changes (server-side, by category)
+  useEffect(() => {
+    if (!activeTabId || tabs.length === 0) return;
     const activeTab = tabs.find((t) => t.id === activeTabId);
-    if (!activeTab) return [];
-    const catName = activeTab.categoryName;
-    return products.filter(
-      (p) =>
-        p.category === catName ||
-        (Array.isArray(p.categories) && p.categories.includes(catName))
-    );
-  }, [products, activeTabId, tabs]);
+    if (!activeTab) return;
 
-  const visibleProducts = isMobile ? filteredProducts.slice(0, 8) : filteredProducts.slice(0, 10);
+    let cancelled = false;
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(
+          `${API}/products?category=${encodeURIComponent(activeTab.categoryName)}&limit=20`
+        );
+        if (!cancelled) setTabProducts(res.data || []);
+      } catch (error) {
+        console.error('Error fetching FreshFinds products:', error);
+        if (!cancelled) setTabProducts([]);
+      }
+    };
+    fetchProducts();
+    return () => { cancelled = true; };
+  }, [activeTabId, tabs]);
+
+  const visibleProducts = isMobile ? tabProducts.slice(0, 8) : tabProducts.slice(0, 10);
 
   if (tabs.length === 0) return null;
 

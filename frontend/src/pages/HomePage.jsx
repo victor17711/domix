@@ -99,7 +99,7 @@ const HomePage = () => {
       <CategoryGrid />
 
       {/* Taburi cu produse */}
-      <BestSellersSection products={products} />
+      <BestSellersSection />
 
       {/* Bannere */}
       <BannerSection />
@@ -114,7 +114,7 @@ const HomePage = () => {
       <BrandsSection />
 
       {/* Taburi cu produse */}
-      <FreshFindsSection products={products} />
+      <FreshFindsSection />
 
       {/* Features Section */}
       <FeaturesSection />

@@ -17,6 +17,7 @@ const CategoryPage = () => {
   const [totalProducts, setTotalProducts] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [brands, setBrands] = useState([]);
+  const [availableBrandIds, setAvailableBrandIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -90,6 +91,7 @@ const [tempPriceRange, setTempPriceRange] = useState({ min: 0, max: 0 });
       const res = await axios.get(`${API}/products/list/paginated?${params.toString()}`);
       setProducts(res.data.items || []);
       setTotalProducts(res.data.total || 0);
+      setAvailableBrandIds(res.data.availableBrandIds || []);
 
       // Initialize the price range only on the very first load of the category
       if (maxCategoryPrice === 0 && res.data.maxPrice > 0) {
@@ -118,6 +120,12 @@ const resetFilters = () => {
       prev.includes(brandId) ? prev.filter((b) => b !== brandId) : [...prev, brandId]
     );
   };
+
+  // Show only brands that actually have products in this category (when known).
+  // Falls back to the full list before the first fetch completes.
+  const visibleBrands = availableBrandIds.length
+    ? brands.filter((b) => availableBrandIds.includes(b.id))
+    : [];
 
   if (loading) {
     return (
@@ -239,11 +247,11 @@ const resetFilters = () => {
               </div>
 
               {/* Brand Filter */}
-              {brands.length > 0 && (
+              {visibleBrands.length > 0 && (
                 <div>
                   <h4 className="font-bold text-gray-900 mb-4">{t('categoryPage.brand')}</h4>
                   <div className="space-y-2 max-h-64 overflow-y-auto">
-                    {brands.map((brand) => (
+                    {visibleBrands.map((brand) => (
                       <label key={brand.id} className="flex items-center gap-3 cursor-pointer group">
                         <input
                           type="checkbox"
@@ -317,11 +325,11 @@ const resetFilters = () => {
                     </div>
                   </div>
 
-                  {brands.length > 0 && (
+                  {visibleBrands.length > 0 && (
                     <div>
                       <h4 className="font-bold text-gray-900 mb-4">Brand</h4>
                       <div className="space-y-2">
-                        {brands.map((brand) => (
+                        {visibleBrands.map((brand) => (
                           <label key={brand.id} className="flex items-center gap-3 cursor-pointer">
                             <input
                               type="checkbox"
