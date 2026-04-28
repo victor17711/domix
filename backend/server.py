@@ -167,6 +167,43 @@ async def update_me(
 
 # ==================== PRODUCT ENDPOINTS ====================
 
+def _build_search_query(search: str) -> dict:
+    """Build a Mongo query that matches every word in `search` (case-insensitive,
+    in any order) against either `name` or `nameRu`.
+
+    Example: search='robinet baie' matches a product called 'Robinet pentru baie'
+    because both 'robinet' and 'baie' appear in the name.
+    """
+    if not search:
+        return {}
+    words = [w for w in re.split(r"\s+", search.strip()) if w]
+    if not words:
+        return {}
+    # Each word must appear somewhere in name OR nameRu
+    and_clauses = []
+    for w in words:
+        escaped = re.escape(w)
+        and_clauses.append({
+            "$or": [
+                {"name": {"$regex": escaped, "$options": "i"}},
+                {"nameRu": {"$regex": escaped, "$options": "i"}},
+            ]
+        })
+    return {"$and": and_clauses}
+
+
+def _merge_query(base: dict, extra: dict) -> dict:
+    """Merge a search sub-query into an existing Mongo query, preserving any
+    existing `$and` / `$or` keys correctly."""
+    if not extra:
+        return base
+    if "$and" in base:
+        base["$and"].extend(extra.get("$and", [extra]))
+    else:
+        base.update(extra)
+    return base
+
+
 @api_router.get("/products", response_model=List[Product])
 async def get_products(
     category: Optional[str] = None,
@@ -188,7 +225,7 @@ async def get_products(
         ]
     
     if search:
-        query["name"] = {"$regex": search, "$options": "i"}
+        _merge_query(query, _build_search_query(search))
     
     if minPrice is not None or maxPrice is not None:
         query["price"] = {}
@@ -272,7 +309,7 @@ async def get_products_paginated(
             {"categories": category},
         ]
     if search:
-        query["name"] = {"$regex": search, "$options": "i"}
+        _merge_query(query, _build_search_query(search))
     if minPrice is not None or maxPrice is not None:
         price_q = {}
         if minPrice is not None:
@@ -352,7 +389,7 @@ async def admin_get_products(
 
     query = {}
     if search:
-        query["name"] = {"$regex": search, "$options": "i"}
+        _merge_query(query, _build_search_query(search))
 
     total = await db.products.count_documents(query)
     skip = (page - 1) * pageSize

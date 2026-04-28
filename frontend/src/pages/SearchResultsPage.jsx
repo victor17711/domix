@@ -29,38 +29,22 @@ const SearchResultsPage = () => {
   const searchProducts = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API}/products`);
-      const allProducts = response.data;
-
-      const searchLower = query.toLowerCase();
-
-      const filtered = allProducts.filter(product => {
-        const name = product.name?.toLowerCase() || '';
-        const nameRu = product.nameRu?.toLowerCase() || '';
-        const category = product.category?.toLowerCase() || '';
-        const categoryRu = product.categoryRu?.toLowerCase() || '';
-        const id = product.id?.toLowerCase() || '';
-        const description = product.description?.toLowerCase() || '';
-
-        return (
-          name.includes(searchLower) ||
-          nameRu.includes(searchLower) ||
-          category.includes(searchLower) ||
-          categoryRu.includes(searchLower) ||
-          id.includes(searchLower) ||
-          description.includes(searchLower)
-        );
-      });
+      // Delegate filtering to backend: it now matches every word in `q`
+      // case-insensitively against `name` AND `nameRu`.
+      const response = await axios.get(
+        `${API}/products?search=${encodeURIComponent(query)}&limit=200`
+      );
+      const filtered = response.data || [];
 
       setProducts(filtered);
 
       const uniqueCategories = [
         ...new Set(
-          filtered.map(p =>
+          filtered.map((p) =>
             language === 'ru' && p.categoryRu ? p.categoryRu : p.category
           )
         )
-      ];
+      ].filter(Boolean);
 
       setCategories(uniqueCategories);
     } catch (error) {
