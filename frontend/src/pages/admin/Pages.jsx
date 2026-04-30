@@ -351,7 +351,7 @@ const Pages = () => {
                         value={contactData.hours}
                         onChange={(e) => setContactData({...contactData, hours: e.target.value})}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                        placeholder="Luni - Vineri: 09:00 - 18:00"
+                        placeholder="Luni - Vineri: 08:00 - 20:00"
                       />
                     </div>
 

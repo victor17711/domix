@@ -13,7 +13,7 @@ export const translations = {
       logout: 'Deconectare',
       cart: 'Coș',
       items: '- Articole',
-      support: '24/7 Suport',
+      support: 'L - S: 08:00 - 20:00',
       termsAndConditions: 'Termeni și condiții',
       privacyPolicy: 'Politica de confidențialitate'
     },
@@ -524,10 +524,10 @@ export const translations = {
       subtotal: 'Subtotal',
       products: 'produse',
       shipping: 'Livrare',
-      freeShipping: 'Gratuită',
+      freeShipping: 'Gratuită în raza orașului Chișinău',
       total: 'Total',
       checkout: 'Finalizează comanda',
-      freeShippingNote: 'Livrare gratuită pentru comenzi peste 500 MDL',
+      freeShippingNote: 'Livrare gratuită pentru comenzi peste 3000 MDL',
       freeReturnNote: 'Retur gratuit în 30 de zile',
       securePaymentNote: 'Plată securizată 100%'
     },
@@ -563,7 +563,7 @@ export const translations = {
       size: 'Mărime',
       subtotal: 'Subtotal',
       shipping: 'Livrare',
-      freeShipping: 'Gratuită',
+      freeShipping: 'Gratuită în raza orașului Chișinău',
       total: 'Total',
       processing: 'Se procesează...',
       placeOrder: 'Plasează Comanda',
@@ -661,7 +661,7 @@ export const translations = {
       learnMore: "Află mai multe",
 
       freeDelivery: "Livrare gratuită",
-      freeDeliveryDesc: "Pentru comenzi peste 500 MDL",
+      freeDeliveryDesc: "în raza orașului Chișinău",
 
       return: "Retur 30 zile",
       returnDesc: "Garanție returnare",
@@ -745,7 +745,7 @@ export const translations = {
       logout: 'Выйти',
       cart: 'Корзина',
       items: '- Товары',
-      support: 'Поддержка 24/7',
+      support: 'П - С: 08:00 - 20:00',
       termsAndConditions: 'Условия и положения',
       privacyPolicy: 'Политика конфиденциальности'
     },
@@ -807,7 +807,7 @@ export const translations = {
       total: 'Итого',
       subtotal: 'Промежуточный итог',
       shipping: 'Доставка',
-      freeShipping: 'Бесплатная доставка',
+      freeShipping: 'Бесплатно в пределах города Кишинёв',
       grandTotal: 'Общая сумма',
       proceedToCheckout: 'Перейти к оформлению',
       remove: 'Удалить',
@@ -1255,10 +1255,10 @@ export const translations = {
       subtotal: 'Промежуточный итог',
       products: 'товаров',
       shipping: 'Доставка',
-      freeShipping: 'Бесплатно',
+      freeShipping: 'Бесплатно в пределах города Кишинёв',
       total: 'Итого',
       checkout: 'Оформить заказ',
-      freeShippingNote: 'Бесплатная доставка для заказов свыше 500 MDL',
+      freeShippingNote: 'Бесплатная доставка для заказов свыше 3000 MDL',
       freeReturnNote: 'Бесплатный возврат в течение 30 дней',
       securePaymentNote: '100% безопасная оплата'
     },
@@ -1392,7 +1392,7 @@ export const translations = {
       learnMore: "Узнать больше",
 
       freeDelivery: "Бесплатная доставка",
-      freeDeliveryDesc: "Для заказов свыше 500 MDL",
+      freeDeliveryDesc: "в пределах города Кишинёв",
 
       return: "Возврат 30 дней",
       returnDesc: "Гарантия возврата",

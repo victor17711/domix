@@ -9,7 +9,6 @@ import {
   ChevronDown,
   Phone,
   Headphones,
-  Tag,
   ChevronRight,
   X
 } from 'lucide-react';
@@ -41,8 +40,13 @@ const Navbar = () => {
   const [mobileMenuTab, setMobileMenuTab] = useState('menu');
   const [searchQuery, setSearchQuery] = useState('');
 
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+
   const dropdownRef = useRef(null);
   const languageDropdownRef = useRef(null);
+  const searchRef = useRef(null);
 
   const openAuthModal = (mode) => {
     setAuthMode(mode);
@@ -69,6 +73,10 @@ const Navbar = () => {
       if (languageDropdownRef.current && !languageDropdownRef.current.contains(event.target)) {
         setIsLanguageDropdownOpen(false);
       }
+
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSearchDropdown(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -93,6 +101,15 @@ const Navbar = () => {
     };
   }, [isMenuOpen]);
 
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      fetchSearchResults();
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
+
   const fetchMenus = async () => {
     try {
       const response = await axios.get(`${API}/settings`);
@@ -106,14 +123,51 @@ const Navbar = () => {
     }
   };
 
+  const fetchSearchResults = async () => {
+    if (searchQuery.trim().length < 2) {
+      setSearchResults([]);
+      setShowSearchDropdown(false);
+      return;
+    }
+
+    try {
+      setSearchLoading(true);
+
+      const res = await axios.get(`${API}/products`, {
+        params: {
+          search: searchQuery.trim(),
+          limit: 6
+        }
+      });
+
+      const data = res.data.products || res.data.items || res.data || [];
+      setSearchResults(Array.isArray(data) ? data : []);
+      setShowSearchDropdown(true);
+    } catch (error) {
+      console.error('Search error:', error);
+      setSearchResults([]);
+      setShowSearchDropdown(true);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
 
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery('');
+      setSearchResults([]);
+      setShowSearchDropdown(false);
       setIsMenuOpen(false);
     }
+  };
+
+  const handleProductClick = () => {
+    setSearchQuery('');
+    setSearchResults([]);
+    setShowSearchDropdown(false);
   };
 
   return (
@@ -127,9 +181,13 @@ const Navbar = () => {
                 <Headphones className="w-4 h-4" />
               </div>
               <span>{t('navbar.infoDesc')}</span>
-              <span className="bg-yellow-400 text-black px-4 py-1 rounded-full font-bold text-sm">
-                (+373) 691 19 991
-              </span>
+<a
+  href="tel:+37369119991"
+  onClick={(e) => e.stopPropagation()}
+  className="bg-yellow-400 text-black px-4 py-1.5 rounded-full font-bold text-sm inline-flex items-center justify-center hover:bg-yellow-300 transition"
+>
+  (+373) 691 19 991
+</a>
             </div>
 
             <div className="hidden lg:flex items-center justify-between w-full">
@@ -139,9 +197,13 @@ const Navbar = () => {
                     <Headphones className="w-3.5 h-3.5" />
                   </div>
                   <span className="text-sm font-bold">{t('navbar.infoDesc')}</span>
-                  <span className="bg-yellow-400 text-black px-4 py-1.5 rounded-full font-bold text-sm">
-                    (+373) 691 19 991
-                  </span>
+<a
+  href="tel:+37369119991"
+  onClick={(e) => e.stopPropagation()}
+  className="bg-yellow-400 text-black px-4 py-1.5 rounded-full font-bold text-sm inline-flex items-center justify-center hover:bg-yellow-300 transition"
+>
+  (+373) 691 19 991
+</a>
                 </div>
 
                 <div className="flex items-center gap-2 relative" ref={languageDropdownRef}>
@@ -183,35 +245,33 @@ const Navbar = () => {
               </div>
 
               <div className="flex items-center gap-4">
-  
-  <a
-    href="https://www.facebook.com/profile.php?id=61574327334921"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="w-7 h-7 border-2 border-white rounded-full flex items-center justify-center hover:bg-white hover:text-teal-700 transition"
-  >
-    <FaFacebookF className="w-4 h-4" />
-  </a>
+                <a
+                  href="https://www.facebook.com/profile.php?id=61574327334921"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-7 h-7 border-2 border-white rounded-full flex items-center justify-center hover:bg-white hover:text-teal-700 transition"
+                >
+                  <FaFacebookF className="w-4 h-4" />
+                </a>
 
-  <a
-    href="#"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="w-7 h-7 border-2 border-white rounded-full flex items-center justify-center hover:bg-white hover:text-teal-700 transition"
-  >
-    <FaInstagram className="w-4 h-4" />
-  </a>
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-7 h-7 border-2 border-white rounded-full flex items-center justify-center hover:bg-white hover:text-teal-700 transition"
+                >
+                  <FaInstagram className="w-4 h-4" />
+                </a>
 
-  <a
-    href="https://www.tiktok.com/@domix.md2"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="w-7 h-7 border-2 border-white rounded-full flex items-center justify-center hover:bg-white hover:text-teal-700 transition"
-  >
-    <FaTiktok className="w-4 h-4" />
-  </a>
-
-</div>
+                <a
+                  href="https://www.tiktok.com/@domix.md2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-7 h-7 border-2 border-white rounded-full flex items-center justify-center hover:bg-white hover:text-teal-700 transition"
+                >
+                  <FaTiktok className="w-4 h-4" />
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -266,20 +326,100 @@ const Navbar = () => {
               />
             </Link>
 
-            <div className="flex-1 max-w-2xl">
+            {/* Desktop Search */}
+            <div className="flex-1 max-w-3xl relative" ref={searchRef}>
               <form onSubmit={handleSearch} className="relative">
                 <input
                   type="text"
                   value={searchQuery}
+                  onFocus={() => {
+                    if (searchQuery.trim().length >= 2) {
+                      setShowSearchDropdown(true);
+                    }
+                  }}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t('navbar.search')}
-                  className="w-full px-6 py-4 pr-14 border-2 border-gray-200 rounded-full focus:outline-none focus:border-teal-500 text-base"
+                  className="w-full px-7 py-4 pr-16 border-2 border-gray-200 rounded-full focus:outline-none focus:border-teal-500 text-base bg-white"
                 />
 
-                <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal-600">
+                <button
+                  type="submit"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-teal-600 text-white rounded-full flex items-center justify-center hover:bg-teal-700 transition"
+                >
                   <Search className="w-6 h-6" />
                 </button>
               </form>
+
+              {showSearchDropdown && searchQuery.trim().length >= 2 && (
+                <div className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[760px] bg-white rounded-2xl shadow-2xl border border-gray-100 z-[999] p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-5">
+                    {language === 'ru' ? 'Товары' : 'Produse'}
+                  </h3>
+
+                  {searchLoading ? (
+                    <div className="py-8 text-center text-gray-500">
+                      {language === 'ru' ? 'Загрузка...' : 'Se încarcă...'}
+                    </div>
+                  ) : searchResults.length === 0 ? (
+                    <div className="py-8 text-center text-gray-500">
+                      {language === 'ru'
+                        ? 'Nu au fost găsite produse'
+                        : 'Nu au fost găsite produse'}
+                    </div>
+                  ) : (
+                    <div className="space-y-4 max-h-[520px] overflow-y-auto pr-2">
+                      {searchResults.map((product) => {
+                        const productName =
+                          language === 'ru' && product.nameRu ? product.nameRu : product.name;
+
+                        return (
+                          <Link
+                            key={product.id}
+                            to={`/product/${product.id}`}
+                            onClick={handleProductClick}
+                            className="flex items-center gap-5 p-4 border border-gray-200 rounded-xl hover:border-teal-500 hover:bg-teal-50/40 transition"
+                          >
+                            <div className="w-24 h-24 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+                              <img
+                                src={product.image || product.images?.[0]}
+                                alt={productName}
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-lg font-bold text-gray-900 line-clamp-2">
+                                {productName}
+                              </h4>
+
+                              <div className="mt-2 flex items-center gap-4">
+                                <span className="text-xl font-bold text-red-600">
+                                  {product.price} lei
+                                </span>
+
+                                {product.originalPrice && Number(product.originalPrice) > Number(product.price) && (
+                                  <span className="text-base text-gray-400 line-through">
+                                    {product.originalPrice} lei
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {searchResults.length > 0 && (
+                    <button
+                      onClick={handleSearch}
+                      className="mt-5 w-full bg-teal-600 text-white py-3 rounded-xl font-bold hover:bg-teal-700 transition"
+                    >
+                      {language === 'ru' ? 'Смотреть все результаты' : 'Vezi toate rezultatele'}
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-6 flex-shrink-0">
@@ -369,8 +509,6 @@ const Navbar = () => {
               {isCategoriesOpen && categoryMenuItems.length > 0 && (
                 <div className="absolute top-full left-0 mt-4 w-[calc(100vw-48px)] max-w-[1600px] bg-white rounded-[24px] shadow-2xl border border-gray-100 p-6 z-50">
                   <div className="grid grid-cols-[390px_1fr] gap-6">
-
-                    {/* Parent Categories */}
                     <div className="border-r border-gray-200 pr-6 space-y-3 max-h-[680px] overflow-y-auto">
                       {categoryMenuItems.map((item) => {
                         const itemName = getName(item);
@@ -419,7 +557,6 @@ const Navbar = () => {
                       })}
                     </div>
 
-                    {/* Children Categories */}
                     <div className="w-full min-h-[520px] max-h-[680px] overflow-y-auto pr-1">
                       {categoryMenuItems.map((item) => {
                         if (hoveredCategoryId !== item.id) return null;
@@ -502,7 +639,7 @@ const Navbar = () => {
 
               <div>
                 <div className="text-sm text-gray-500">{t('navbar.support')}</div>
-                <div className="text-base font-bold text-gray-900">069 119 991</div>
+                <div className="text-base text-right font-bold text-gray-900">069 119 991</div>
               </div>
             </div>
           </div>

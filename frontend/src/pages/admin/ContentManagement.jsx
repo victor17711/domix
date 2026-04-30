@@ -1012,7 +1012,7 @@ const ContentManagement = () => {
                     value={contactInfo.hours}
                     onChange={(e) => setContactInfo({...contactInfo, hours: e.target.value})}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    placeholder="Luni - Vineri: 09:00 - 18:00"
+                    placeholder="Luni - Vineri: 08:00 - 20:00"
                   />
                 </div>
 

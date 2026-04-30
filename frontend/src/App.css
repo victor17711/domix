@@ -108,3 +108,13 @@ input:focus, textarea:focus, select:focus {
     transform: translateX(-25%);
   }
 }
+
+/* ascunde scrollbar */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent;
+}

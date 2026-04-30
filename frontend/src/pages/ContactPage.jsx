@@ -57,11 +57,11 @@ const ContactPage = () => {
       // Use default data if page doesn't exist
       setPageData({
         content: JSON.stringify({
-          address: 'or. Durleşti, str. Tudor Vladimirescu 67C',
+          address: 'or. Durleşti, str. Tudor Vladimirescu 70B',
           phone: '+373 69 711 967',
           email: 'support@domix.md',
-          hours: 'Luni - Vineri: 09:00 - 18:00',
-          mapUrl: 'https://www.google.com/maps?q=47.028105,28.770326&hl=ro&z=16&output=embed'
+          hours: 'Luni - Vineri: 08:00 - 20:00',
+          mapUrl: 'https://www.google.com/maps?q=47.037960,28.860430&hl=ro&z=17&output=embed'
         })
       });
     } finally {
@@ -109,14 +109,14 @@ const ContactPage = () => {
 
   // Use contactInfo from state (fetched from settings), with fallbacks
   const finalContactInfo = {
-    address: contactInfo.address || 'or. Durleşti, str. Tudor Vladimirescu 67C',
+    address: contactInfo.address || 'or. Durleşti, str. Tudor Vladimirescu 70B',
     phone: contactInfo.phone || '+373 69 711 967',
     email: contactInfo.email || 'comenzi@domix.md',
-    hours: contactInfo.hours || 'Luni - Vineri: 09:00 - 18:00',
+    hours: contactInfo.hours || 'Luni - Vineri: 08:00 - 20:00',
     facebook: contactInfo.facebook || '',
     instagram: contactInfo.instagram || '',
     tiktok: contactInfo.tiktok || '',
-    mapUrl: 'https://www.google.com/maps?q=47.028105,28.770326&hl=ro&z=16&output=embed'
+    mapUrl: 'https://www.google.com/maps?q=47.037960,28.860430&hl=ro&z=17&output=embed'
   };
 
   return (

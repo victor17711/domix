@@ -127,79 +127,81 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = async (productId, selectedSize = null, selectedColor = null) => {
-    if (isAuthenticated) {
-      try {
-        // Build query params only if values exist
-        const params = new URLSearchParams();
-        if (selectedSize) params.append('selectedSize', selectedSize);
-        if (selectedColor) params.append('selectedColor', selectedColor);
-        const queryString = params.toString() ? `?${params.toString()}` : '';
-        
-        await axios.delete(
-          `${API}/cart/remove/${productId}${queryString}`, 
-          getAuthHeaders()
-        );
-        
-        await fetchCart();
-      } catch (error) {
-        console.error('Error removing from cart:', error);
-        throw error;
-      }
-    } else {
-      setCart(prevCart => 
-        prevCart.filter(item => 
-          !(item.id === productId && 
-            item.selectedSize === selectedSize && 
-            item.selectedColor === selectedColor)
-        )
+    // Optimistic local update — UI removes the item instantly regardless of
+    // what happens on the server. This also acts as a safety net when the
+    // user's session has expired and the API would 401 otherwise.
+    setCart((prevCart) =>
+      prevCart.filter(
+        (item) =>
+          !(
+            item.id === productId &&
+            item.selectedSize === selectedSize &&
+            item.selectedColor === selectedColor
+          )
+      )
+    );
+
+    if (!isAuthenticated) return;
+
+    try {
+      const params = new URLSearchParams();
+      if (selectedSize) params.append('selectedSize', selectedSize);
+      if (selectedColor) params.append('selectedColor', selectedColor);
+      const queryString = params.toString() ? `?${params.toString()}` : '';
+
+      await axios.delete(
+        `${API}/cart/remove/${productId}${queryString}`,
+        getAuthHeaders()
       );
+      await fetchCart();
+    } catch (error) {
+      // Swallow 401/network errors — the item is already gone from local
+      // state. Re-throwing would surface as an uncaught runtime error.
+      console.error('Error removing from cart:', error?.response?.status || error);
     }
   };
 
   const updateQuantity = async (productId, quantity, selectedSize = null, selectedColor = null) => {
-    if (isAuthenticated) {
-      try {
-        const params = new URLSearchParams();
-        params.append('productId', productId);
-        params.append('quantity', quantity);
-        if (selectedSize) params.append('selectedSize', selectedSize);
-        if (selectedColor) params.append('selectedColor', selectedColor);
-        
-        await axios.put(
-          `${API}/cart/update?${params.toString()}`,
-          {},
-          getAuthHeaders()
-        );
-        
-        await fetchCart();
-      } catch (error) {
-        console.error('Error updating cart:', error);
-        throw error;
-      }
-    } else {
-      setCart(prevCart =>
-        prevCart.map(item =>
-          item.id === productId && 
-          item.selectedSize === selectedSize && 
-          item.selectedColor === selectedColor
-            ? { ...item, quantity: Math.max(1, quantity) }
-            : item
-        )
+    // Optimistic local update so UI reflects the change immediately
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item.id === productId &&
+        item.selectedSize === selectedSize &&
+        item.selectedColor === selectedColor
+          ? { ...item, quantity: Math.max(1, quantity) }
+          : item
+      )
+    );
+
+    if (!isAuthenticated) return;
+
+    try {
+      const params = new URLSearchParams();
+      params.append('productId', productId);
+      params.append('quantity', quantity);
+      if (selectedSize) params.append('selectedSize', selectedSize);
+      if (selectedColor) params.append('selectedColor', selectedColor);
+
+      await axios.put(
+        `${API}/cart/update?${params.toString()}`,
+        {},
+        getAuthHeaders()
       );
+
+      await fetchCart();
+    } catch (error) {
+      console.error('Error updating cart:', error?.response?.status || error);
     }
   };
 
   const clearCart = async () => {
-    if (isAuthenticated) {
-      try {
-        await axios.delete(`${API}/cart/clear`, getAuthHeaders());
-        await fetchCart();
-      } catch (error) {
-        console.error('Error clearing cart:', error);
-        throw error;
-      }
-    } else {
-      setCart([]);
+    setCart([]);
+    if (!isAuthenticated) return;
+    try {
+      await axios.delete(`${API}/cart/clear`, getAuthHeaders());
+      await fetchCart();
+    } catch (error) {
+      console.error('Error clearing cart:', error?.response?.status || error);
     }
   };
 

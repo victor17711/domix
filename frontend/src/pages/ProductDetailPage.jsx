@@ -28,7 +28,7 @@ const ProductDetailPage = () => {
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState('description');
+  const [activeTab, setActiveTab] = useState('specifications');
   const [reviewForm, setReviewForm] = useState({
     userName: '',
     userEmail: '',
@@ -52,6 +52,19 @@ const ProductDetailPage = () => {
       fetchReviews();
     }
   }, [product]);
+
+
+  const nextMainImage = (e) => {
+  e.stopPropagation();
+  setSelectedImage((prev) => (prev + 1) % images.length);
+};
+
+const prevMainImage = (e) => {
+  e.stopPropagation();
+  setSelectedImage((prev) => (prev - 1 + images.length) % images.length);
+};
+
+
 
   const fetchProduct = async () => {
     try {
@@ -260,33 +273,62 @@ const ProductDetailPage = () => {
       <div className="w-full px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
           {/* Images */}
-          <div>
-            <div
-              className="bg-white rounded-2xl overflow-hidden mb-4 border-2 border-gray-100 cursor-pointer hover:border-teal-500 transition"
-              onClick={() => openGallery(selectedImage)}
-            >
-              <img
-                src={images[selectedImage]}
-                alt={product.name}
-                className="w-full h-[300px] md:h-[600px] object-contain"
-              />
-            </div>
+<div>
+  <div
+    className="relative bg-white rounded-2xl overflow-hidden mb-4 border-2 border-gray-100 cursor-pointer hover:border-teal-500 transition group"
+    onClick={() => openGallery(selectedImage)}
+  >
+    <img
+      src={images[selectedImage]}
+      alt={product.name}
+      className="w-full h-[300px] md:h-[600px] object-contain"
+    />
 
-            {images.length > 1 && (
-              <div className="grid grid-cols-5 gap-2">
-                {images.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setSelectedImage(idx)}
-                    className={`bg-white rounded-lg overflow-hidden border-2 transition cursor-pointer hover:border-teal-400 ${selectedImage === idx ? 'border-teal-600' : 'border-gray-200'
-                      }`}
-                  >
-                    <img src={img} alt="" className="w-full h-[60px] md:h-[140px] object-cover" />
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+    {images.length > 1 && (
+      <>
+        <button
+          type="button"
+          onClick={prevMainImage}
+          className="absolute left-3 md:left-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/90 hover:bg-white border border-teal-600 flex items-center justify-center transition"
+        >
+          <ChevronLeft className="w-6 h-6 text-gray-900" />
+        </button>
+
+        <button
+          type="button"
+          onClick={nextMainImage}
+          className="absolute right-3 md:right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/90 hover:bg-white border border-teal-600 flex items-center justify-center transition"
+        >
+          <ChevronRight className="w-6 h-6 text-gray-900" />
+        </button>
+
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 px-3 py-1 rounded-full bg-black/60 text-white text-sm font-semibold">
+          {selectedImage + 1} / {images.length}
+        </div>
+      </>
+    )}
+  </div>
+
+  {images.length > 1 && (
+    <div className="grid grid-cols-5 gap-2">
+      {images.map((img, idx) => (
+        <button
+          key={idx}
+          onClick={() => setSelectedImage(idx)}
+          className={`bg-white rounded-lg overflow-hidden border-2 transition cursor-pointer hover:border-teal-400 ${
+            selectedImage === idx ? 'border-teal-600' : 'border-gray-200'
+          }`}
+        >
+          <img
+            src={img}
+            alt=""
+            className="w-full h-[60px] md:h-[140px] object-cover"
+          />
+        </button>
+      ))}
+    </div>
+  )}
+</div>
 
           {/* Info */}
           <div>
@@ -348,8 +390,8 @@ const ProductDetailPage = () => {
                             <Star
                               key={i}
                               className={`w-5 h-5 ${i < Math.floor(product.rating || 0)
-                                  ? 'text-yellow-400 fill-yellow-400'
-                                  : 'text-gray-300'
+                                ? 'text-yellow-400 fill-yellow-400'
+                                : 'text-gray-300'
                                 }`}
                             />
                           ))}
@@ -390,39 +432,59 @@ const ProductDetailPage = () => {
                     </div>
                   </div>
 
-                  {/* Quantity */}
-                  <div className="mb-6">
-                    <label className="block text-sm font-bold text-gray-900 mb-3">
-                      {t('productDetail.quantity')}
-                    </label>
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center border-2 border-gray-300 rounded-lg">
-                        <button
-                          onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                          className="p-3 hover:bg-gray-100 transition"
-                        >
-                          <Minus className="w-4 h-4 md:w-5 md:h-5" />
-                        </button>
-                        <span className="px-2 md:px-6 py-2 font-bold text-lg">{quantity}</span>
-                        <button
-                          onClick={() => setQuantity(quantity + 1)}
-                          className="p-3 hover:bg-gray-100 transition"
-                        >
-                          <Plus className="w-4 h-4 md:w-5 md:h-5" />
-                        </button>
-                      </div>
-                      <span className="text-gray-600">
-                        {product.available
-                          ? `${product.available} ${t('productDetail.available')}`
-                          : t('productDetail.inStock')}
-                      </span>
-                    </div>
-                  </div>
+{/* Quantity */}
+<div className="mb-6">
+  <label className="block text-sm font-bold text-gray-900 mb-3">
+    {t('productDetail.quantity')}
+  </label>
+
+  <div className="flex items-center gap-4">
+    <div
+      className={`flex items-center border-2 rounded-lg ${
+        product.available
+          ? 'border-gray-300'
+          : 'border-gray-200 opacity-50 cursor-not-allowed'
+      }`}
+    >
+      <button
+        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+        disabled={!product.available}
+        className="p-3 hover:bg-gray-100 transition disabled:cursor-not-allowed"
+      >
+        <Minus className="w-4 h-4 md:w-5 md:h-5" />
+      </button>
+
+      <span className="px-2 md:px-6 py-2 font-bold text-lg">
+        {quantity}
+      </span>
+
+      <button
+        onClick={() => setQuantity(quantity + 1)}
+        disabled={!product.available}
+        className="p-3 hover:bg-gray-100 transition disabled:cursor-not-allowed"
+      >
+        <Plus className="w-4 h-4 md:w-5 md:h-5" />
+      </button>
+    </div>
+
+    <span
+      className={`font-medium ${
+        product.available ? 'text-gray-600' : 'text-red-600'
+      }`}
+    >
+      {product.available
+        ? `${product.available} ${t('productDetail.available')}`
+        : language === 'ru'
+        ? 'Нет в наличии'
+        : 'Nu este în stoc'}
+    </span>
+  </div>
+</div>
 
                   {/* Actions */}
                   <div className="flex flex-col gap-3 mb-4">
                     <a
-                      href="tel:+37369711967"
+                      href="tel:+37369119991"
                       className="flex items-center justify-center gap-3 border-2 border-indigo-500 rounded-2xl px-4 md:px-6 py-3 md:py-4 transition hover:shadow-md order-2 md:order-1"
                     >
                       <span className="text-base md:text-lg font-semibold text-indigo-500">
@@ -430,7 +492,7 @@ const ProductDetailPage = () => {
                       </span>
                       <span className="text-indigo-500 text-xl">📞</span>
                       <span className="text-base md:text-lg font-bold text-pink-600 underline">
-                        +373 69 711 967
+                        +373 691 19 991
                       </span>
                     </a>
 
@@ -550,13 +612,13 @@ const ProductDetailPage = () => {
         {/* Tabs */}
         <div className="bg-white rounded-2xl p-8 mb-12">
           <div className="flex gap-8 border-b mb-6">
-            {['description', 'specifications', 'reviews'].map((tab) => (
+            {['specifications', 'description', 'reviews'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`pb-4 font-semibold transition border-b-2 ${activeTab === tab
-                    ? 'border-teal-600 text-teal-600'
-                    : 'border-transparent text-gray-600 hover:text-gray-900'
+                  ? 'border-teal-600 text-teal-600'
+                  : 'border-transparent text-gray-600 hover:text-gray-900'
                   }`}
               >
                 {tab === 'description' && t('productDetail.tabs.description')}
@@ -570,10 +632,10 @@ const ProductDetailPage = () => {
             {activeTab === 'description' && (
               <div>
                 <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-  {language === 'ru' && product.descriptionRu
-    ? product.descriptionRu
-    : product.description || t('productDetail.noDescription')}
-</p>
+                  {language === 'ru' && product.descriptionRu
+                    ? product.descriptionRu
+                    : product.description || t('productDetail.noDescription')}
+                </p>
               </div>
             )}
 
@@ -658,8 +720,8 @@ const ProductDetailPage = () => {
                           >
                             <Star
                               className={`w-8 h-8 ${star <= reviewForm.rating
-                                  ? 'text-yellow-400 fill-yellow-400'
-                                  : 'text-gray-300'
+                                ? 'text-yellow-400 fill-yellow-400'
+                                : 'text-gray-300'
                                 }`}
                             />
                           </button>
@@ -716,8 +778,8 @@ const ProductDetailPage = () => {
                                     <Star
                                       key={i}
                                       className={`w-4 h-4 ${i < review.rating
-                                          ? 'text-yellow-400 fill-yellow-400'
-                                          : 'text-gray-300'
+                                        ? 'text-yellow-400 fill-yellow-400'
+                                        : 'text-gray-300'
                                         }`}
                                     />
                                   ))}
@@ -755,7 +817,7 @@ const ProductDetailPage = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => scrollRelatedProducts('left')}
-                    className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+                    className="p-2 rounded-full bg-teal-100 hover:bg-gray-200 border border-teal-600 transition"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -763,7 +825,7 @@ const ProductDetailPage = () => {
                   </button>
                   <button
                     onClick={() => scrollRelatedProducts('right')}
-                    className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+                    className="p-2 rounded-full bg-teal-100 hover:bg-gray-200 border border-teal-600 transition"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -1049,8 +1111,8 @@ const ProductDetailPage = () => {
                   key={idx}
                   onClick={() => setGalleryIndex(idx)}
                   className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition ${galleryIndex === idx
-                      ? 'border-teal-500'
-                      : 'border-white border-opacity-30 hover:border-opacity-60'
+                    ? 'border-teal-500'
+                    : 'border-white border-opacity-30 hover:border-opacity-60'
                     }`}
                 >
                   <img src={img} alt="" className="w-full h-full object-cover" />

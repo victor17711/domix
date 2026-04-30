@@ -83,9 +83,9 @@ const Footer = () => {
       {/* Footer */}
       <footer className="bg-[#16a085] pt-10 md:pt-12 pb-[50px] md:pb-12 xl:rounded-tr-[22px] xl:rounded-tl-[22px] relative">
         <div className="max-w-[1320px] mx-auto px-4">
-          <div className="grid grid-cols-12 gap-x-6 gap-y-6 md:gap-y-8 pb-9">
+          <div className="grid grid-cols-12 gap-x-6 gap-y-6 md:gap-y-8 pb-9 xl:flex xl:justify-between">
             {/* Column 1 */}
-            <div className="col-span-12 md:col-span-12 xl:col-span-3 flex flex-col gap-y-6">
+            <div className="col-span-12 md:col-span-12 xl:w-1/4 flex flex-col gap-y-6">
               <div>
                 <Link to="/" className="inline-flex items-center">
                   <img
@@ -131,7 +131,7 @@ const Footer = () => {
             </div>
 
             {/* Column 2 */}
-            <div className="col-span-12 md:col-span-6 xl:col-span-2">
+            <div className="col-span-12 md:col-span-6 xl:w-1/4">
               <button
                 type="button"
                 onClick={() => toggleFooterMenu('usefulLinks')}
@@ -178,7 +178,7 @@ const Footer = () => {
             </div>
 
             {/* Column 3 */}
-            <div className="col-span-12 md:col-span-6 xl:col-span-2">
+            <div className="col-span-12 md:col-span-6 xl:w-1/4">
               <button
                 type="button"
                 onClick={() => toggleFooterMenu('info')}
@@ -224,7 +224,8 @@ const Footer = () => {
               </ul>
             </div>
 
-            {/* Column 4 */}
+            {/* Column 4 - Categorii comentată */}
+            {/*
             <div className="col-span-12 md:col-span-6 xl:col-span-2">
               <button
                 type="button"
@@ -269,10 +270,11 @@ const Footer = () => {
                 ))}
               </ul>
             </div>
+            */}
 
             {/* Column 5 */}
-            <div className="col-span-12 md:col-span-6 xl:col-span-3">
-              <h5 className="text-[#D8ECE6] text-[20px] font-semibold pb-o border-b border-[rgba(145,158,171,0.24)]">
+            <div className="col-span-12 md:col-span-6 xl:w-1/4">
+              <h5 className="text-[#D8ECE6] text-[20px] font-semibold pb-0 border-b border-[rgba(145,158,171,0.24)]">
                 {t('footer.contactUs')}
               </h5>
 
@@ -300,18 +302,18 @@ const Footer = () => {
                     <Mail className="w-5 h-5 text-[#D8ECE6]" />
                   </span>
                   <p className="text-[#D8ECE6] font-semibold">
-                    support@domix.md
+                    1domixmd@gmail.com
                   </p>
                 </li>
 
-                <li className="flex items-center gap-x-3">
+                {/* <li className="flex items-center gap-x-3">
                   <span className="size-10 inline-flex items-center justify-center rounded-full bg-[#ffffff]/20 shrink-0">
                     <Mail className="w-5 h-5 text-[#D8ECE6]" />
                   </span>
                   <p className="text-[#D8ECE6] font-semibold">
                     comenzi@domix.md
                   </p>
-                </li>
+                </li> */}
               </ul>
             </div>
           </div>

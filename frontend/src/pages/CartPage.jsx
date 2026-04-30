@@ -199,10 +199,10 @@ const CartPage = () => {
               </Link>
 
               <div className="mt-6 pt-6 border-t space-y-3 text-sm text-gray-600">
-                <div className="flex items-center gap-2">
+                {/* <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-teal-600 rounded-full"></div>
                   {t('cart.freeShippingNote')}
-                </div>
+                </div> */}
 
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-teal-600 rounded-full"></div>

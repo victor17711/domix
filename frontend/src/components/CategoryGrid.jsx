@@ -62,14 +62,14 @@ const CategoryGrid = () => {
             <div className="hidden md:flex gap-2">
               <button
                 ref={prevRef}
-                className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-teal-600 hover:bg-teal-600 hover:text-white transition border border-gray-200"
+                className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-teal-600 hover:bg-teal-600 hover:text-white transition border border-teal-600"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
 
               <button
                 ref={nextRef}
-                className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-teal-600 hover:bg-teal-600 hover:text-white transition border border-gray-200"
+                className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-teal-600 hover:bg-teal-600 hover:text-white transition border border-teal-600"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>

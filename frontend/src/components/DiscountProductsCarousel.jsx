@@ -136,14 +136,14 @@ const DiscountProductsCarousel = () => {
             {/* Navigation Buttons */}
             <button
               ref={prevRef}
-              className="hidden absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-lg items-center justify-center text-teal-600 hover:bg-teal-600 hover:text-white transition-all duration-300 hover:scale-110 border border-gray-200"
+              className="hidden absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-lg items-center justify-center text-teal-600 hover:bg-teal-600 hover:text-white transition-all duration-300 hover:scale-110 border border-teal-600"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
 
             <button
               ref={nextRef}
-              className="hidden absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-lg items-center justify-center text-teal-600 hover:bg-teal-600 hover:text-white transition-all duration-300 hover:scale-110 border border-gray-200"
+              className="hidden absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-lg items-center justify-center text-teal-600 hover:bg-teal-600 hover:text-white transition-all duration-300 hover:scale-110 border border-teal-600"
             >
               <ChevronRight className="w-6 h-6" />
             </button>
