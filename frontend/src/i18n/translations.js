@@ -102,7 +102,7 @@ export const translations = {
 
     // Footer
     footer: {
-      aboutUs: 'Partenerul tău de încredere în construcții. Oferim o gamă variată de materiale de calitate pentru proiecte durabile, la prețuri competitive.',
+      aboutUs: 'Domix.md este magazinul tău online cu produse pentru gospodărie, grădinărit și bricolaj, oferind unelte și utilaje la prețuri accesibile, cu livrare în toată țara.',
       menuFirst: 'Link-uri utile',
       menuSecond: 'Informații',
       menuThird: 'Categorii',
@@ -833,7 +833,7 @@ export const translations = {
     },
 
     footer: {
-      aboutUs: 'Ваш надёжный партнёр в строительстве. Мы предлагаем широкий ассортимент качественных материалов для долговечных проектов по конкурентным ценам.',
+      aboutUs: 'Domix.md — это ваш интернет-магазин товаров для дома, садоводства и ремонта, предлагающий инструменты и оборудование по доступным ценам с доставкой по всей стране.',
       menuFirst: 'Полезные ссылки',
       menuSecond: 'Информация',
       menuThird: 'Категории',

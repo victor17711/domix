@@ -180,50 +180,7 @@ const ContactPage = () => {
           </div>
         </div>
 
-        {/* Social Media - if available from Admin */}
-        {(finalContactInfo.facebook || finalContactInfo.instagram || finalContactInfo.tiktok) && (
-          <div className="bg-white rounded-2xl p-6 shadow-lg mb-12">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Share2 className="w-6 h-6 text-teal-600" />
-              {t('contact.socialTitle')}
-            </h3>
-            <div className="flex gap-4">
-              {finalContactInfo.facebook && (
-                <a
-                  href={finalContactInfo.facebook}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition font-semibold"
-                >
-                  <Facebook className="w-5 h-5" />
-                  Facebook
-                </a>
-              )}
-              {finalContactInfo.instagram && (
-                <a
-                  href={finalContactInfo.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 bg-gradient-to-br from-purple-600 to-pink-500 text-white px-6 py-3 rounded-xl hover:from-purple-700 hover:to-pink-600 transition font-semibold"
-                >
-                  <Instagram className="w-5 h-5" />
-                  Instagram
-                </a>
-              )}
-              {finalContactInfo.tiktok && (
-                <a
-                  href={finalContactInfo.tiktok}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-xl hover:bg-gray-800 transition font-semibold"
-                >
-                  <Music className="w-5 h-5" />
-                  TikTok
-                </a>
-              )}
-            </div>
-          </div>
-        )}
+
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Contact Form */}
