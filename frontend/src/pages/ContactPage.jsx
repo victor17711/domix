@@ -61,7 +61,7 @@ const ContactPage = () => {
           phone: '+373 69 711 967',
           email: 'support@domix.md',
           hours: 'Luni - Vineri: 08:00 - 20:00',
-          mapUrl: 'https://www.google.com/maps?q=47.037960,28.860430&hl=ro&z=17&output=embed'
+          mapUrl: 'https://www.google.com/maps?q=47.02988894044589,28.768576182349097&hl=ro&z=17&output=embed'
         })
       });
     } finally {
@@ -116,7 +116,7 @@ const ContactPage = () => {
     facebook: contactInfo.facebook || '',
     instagram: contactInfo.instagram || '',
     tiktok: contactInfo.tiktok || '',
-    mapUrl: 'https://www.google.com/maps?q=47.037960,28.860430&hl=ro&z=17&output=embed'
+    mapUrl: 'https://www.google.com/maps?q=47.02988894044589,28.768576182349097&hl=ro&z=17&output=embed'
   };
 
   return (

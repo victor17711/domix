@@ -212,7 +212,8 @@ async def get_products(
     maxPrice: Optional[float] = None,
     brandId: Optional[str] = None,
     skip: int = 0,
-    limit: int = 100
+    limit: int = 100,
+    withReviewStats: bool = False,
 ):
     """Get all products with optional filtering"""
     query = {}
@@ -243,9 +244,12 @@ async def get_products(
     # Sort by createdAt descending (newest first)
     products = await db.products.find(query, {"_id": 0}).sort("createdAt", -1).skip(skip).limit(limit).to_list(limit)
 
-    # Recompute the real review count and average rating for each product from the reviews collection
+    # Recompute the real review count and average rating for each product from
+    # the reviews collection. Skipped by default (the stored values are cheap
+    # and accurate enough for listings). Callers pass `withReviewStats=true`
+    # when they need exact numbers — typically the admin dashboard.
     product_ids = [p["id"] for p in products if p.get("id")]
-    if product_ids:
+    if withReviewStats and product_ids:
         pipeline = [
             {"$match": {"productId": {"$in": product_ids}}},
             {"$group": {
@@ -345,22 +349,8 @@ async def get_products_paginated(
     )
     items = await cursor.to_list(pageSize)
 
-    # Recompute review counts (same as get_products)
-    product_ids = [p.get("id") for p in items if p.get("id")]
-    if product_ids:
-        pipeline = [
-            {"$match": {"productId": {"$in": product_ids}}},
-            {"$group": {
-                "_id": "$productId",
-                "count": {"$sum": 1},
-                "avgRating": {"$avg": "$rating"},
-            }},
-        ]
-        stats = {s["_id"]: s async for s in db.reviews.aggregate(pipeline)}
-        for p in items:
-            s = stats.get(p.get("id"))
-            p["reviews"] = s["count"] if s else 0
-            p["rating"] = round(s["avgRating"], 1) if s else 0.0
+    # Review recount skipped for listing endpoints — use stored `reviews` and
+    # `rating` (which are kept in sync at write-time in review creation).
 
     return {
         "items": [Product(**p).dict() for p in items],
@@ -2176,11 +2166,56 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+# Add browser-side caching for read-only, public listing endpoints.
+# Browsers will reuse the cached response for up to `max-age` seconds,
+# slashing repeat requests during navigation.
+_CACHEABLE_PATHS = (
+    "/api/settings",
+    "/api/categories",
+    "/api/brands",
+    "/api/gifts",
+    "/api/gift-conditions",
+)
+
+
+@app.middleware("http")
+async def add_cache_headers(request, call_next):
+    response = await call_next(request)
+    if request.method == "GET" and any(
+        request.url.path.startswith(p) for p in _CACHEABLE_PATHS
+    ):
+        # Public cache for 60s, stale-while-revalidate for 5 min
+        response.headers["Cache-Control"] = (
+            "public, max-age=60, stale-while-revalidate=300"
+        )
+    return response
+
 @app.on_event("startup")
 async def startup_db_client():
     global db
     db = client[os.environ['DB_NAME']]
     logger.info("MongoDB connected")
+
+    # Create indexes to speed up the most common frontend queries.
+    # `create_index` is idempotent — it's a no-op if the index already exists.
+    try:
+        await db.products.create_index("category")
+        await db.products.create_index("categories")
+        await db.products.create_index("brandId")
+        await db.products.create_index("slug", unique=False, sparse=True)
+        await db.products.create_index("id", unique=True)
+        await db.products.create_index([("createdAt", -1)])
+        await db.products.create_index("price")
+        await db.products.create_index("name")
+        await db.categories.create_index("slug", unique=False, sparse=True)
+        await db.categories.create_index("parentId")
+        await db.brands.create_index("id", unique=True)
+        await db.orders.create_index([("createdAt", -1)])
+        await db.reviews.create_index("productId")
+        logger.info("MongoDB indexes ensured")
+    except Exception as e:
+        logger.warning(f"Could not create indexes: {e}")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

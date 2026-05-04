@@ -84,6 +84,8 @@ const ProductCard = ({ product, showProgress = false }) => {
             <img
               src={product.image}
               alt={product.name}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
             />
           </div>
@@ -98,7 +100,7 @@ const ProductCard = ({ product, showProgress = false }) => {
             </h3>
 
             {/* Rating - Only show if reviews exist */}
-            {product.reviews > 0 && (
+            {/* {product.reviews > 0 && (
               <div className="flex items-center gap-2 mb-2">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
@@ -114,7 +116,7 @@ const ProductCard = ({ product, showProgress = false }) => {
                 </div>
                 <span className="text-xs text-gray-500">({product.reviews})</span>
               </div>
-            )}
+            )} */}
 
             {/* Colors
             {product.colors && (
